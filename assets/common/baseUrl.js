@@ -1,11 +1,10 @@
 import { Platform } from 'react-native'
 
-
 let baseURL = '';
 
 {Platform.OS == 'android'
-? baseURL = 'http://192.168.0.100:3000'
-: baseURL = 'http://192.168.0.100:3000'
+? baseURL = 'http://192.168.100.76:3000'
+: baseURL = 'http://192.168.100.76:3000'
 }
 
 export default baseURL;
