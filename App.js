@@ -5,6 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Register from './screens/user/register'; 
 import Login from './screens/user/login';
 import Signup from './screens/user/signup';
+import Toast from 'react-native-toast-message';
 
 const stack = createNativeStackNavigator();
 
@@ -16,12 +17,14 @@ export default function App() {
     //   <StatusBar style="auto" /> */}
     // </View>
     <NavigationContainer>
-      <stack.Navigator initialRouteName='signup'>
+      <stack.Navigator initialRouteName='Signup'>
         <stack.Screen name='Register' component={Register} options={{headerShown:false}} />
         <stack.Screen name='Login' component={Login} options={{headerShown:false}} />
         <stack.Screen name='Signup' component={Signup} options={{headerShown:false}} />
       </stack.Navigator>
+      <Toast />
     </NavigationContainer>
+    
   );
 }
 
