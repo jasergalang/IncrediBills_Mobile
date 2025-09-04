@@ -159,7 +159,6 @@ export default function Register() {
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#f5f5f5" />
             
-            {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={handleBack} style={styles.backButton}>
                     <Ionicons name="chevron-back" size={24} color="#000" />
@@ -167,7 +166,6 @@ export default function Register() {
                 <Text style={styles.headerTitle}>Create new account</Text>
             </View>
 
-            {/* Profile Icon */}
             <View style={styles.profileSection}>
                 <TouchableOpacity onPress={showImagePickerOptions} style={styles.profileIconContainer}>
                     <View style={styles.profileIcon}>
@@ -185,7 +183,6 @@ export default function Register() {
 
             {/* Form */}
             <View style={styles.formContainer}>
-                {/* Name Fields Row */}
                 <View style={styles.nameRow}>
                     <View style={styles.nameInputContainer}>
                         <TextInput
@@ -207,7 +204,6 @@ export default function Register() {
                     </View>
                 </View>
 
-                {/* Email Field */}
                 <View style={styles.inputContainer}>
                     <TextInput
                         style={styles.input}
@@ -220,7 +216,6 @@ export default function Register() {
                     />
                 </View>
 
-                {/* Password Field */}
                 <View style={styles.inputContainer}>
                     <TextInput
                         style={styles.passwordInput}
@@ -242,7 +237,6 @@ export default function Register() {
                     </TouchableOpacity>
                 </View>
 
-                {/* Confirm Password Field */}
                 <View style={styles.inputContainer}>
                     <TextInput
                         style={styles.passwordInput}
@@ -264,7 +258,6 @@ export default function Register() {
                     </TouchableOpacity>
                 </View>
 
-                {/* Sign Up Button */}
                 <TouchableOpacity onPress={handleRegister} style={styles.signUpButton} >
                     <Text style={styles.signUpButtonText}>Sign Up</Text>
                 </TouchableOpacity>
