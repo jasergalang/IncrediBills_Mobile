@@ -158,7 +158,7 @@ export default function Register() {
     return (
         <SafeAreaView style={styles.container}>
             <StatusBar barStyle="dark-content" backgroundColor="#f5f5f5" />
-            
+
             <View style={styles.header}>
                 <TouchableOpacity onPress={handleBack} style={styles.backButton}>
                     <Ionicons name="chevron-back" size={24} color="#000" />
@@ -176,7 +176,7 @@ export default function Register() {
                         )}
                     </View>
                     <View style={styles.editIconContainer}>
-                        <Ionicons name="pencil" size={12} color="#fff" />
+                        <Ionicons name="camera" size={12} color="#fff" />
                     </View>
                 </TouchableOpacity>
             </View>
