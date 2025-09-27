@@ -1,7 +1,9 @@
 import React from 'react'
-
-export default function gameNav() {
-  return (
-    <div>gameNav</div>
-  )
+import { View, Text } from 'react-native'
+export default function GameNavigator() {
+    return (
+        <View>
+            <Text>Gane Navigator</Text>
+        </View>
+    )
 }

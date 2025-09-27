@@ -5,7 +5,7 @@ import Login from '../screens/user/login';
 import Register from '../screens/user/register';
 import Signup from '../screens/user/signup';
 
-export default function userNav() {
+export default function UserNavigator() {
   return (
     <Stack.Navigator>
         <Stack.Screen 
@@ -19,7 +19,7 @@ export default function userNav() {
         component={Login} 
         options={{headerShown:false}} 
         />
-        
+
         <Stack.Screen 
         name='register' 
         component={Register} 

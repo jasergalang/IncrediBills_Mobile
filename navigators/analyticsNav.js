@@ -1,7 +1,10 @@
 import React from 'react'
+import { View, Text } from 'react-native'
 
-export default function analyticsNav() {
-  return (
-    <div>analyticsNav</div>
-  )
+export default function AnalyticsNavigator() {
+    return (
+        <View>
+            <Text>Analytics Nav</Text>
+        </View>
+    )
 }

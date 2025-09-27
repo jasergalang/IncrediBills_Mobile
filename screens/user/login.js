@@ -15,6 +15,7 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import baseURL from '../../assets/common/baseUrl';
 import { useAuth } from '../../context/auth';
+import MainNavigator from '../../navigators/mainNav';
 
 export default function Login() {
   const navigation = useNavigation();
@@ -48,9 +49,9 @@ export default function Login() {
 
         setTimeout(() => {
           if (response.data.user.role === 'admin') {
-            // navigation.navigate('AdminNavigator');
+            // navigation.navigate('mainNav');
           } else {
-            navigation.navigate('Signup');
+            navigation.navigate('MainNavigator');
           }
         }, 1500);
       } else {

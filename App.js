@@ -7,7 +7,7 @@ import Login from './screens/user/login';
 import Signup from './screens/user/signup';
 import Toast from 'react-native-toast-message';
 import { AuthProvider } from './context/auth';
-
+import MainNavigator from './navigators/mainNav';
 const stack = createNativeStackNavigator();
 
 function AppWrapper() {
@@ -21,6 +21,7 @@ function AppWrapper() {
         <stack.Screen name='Register' component={Register} options={{ headerShown: false }} />
         <stack.Screen name='Login' component={Login} options={{ headerShown: false }} />
         <stack.Screen name='Signup' component={Signup} options={{ headerShown: false }} />
+        <stack.Screen name='MainNavigator' component={MainNavigator} options={{ headerShown: false }} />
       </stack.Navigator>
       <Toast />
     </NavigationContainer>
