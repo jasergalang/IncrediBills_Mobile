@@ -63,25 +63,12 @@ export default function Login() {
       }
     } catch (error) {
       console.error('Login error:', error);
-      if (error.response) {
-        Toast.show({
-          type: 'error',
-          text1: 'Login Failed',
-          text2: error.response.data?.message || 'Invalid credentials',
-        });
-      } else if (error.request) {
-        Toast.show({
-          type: 'error',
-          text1: 'Network Error',
-          text2: 'Please check your internet connection',
-        });
-      } else {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Something went wrong. Please try again.',
-        });
-      }
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Something went wrong.',
+        position: 'top'
+      });
     }
   };
 
