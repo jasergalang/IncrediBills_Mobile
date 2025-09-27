@@ -30,6 +30,7 @@ export const AuthProvider = ({ children }) => {
             if (storedToken && storedUser) {
                 setToken(storedToken);
                 setUser(JSON.parse(storedUser));
+                setIsAuthenticated(true);
             }
         } catch (error) {
             console.error('Error checking auth status:', error);
@@ -97,9 +98,6 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // const isAuthenticated = () => {
-    //     return token !== null && user !== null;
-    // };
 
     const value = {
         user,

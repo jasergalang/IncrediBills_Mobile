@@ -15,7 +15,6 @@ import { useNavigation } from '@react-navigation/native';
 import axios from 'axios';
 import baseURL from '../../assets/common/baseUrl';
 import { useAuth } from '../../context/auth';
-import MainNavigator from '../../navigators/mainNav';
 
 export default function Login() {
   const navigation = useNavigation();

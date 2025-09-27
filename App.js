@@ -8,21 +8,36 @@ import Signup from './screens/user/signup';
 import Toast from 'react-native-toast-message';
 import { AuthProvider } from './context/auth';
 import MainNavigator from './navigators/mainNav';
-const stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator();
+import { useAuth } from './context/auth';
 
 function AppWrapper() {
+  const { isAuthenticated } = useAuth();
+
   return (
-    // <View style={styles.container}>
-    //   {/* <Text>Open up App.js to start working on your app!</Text>
-    //   <StatusBar style="auto" /> */}
-    // </View>
     <NavigationContainer>
-      <stack.Navigator initialRouteName='Signup'>
-        <stack.Screen name='Register' component={Register} options={{ headerShown: false }} />
-        <stack.Screen name='Login' component={Login} options={{ headerShown: false }} />
-        <stack.Screen name='Signup' component={Signup} options={{ headerShown: false }} />
-        <stack.Screen name='MainNavigator' component={MainNavigator} options={{ headerShown: false }} />
-      </stack.Navigator>
+      <Stack.Navigator initialRouteName="Login">
+        {isAuthenticated ? (
+          <Stack.Screen
+            name="MainNavigator"
+            component={MainNavigator}
+            options={{ headerShown: false }}
+          />
+        ) : (
+          <>
+            <Stack.Screen
+              name="Login"
+              component={Login}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Register"
+              component={Register}
+              options={{ headerShown: false }}
+            />
+          </>
+        )}
+      </Stack.Navigator>
       <Toast />
     </NavigationContainer>
   );
@@ -30,7 +45,7 @@ function AppWrapper() {
 
 
 export default function App() {
-    return (
+  return (
     <AuthProvider>
       <AppWrapper />
     </AuthProvider>
