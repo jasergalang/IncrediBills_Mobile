@@ -16,7 +16,7 @@ function AppWrapper() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
+      <Stack.Navigator initialRouteName="Signup">
         {isAuthenticated ? (
           <Stack.Screen
             name="MainNavigator"
@@ -25,6 +25,11 @@ function AppWrapper() {
           />
         ) : (
           <>
+            <Stack.Screen
+              name="Signup"
+              component={Signup}
+              options={{ headerShown: false }}
+            />
             <Stack.Screen
               name="Login"
               component={Login}
