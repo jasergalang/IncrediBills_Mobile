@@ -4,7 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Register from "./screens/user/register";
 import Login from "./screens/user/login";
-import Signup from "./screens/user/signup";
+import Signup from "./screens/user/landing";
 import Toast from "react-native-toast-message";
 import { AuthProvider } from "./context/auth";
 import MainNavigator from "./navigators/mainNav";

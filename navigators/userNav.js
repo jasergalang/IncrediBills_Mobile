@@ -4,13 +4,13 @@ import { createStackNavigator } from "@react-navigation/stack";
 const Stack = createStackNavigator();
 import Login from "../screens/user/login";
 import Register from "../screens/user/register";
-import Signup from "../screens/user/signup";
+import Signup from "../screens/user/landing";
 import Profile from "../screens/user/profile";
 export default function UserNavigator() {
   return (
     <Stack.Navigator>
       <Stack.Screen
-        name="signup"
+        name="Signup"
         component={Signup}
         options={{ headerShown: false }}
       />
@@ -22,7 +22,7 @@ export default function UserNavigator() {
       />
 
       <Stack.Screen
-        name="register"
+        name="Register"
         component={Register}
         options={{ headerShown: false }}
       />

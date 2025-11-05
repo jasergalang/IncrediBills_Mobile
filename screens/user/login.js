@@ -76,7 +76,7 @@ export default function Login() {
   };
 
   const handleBack = () => {
-    navigation.navigate("Signup");
+    navigation.navigate("Register");
   };
 
   const handleForgotPassword = () => {
