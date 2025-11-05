@@ -1,15 +1,16 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import Register from './screens/user/register';
-import Login from './screens/user/login';
-import Signup from './screens/user/signup';
-import Toast from 'react-native-toast-message';
-import { AuthProvider } from './context/auth';
-import MainNavigator from './navigators/mainNav';
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet, Text, View } from "react-native";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Register from "./screens/user/register";
+import Login from "./screens/user/login";
+import Signup from "./screens/user/signup";
+import Toast from "react-native-toast-message";
+import { AuthProvider } from "./context/auth";
+import MainNavigator from "./navigators/mainNav";
 const Stack = createNativeStackNavigator();
-import { useAuth } from './context/auth';
+import { useAuth } from "./context/auth";
+import "./global.css";
 
 function AppWrapper() {
   const { isAuthenticated } = useAuth();
@@ -48,7 +49,6 @@ function AppWrapper() {
   );
 }
 
-
 export default function App() {
   return (
     <AuthProvider>
@@ -60,8 +60,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
