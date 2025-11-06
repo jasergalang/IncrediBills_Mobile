@@ -9,7 +9,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import HomeNavigator from "./homeNav";
 import GameNavigator from "./gameNav";
 import AnalyticsNavigator from "./analyticsNav";
-import UploadNavigator from "./uploadNav";
+import BillsNavigator from "./BillsNav";
 import UserNavigator from "./userNav";
 
 const Drawer = createDrawerNavigator();
@@ -43,6 +43,13 @@ function CustomDrawerContent(props) {
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
       {/* Logo & Brand */}
+      <View
+        style={{ position: "absolute", right: -20, top: "50%", zIndex: 10 }}
+      >
+        <TouchableOpacity onPress={() => props.navigation.openDrawer()}>
+          <Ionicons name="chevron-forward-circle" size={32} color="#2563eb" />
+        </TouchableOpacity>
+      </View>
       <View className="p-6 border-b border-slate-200 flex-row items-center gap-3">
         <LinearGradient
           colors={["#2563eb", "#4f46e5"]}
@@ -165,7 +172,7 @@ export default function MainNavigator() {
       }}
     >
       <Drawer.Screen name="Home" component={HomeNavigator} />
-      <Drawer.Screen name="Upload" component={UploadNavigator} />
+      <Drawer.Screen name="Upload" component={BillsNavigator} />
       <Drawer.Screen name="Games" component={GameNavigator} />
       <Drawer.Screen name="Analytics" component={AnalyticsNavigator} />
       <Drawer.Screen name="Profile" component={UserNavigator} />
