@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { ScrollView, SafeAreaView, StatusBar, View } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import ElectricHeader from "../../../components/uploadBills/electricBills/ElectricHeader";
-import ElectricSummaryCards from "../../../components/uploadBills/electricBills/ElectricSummaryCards";
-import ElectricBox from "../../../components/uploadBills/electricBills/ElectricBox";
-import ElectricActions from "../../../components/uploadBills/electricBills/ElectricActions";
-import ElectricRecent from "../../../components/uploadBills/electricBills/ElectricRecent";
-import ElectricTips from "../../../components/uploadBills/electricBills/ElectricTips";
+import ElectricHeader from "../../../components/bills/uploadBills/electricBills/ElectricHeader";
+import ElectricSummaryCards from "../../../components/bills/uploadBills/electricBills/ElectricSummaryCards";
+import ElectricBox from "../../../components/bills/uploadBills/electricBills/ElectricBox";
+import ElectricActions from "../../../components/bills/uploadBills/electricBills/ElectricActions";
+import ElectricRecent from "../../../components/bills/uploadBills/electricBills/ElectricRecent";
+import ElectricTips from "../../../components/bills/uploadBills/electricBills/ElectricTips";
 
 const recentUploads = [
   {

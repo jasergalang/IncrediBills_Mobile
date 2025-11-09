@@ -1,13 +1,12 @@
-
 import React, { useState } from "react";
 import { ScrollView, SafeAreaView, StatusBar, View } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import UploadHeader from "../../../components/uploadBills/waterBills/WaterHeader";
-import UploadSummaryCards from "../../../components/uploadBills/waterBills/WaterSummaryCards";
-import UploadBox from "../../../components/uploadBills/waterBills/WaterBox";
-import UploadActions from "../../../components/uploadBills/waterBills/WaterActions";
-import UploadRecent from "../../../components/uploadBills/waterBills/WaterRecent";
-import UploadTips from "../../../components/uploadBills/waterBills/WaterTips";
+import UploadHeader from "../../../components/bills/uploadBills/waterBills/WaterHeader";
+import UploadSummaryCards from "../../../components/bills/uploadBills/waterBills/WaterSummaryCards";
+import UploadBox from "../../../components/bills/uploadBills/waterBills/WaterBox";
+import UploadActions from "../../../components/bills/uploadBills/waterBills/WaterActions";
+import UploadRecent from "../../../components/bills/uploadBills/waterBills/WaterRecent";
+import UploadTips from "../../../components/bills/uploadBills/waterBills/WaterTips";
 
 const recentUploads = [
   {

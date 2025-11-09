@@ -1,8 +1,11 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
 
-export default function UploadRecent({ uploads, removeUpload }) {
+export default function ElectricRecent({ uploads, removeUpload }) {
+  const navigation = useNavigation();
+
   return (
     <View className="px-4 pb-6">
       <View className="flex-row items-center justify-between mb-4">
@@ -18,18 +21,31 @@ export default function UploadRecent({ uploads, removeUpload }) {
           <Text className="text-sm font-semibold text-slate-700">View All</Text>
         </TouchableOpacity>
       </View>
+
       <View className="space-y-3">
         {uploads.map((item) => (
-          <View
+          <TouchableOpacity
             key={item.id}
+            onPress={() =>
+              navigation.navigate("ElectricBillDetails", {
+                bill: {
+                  ...item,
+                  scannedCost: 2850.0,
+                  scannedConsumption: 285,
+                  scannedDate: item.date,
+                  predictedCost: 3120.0,
+                  predictedConsumption: 312,
+                },
+              })
+            }
             className="bg-white rounded-2xl p-4 border border-slate-200"
           >
             <View className="flex-row items-center gap-3">
-              <View className="w-12 h-12 bg-blue-100 rounded-xl items-center justify-center">
+              <View className="w-12 h-12 bg-amber-100 rounded-xl items-center justify-center">
                 <Ionicons
                   name={item.name.includes(".pdf") ? "document-text" : "image"}
                   size={24}
-                  color="#2563eb"
+                  color="#f59e0b"
                 />
               </View>
               <View className="flex-1">
@@ -60,14 +76,17 @@ export default function UploadRecent({ uploads, removeUpload }) {
                   </View>
                 )}
                 <TouchableOpacity
-                  onPress={() => removeUpload(item.id)}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    removeUpload(item.id);
+                  }}
                   className="w-8 h-8 bg-slate-100 rounded-lg items-center justify-center"
                 >
                   <Ionicons name="close" size={18} color="#64748b" />
                 </TouchableOpacity>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
     </View>
