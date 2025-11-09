@@ -1,10 +1,12 @@
-import React from 'react'
-import { View, Text } from 'react-native'
+import { createStackNavigator } from "@react-navigation/stack";
+import Analytics from "../screens/analytics/Analytics";
+
+const Stack = createStackNavigator();
 
 export default function AnalyticsNavigator() {
-    return (
-        <View>
-            <Text>Analytics Nav</Text>
-        </View>
-    )
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Analytics" component={Analytics} />
+    </Stack.Navigator>
+  );
 }

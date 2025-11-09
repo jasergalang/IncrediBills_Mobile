@@ -8,7 +8,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import HomeNavigator from "./homeNav";
 import GameNavigator from "./gameNav";
-import AnalyticsNavigator from "./analyticsNav";
+import AnalyticsNavigator from "./AnalyticsNav";
 import BillsNavigator from "./BillsNav";
 import UserNavigator from "./userNav";
 
