@@ -7,7 +7,7 @@ import Login from "./screens/user/login";
 import Signup from "./screens/user/landing";
 import Toast from "react-native-toast-message";
 import { AuthProvider } from "./context/auth";
-import MainNavigator from "./navigators/mainNav";
+import MainNavigator from "./navigators/MainNav";
 const Stack = createNativeStackNavigator();
 import { useAuth } from "./context/auth";
 import "./global.css";

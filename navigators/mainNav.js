@@ -6,7 +6,7 @@ import {
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import HomeNavigator from "./homeNav";
+import HomeNavigator from "./HomeNav";
 import GameNavigator from "./gameNav";
 import AnalyticsNavigator from "./AnalyticsNav";
 import BillsNavigator from "./BillsNav";

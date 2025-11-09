@@ -16,6 +16,8 @@ export default function BillCategories({ navigation }) {
       navigation.navigate("WaterBills", { category });
     } else if (category.id === "electricity") {
       navigation.navigate("ElectricBills", { category });
+    } else if (category.id === "fuel") {
+      navigation.navigate("TransportBills", { category });
     } else {
       navigation.navigate("BillCategories", { category });
     }
