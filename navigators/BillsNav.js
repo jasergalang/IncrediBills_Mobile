@@ -7,6 +7,10 @@ import ElectricBills from "../screens/bills/uploadBills/ElectricBills";
 import ElectricBillDetails from "../screens/bills/billsDetails/ElectricBillDetails";
 import TransportBills from "../screens/bills/uploadBills/TransportBills";
 import TransportBillDetails from "../screens/bills/billsDetails/TransportBillDetails";
+import KitchenGasBills from "../screens/bills/uploadBills/KitchenGasBills";
+import KitchenGasBillDetails from "../screens/bills/billsDetails/KitchenGasBillDetails";
+import GroceryBills from "../screens/bills/uploadBills/GroceryBills";
+import GroceryBillDetails from "../screens/bills/billsDetails/GroceryBillDetails";
 
 const Stack = createStackNavigator();
 
@@ -25,6 +29,16 @@ export default function UploadNavigator() {
       <Stack.Screen
         name="TransportBillDetails"
         component={TransportBillDetails}
+      />
+      <Stack.Screen name="KitchenGasBills" component={KitchenGasBills} />
+      <Stack.Screen
+        name="KitchenGasBillDetails"
+        component={KitchenGasBillDetails}
+      />
+      <Stack.Screen name="GroceryBills" component={GroceryBills} />
+      <Stack.Screen
+        name="GroceryBillDetails"
+        component={GroceryBillDetails}
       />
     </Stack.Navigator>
   );

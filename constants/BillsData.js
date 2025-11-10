@@ -4,7 +4,7 @@ export const utilities = [
     name: "Water",
     icon: "💧",
     color: "blue",
-    gradientColors: ["#dbeafe", "#bfdbfe"],
+    backgroundColor: "#dbeafe", // solid color instead of gradient
     borderColor: "#3b82f6",
     amount: 450,
     change: -15,
@@ -15,7 +15,7 @@ export const utilities = [
     name: "Electricity",
     icon: "⚡",
     color: "amber",
-    gradientColors: ["#fef3c7", "#fde68a"],
+    backgroundColor: "#fef3c7",
     borderColor: "#f59e0b",
     amount: 2850,
     change: -8,
@@ -26,7 +26,7 @@ export const utilities = [
     name: "Kitchen Gas",
     icon: "🔥",
     color: "orange",
-    gradientColors: ["#fed7aa", "#fdba74"],
+    backgroundColor: "#fed7aa",
     borderColor: "#f97316",
     amount: 550,
     change: 5,
@@ -37,8 +37,8 @@ export const utilities = [
     name: "Transport Fuel",
     icon: "⛽",
     color: "red",
-    gradientColors: ["#fecaca", "#fca5a5"],
-    borderColor: "#ef4444",
+    backgroundColor: "#f3f4f6",
+    borderColor: "#6b7280",
     amount: 1200,
     change: 3,
     provider: "Shell",
@@ -48,13 +48,14 @@ export const utilities = [
     name: "Groceries",
     icon: "🛒",
     color: "green",
-    gradientColors: ["#bbf7d0", "#86efac"],
+    backgroundColor: "#bbf7d0",
     borderColor: "#22c55e",
     amount: 3500,
     change: -12,
     provider: "SM Supermarket",
   },
 ];
+// ...existing code...
 
 export const monthlyData = [
   {

@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 
 export default function BillsUtilitiesGrid({ utilities, onPress }) {
   return (
@@ -16,12 +15,12 @@ export default function BillsUtilitiesGrid({ utilities, onPress }) {
             activeOpacity={0.7}
             className="w-[48%]"
           >
-            <LinearGradient
-              colors={utility.gradientColors}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              className="rounded-2xl p-4 border-2"
-              style={{ borderColor: utility.borderColor }}
+            <View
+              className="rounded-2xl p-4"
+              style={{
+                backgroundColor: utility.backgroundColor,
+                borderColor: utility.backgroundColor // border matches background
+              }}
             >
               <View className="w-10 h-10 bg-white rounded-xl items-center justify-center mb-3">
                 <Text className="text-2xl">{utility.icon}</Text>
@@ -33,14 +32,13 @@ export default function BillsUtilitiesGrid({ utilities, onPress }) {
                 ₱{utility.amount}
               </Text>
               <Text
-                className={`text-xs font-semibold ${
-                  utility.change < 0 ? "text-green-600" : "text-red-600"
-                }`}
+                className={`text-xs font-semibold ${utility.change < 0 ? "text-green-600" : "text-red-600"
+                  }`}
               >
                 {utility.change < 0 ? "↓" : "↑"} {Math.abs(utility.change)}%{" "}
                 {utility.change < 0 ? "saved" : "increase"}
               </Text>
-            </LinearGradient>
+            </View>
           </TouchableOpacity>
         ))}
       </View>

@@ -1,15 +1,12 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 
 export default function BillsTotalCard({ totalAmount }) {
   return (
     <View className="p-4">
-      <LinearGradient
-        colors={["#eff6ff", "#dbeafe"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        className="rounded-2xl p-6 border-2 border-blue-200"
+      <View
+        className="rounded-2xl p-6"
+        style={{ backgroundColor: "#eff6ff" }}
       >
         <View className="flex-row items-center justify-between mb-4">
           <View className="w-12 h-12 bg-blue-500 rounded-xl items-center justify-center">
@@ -30,7 +27,7 @@ export default function BillsTotalCard({ totalAmount }) {
         <Text className="text-xs text-green-600 font-semibold">
           ↓ 8.5% from last month
         </Text>
-      </LinearGradient>
+      </View>
     </View>
   );
 }
