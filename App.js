@@ -77,6 +77,8 @@ import { AuthProvider } from "./context/auth";
 import MainNavigator from "./navigators/mainNav";
 import "./global.css";
 
+import store from "./redux/store";
+import { Provider } from "react-redux";
 const Stack = createNativeStackNavigator();
 
 function AppWrapper() {
@@ -111,9 +113,11 @@ function AppWrapper() {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppWrapper />
-    </AuthProvider>
+    <Provider store={store}>
+      <AuthProvider>
+        <AppWrapper />
+      </AuthProvider>
+    </Provider>
   );
 }
 

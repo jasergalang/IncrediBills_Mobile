@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -18,6 +18,14 @@ import baseURL from "../../assets/common/baseUrl";
 import { useAuth } from "../../context/auth";
 import { LinearGradient } from "expo-linear-gradient";
 
+
+// LOGIN GOOGLE LOGIC
+import { useDispatch, useSelector } from "react-redux";
+import { googleLogin } from "../../redux/actions/authAction"; // Your fixed thunk
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
+
+
 export default function Login() {
   const navigation = useNavigation();
   const { login } = useAuth();
@@ -25,6 +33,27 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+// GOOGLE LOGIC
+  const dispatch = useDispatch();
+  const authState = useSelector((state) => state.auth);
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId: '874197012989-7l1a0eqskem80ohi5up6h40j4e6ltv47.apps.googleusercontent.com',
+    expoClientId: '874197012989-6fc1r46s2h57ucueu82j6bpifrubbbnn.apps.googleusercontent.com',
+    scopes: ['profile', 'email'],
+  });
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { authentication } = response;
+      // 3. When you get a success response, dispatch your thunk
+      //    with the access token.
+      dispatch(googleLogin(authentication.accessToken));
+    }
+  }, [response, dispatch]);
+
+
+
+
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -84,11 +113,13 @@ export default function Login() {
   };
 
   const handleGoogleLogin = () => {
-    Toast.show({
-      type: "info",
-      text1: "Info",
-      text2: "Google login coming soon!",
-    });
+    // Toast.show({
+    //   type: "info",
+    //   text1: "Info",
+    //   text2: "Google login coming soon!",
+    // });
+
+    promptAsync();
   };
 
   const handleFacebookLogin = () => {

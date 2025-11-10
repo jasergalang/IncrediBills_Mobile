@@ -1,8 +1,9 @@
 {
   "expo": {
     "name": "IncrediBills",
-    "slug": "IncrediBills",
+    "slug": "incredibills",
     "version": "1.0.0",
+    "scheme":"com.group7.incredibills",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -20,11 +21,21 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "package": "com.group7.incredibills",
       "edgeToEdgeEnabled": true
     },
     "web": {
       "favicon": "./assets/favicon.png",
       "bundler": "metro"
-    }
+    },
+    "plugins": [
+      "expo-web-browser"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "0062122d-fd47-4c78-839e-745356e19456"
+      }
+    },
+    "owner": "eliboi"
   }
 }
