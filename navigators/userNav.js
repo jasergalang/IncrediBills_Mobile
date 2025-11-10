@@ -2,11 +2,11 @@ import React from "react";
 import { View, Text } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 const Stack = createStackNavigator();
-import Login from "../screens/user/Login";
-import Register from "../screens/user/Register";
-import Landing from "../screens/user/Landing";
+import Login from "../screens/user/login";
+import Register from "../screens/user/register";
+import Landing from "../screens/user/landing";
 import Logout from "../screens/user/Logout";
-import Profile from "../screens/user/Profile";
+import Profile from "../screens/user/profile";
 
 export default function UserNavigator() {
   return (
