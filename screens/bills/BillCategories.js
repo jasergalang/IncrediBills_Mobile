@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ScrollView, SafeAreaView, StatusBar } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView, StatusBar } from "react-native";
 import BillsHeader from "../../components/bills/billCategories/BillsHeader";
 import BillsTotalCard from "../../components/bills/billCategories/BillsTotalCard";
 import BillsUtilitiesGrid from "../../components/bills//billCategories/BillsUtilitiesGrid";

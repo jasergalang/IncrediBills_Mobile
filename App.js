@@ -67,11 +67,12 @@
 // });
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
+import { SafeAreaView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Register from "./screens/user/register";
-import Login from "./screens/user/login";
-import Signup from "./screens/user/landing";
+import Register from "./screens/user/Register";
+import Login from "./screens/user/Login";
+import Signup from "./screens/user/Landing";
 import Toast from "react-native-toast-message";
 import { AuthProvider } from "./context/auth";
 import MainNavigator from "./navigators/MainNav";
@@ -86,21 +87,6 @@ function AppWrapper() {
         <Stack.Screen
           name="MainNavigator"
           component={MainNavigator}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Signup"
-          component={Signup}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Login"
-          component={Login}
-          options={{ headerShown: false }}
-        />
-        <Stack.Screen
-          name="Register"
-          component={Register}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>

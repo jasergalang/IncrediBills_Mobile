@@ -1,5 +1,6 @@
 import React from "react";
-import { ScrollView, SafeAreaView, StatusBar } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView, StatusBar } from "react-native";
 import DetailsHeader from "../../../components/bills/billDetails/transportBillDetails/DetailsHeader.js";
 import BillInfoCard from "../../../components/bills/billDetails/transportBillDetails/BillInfoCard.js";
 import ScannedDataSection from "../../../components/bills/billDetails/transportBillDetails/ScannedDataSection";

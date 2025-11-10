@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ScrollView, SafeAreaView, StatusBar, View } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView, StatusBar, View } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import GroceryHeader from "../../../components/bills/uploadBills/groceryBills/GroceryHeader.js";
 import GrocerySummaryCards from "../../../components/bills/uploadBills/groceryBills/GrocerySummaryCards.js";

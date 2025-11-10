@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { ScrollView, SafeAreaView, StatusBar, View } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView, StatusBar, View } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import ElectricHeader from "../../../components/bills/uploadBills/electricBills/ElectricHeader";
 import ElectricSummaryCards from "../../../components/bills/uploadBills/electricBills/ElectricSummaryCards";

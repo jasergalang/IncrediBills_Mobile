@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { SafeAreaView, StatusBar, ScrollView } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar, ScrollView } from "react-native";
 import AnalyticsHeader from "../../components/analytics/AnalyticsHeader";
 import DateRangeFilter from "../../components/analytics/DateRangeFilter";
 import UtilityKPICards from "../../components/analytics/UtilityKPICards";
