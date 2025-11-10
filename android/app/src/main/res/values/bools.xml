@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Ensure this meta-data is a true boolean resource so native code reading it as boolean won't receive a String -->
+    <bool name="expo_updates_enabled">false</bool>
+</resources>
