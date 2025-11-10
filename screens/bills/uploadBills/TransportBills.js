@@ -6,6 +6,7 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
+import * as ImagePicker from "expo-image-picker";
 import TransportHeader from "../../../components/bills/uploadBills/transportBills/TransportHeader.js";
 import TransportSummaryCards from "../../../components/bills/uploadBills/transportBills/TransportSummaryCard.js";
 import TransportBox from "../../../components/bills/uploadBills/transportBills/TransportBox.js";
@@ -31,7 +32,29 @@ export default function TransportBills({ navigation }) {
       status: "uploaded",
     },
   ]);
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.IMAGE,
+      allowsEditing: true,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      console.log("Image selected:", result.assets[0].uri);
+      // Add upload logic here
+    }
+  };
 
+  const takePhoto = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.IMAGE,
+      allowsEditing: true,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      console.log("Photo taken:", result.assets[0].uri);
+      // Add upload logic here
+    }
+  };
   const onRefresh = () => {
     setRefreshing(true);
     setTimeout(() => setRefreshing(false), 2000);
@@ -53,8 +76,10 @@ export default function TransportBills({ navigation }) {
         }
       >
         <TransportSummaryCards />
-        <TransportBox navigation={navigation} />
-        <TransportActions />
+        <View className="mx-4">
+          <TransportBox pickImage={pickImage} />
+          <TransportActions pickImage={pickImage} takePhoto={takePhoto} />
+        </View>
         <TransportRecent uploads={uploads} removeUpload={removeUpload} />
         <TransportTips />
       </ScrollView>

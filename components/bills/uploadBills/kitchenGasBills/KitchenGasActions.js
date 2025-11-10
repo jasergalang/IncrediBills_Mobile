@@ -2,22 +2,25 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function KitchenGasActions() {
+export default function KitchenGasActions({ pickImage, takePhoto }) {
     const actions = [
         {
-            icon: "calendar-outline",
-            label: "Schedule Refill",
+            icon: "camera-outline",
+            label: "Take Photo",
             color: "#f97316",
+            onPress: takePhoto,
         },
         {
-            icon: "notifications-outline",
-            label: "Set Reminder",
+            icon: "image-outline",
+            label: "From Gallery",
             color: "#f97316",
+            onPress: pickImage,
         },
         {
             icon: "document-text-outline",
             label: "View History",
             color: "#f97316",
+            onPress: () => { },
         },
     ];
 
@@ -30,6 +33,7 @@ export default function KitchenGasActions() {
                 {actions.map((action, index) => (
                     <TouchableOpacity
                         key={index}
+                        onPress={action.onPress}
                         className="flex-1 bg-white rounded-xl p-4 items-center"
                         activeOpacity={0.7}
                     >

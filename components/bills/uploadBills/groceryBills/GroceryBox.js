@@ -7,19 +7,27 @@ export default function GroceryBox({ pickImage, category }) {
     <TouchableOpacity
       onPress={pickImage}
       activeOpacity={0.7}
-      className="bg-white rounded-2xl p-8 border-2 border-dashed border-green-300 items-center mb-4"
+      className="border-2 border-dashed border-green-300 rounded-2xl bg-green-50 p-8 items-center justify-center mb-4"
     >
       <View className="w-16 h-16 bg-green-100 rounded-full items-center justify-center mb-4">
         <Ionicons name="cloud-upload-outline" size={32} color="#22c55e" />
       </View>
-      <Text className="text-lg font-bold text-slate-900 mb-2">
-        Upload {category.name} Receipt
+      <Text className="text-base font-semibold text-slate-900 mb-2">
+        Tap to Upload
       </Text>
       <Text className="text-sm text-slate-600 text-center mb-4">
-        Take a photo or select from gallery
+        Choose a file from your device or take a photo
       </Text>
-      <View className="bg-green-500 px-6 py-3 rounded-xl">
-        <Text className="text-white font-semibold">Select File</Text>
+      <View className="flex-row gap-2">
+        <View className="bg-white px-3 py-1 rounded-full border border-slate-200">
+          <Text className="text-xs text-slate-600 font-medium">PNG</Text>
+        </View>
+        <View className="bg-white px-3 py-1 rounded-full border border-slate-200">
+          <Text className="text-xs text-slate-600 font-medium">JPG</Text>
+        </View>
+        <View className="bg-white px-3 py-1 rounded-full border border-slate-200">
+          <Text className="text-xs text-slate-600 font-medium">PDF</Text>
+        </View>
       </View>
     </TouchableOpacity>
   );

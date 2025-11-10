@@ -3,22 +3,52 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function UploadActions({ pickImage, takePhoto }) {
+  const actions = [
+    {
+      icon: "camera-outline",
+      label: "Take Photo",
+      color: "#3b82f6",
+      onPress: takePhoto,
+    },
+    {
+      icon: "image-outline",
+      label: "From Gallery",
+      color: "#3b82f6",
+      onPress: pickImage,
+    },
+    {
+      icon: "document-text-outline",
+      label: "View History",
+      color: "#3b82f6",
+      onPress: () => { },
+    },
+  ];
+
   return (
-    <View className="flex-row gap-3">
-      <TouchableOpacity
-        onPress={pickImage}
-        className="flex-1 bg-blue-600 rounded-xl py-3 flex-row items-center justify-center gap-2"
-      >
-        <Ionicons name="image-outline" size={20} color="#fff" />
-        <Text className="text-white font-semibold">Gallery</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        onPress={takePhoto}
-        className="flex-1 bg-indigo-600 rounded-xl py-3 flex-row items-center justify-center gap-2"
-      >
-        <Ionicons name="camera-outline" size={20} color="#fff" />
-        <Text className="text-white font-semibold">Camera</Text>
-      </TouchableOpacity>
+    <View className="mb-4">
+      <Text className="text-lg font-bold text-slate-900 mb-3">
+        Quick Actions
+      </Text>
+      <View className="flex-row gap-3">
+        {actions.map((action, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={action.onPress}
+            className="flex-1 bg-white rounded-xl p-4 items-center"
+            activeOpacity={0.7}
+          >
+            <View
+              className="w-12 h-12 rounded-xl items-center justify-center mb-2"
+              style={{ backgroundColor: "#dbeafe" }}
+            >
+              <Ionicons name={action.icon} size={24} color={action.color} />
+            </View>
+            <Text className="text-xs font-semibold text-slate-700 text-center">
+              {action.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </View>
     </View>
   );
 }
