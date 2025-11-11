@@ -27,10 +27,7 @@ if (!normalized) {
   baseURL = `http://${normalized}:${DEFAULT_PORT}`;
 }
 
-// optional: handle Android emulator special host if you prefer automatic mapping
-// if (Platform.OS === "android" && (normalized === "localhost" || normalized === "127.0.0.1")) {
-//   baseURL = `http://10.0.2.2:${DEFAULT_PORT}`;
-// }
+
 
 export default baseURL;
 // ...existing code...
