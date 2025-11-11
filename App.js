@@ -70,12 +70,12 @@ import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import Register from "./screens/user/Register";
-import Login from "./screens/user/Login";
-import Signup from "./screens/user/Landing";
+import Register from "./screens/user/register";
+import Login from "./screens/user/login";
+import Signup from "./screens/user/landing";
 import Toast from "react-native-toast-message";
 import { AuthProvider } from "./context/auth";
-import MainNavigator from "./navigators/MainNav";
+import MainNavigator from "./navigators/mainNav";
 import "./global.css";
 
 const Stack = createNativeStackNavigator();
