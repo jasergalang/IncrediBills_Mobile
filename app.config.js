@@ -1,13 +1,15 @@
+// ...existing code...
 require("dotenv").config();
 
 module.exports = (ctx = {}) => {
   const config = ctx.config ?? ctx ?? {};
 
   const BASE_IP =
-    process.env.BASE_IP ?? // <-- Fix here
+    process.env.BASEIP ??
+    process.env.BASE_IP ??
     config.extra?.BASE_IP ??
     config.extra?.BASEIP ??
-    "192.168.1.5";
+    "192.168.1.12";
 
   const EAS_PROJECT_ID =
     process.env.EAS_PROJECT_ID ??
@@ -26,3 +28,4 @@ module.exports = (ctx = {}) => {
     },
   };
 };
+// ...existing code...P
