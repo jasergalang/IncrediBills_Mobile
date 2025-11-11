@@ -21,7 +21,7 @@ import { useAuth } from "../../context/auth";
 import { LinearGradient } from "expo-linear-gradient";
 
 
- 
+
   import
   {
     GoogleSignin,
