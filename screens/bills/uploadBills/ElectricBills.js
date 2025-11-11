@@ -8,6 +8,8 @@ import ElectricBox from "../../../components/bills/uploadBills/electricBills/Ele
 import ElectricActions from "../../../components/bills/uploadBills/electricBills/ElectricActions";
 import ElectricRecent from "../../../components/bills/uploadBills/electricBills/ElectricRecent";
 import ElectricTips from "../../../components/bills/uploadBills/electricBills/ElectricTips";
+import baseURL from "../../../assets/common/baseUrl";
+import { useAuth } from "../../../context/auth";
 
 const recentUploads = [
   {
@@ -43,6 +45,48 @@ const recentUploads = [
 export default function ElectricBills({ navigation }) {
   const category = { name: "Electricity", icon: "⚡", color: "amber" };
   const [uploads, setUploads] = useState(recentUploads);
+  const { token, getToken } = useAuth();
+  const uploadBill = async (uri) => {
+    try {
+      const formData = new FormData();
+      const filename = uri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : `image`;
+
+      formData.append("billImage", {
+        uri,
+        name: filename,
+        type,
+      });
+      
+      const userToken = token || (await getToken());
+      if (!userToken) {
+        alert("You must be logged in to upload bills.");
+        return;
+      }
+
+      const response = await fetch(`${baseURL}/api/electric-bill/upload`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${userToken}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+      console.log("Upload response:", data);
+
+      if (response.ok) {
+        alert("Bill uploaded successfully!");
+      } else {
+        alert(`Upload failed: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("An error occurred during upload.");
+    }
+  };
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -51,8 +95,9 @@ export default function ElectricBills({ navigation }) {
       quality: 1,
     });
     if (!result.canceled) {
-      console.log("Image selected:", result.assets[0].uri);
-      // Add upload logic here
+      const uri = result.assets[0].uri;
+      console.log("Image selected:", uri);
+      await uploadBill(uri);
     }
   };
 
@@ -63,8 +108,9 @@ export default function ElectricBills({ navigation }) {
       quality: 1,
     });
     if (!result.canceled) {
-      console.log("Photo taken:", result.assets[0].uri);
-      // Add upload logic here
+      const uri = result.assets[0].uri;
+      console.log("Photo taken:", uri);
+      await uploadBill(uri);
     }
   };
 
