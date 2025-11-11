@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+
+
 import {
   View,
   Text,
@@ -18,6 +20,20 @@ import baseURL from "../../assets/common/baseUrl";
 import { useAuth } from "../../context/auth";
 import { LinearGradient } from "expo-linear-gradient";
 
+
+ // GOOGLE LOGIN LOGIC HERE
+  import
+  {
+    GoogleSignin,
+    statusCodes,
+  } from "@react-native-google-signin/google-signin";
+
+
+
+
+
+
+
 export default function Login() {
   const navigation = useNavigation();
   const { login } = useAuth();
@@ -29,6 +45,10 @@ export default function Login() {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+ 
+
+
 
   const handleLogin = async () => {
     try {
