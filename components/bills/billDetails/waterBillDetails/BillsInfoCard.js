@@ -25,17 +25,18 @@ export default function BillInfoCard({ bill }) {
               <Text className="text-sm text-slate-600">{bill.scannedDate}</Text>
             </View>
           </View>
+
           <View
-            className={`px-3 py-1 rounded-full ${
-              bill.status === "uploaded" ? "bg-green-100" : "bg-amber-100"
-            }`}
+            className={`px-3 py-1 rounded-full ${bill.status === "Success" ? "bg-green-100" : "bg-red-100"
+              }`}
           >
             <Text
-              className={`text-xs font-bold ${
-                bill.status === "uploaded" ? "text-green-700" : "text-amber-700"
-              }`}
+              className={`text-xs font-bold ${bill.status === "Success"
+                  ? "text-green-700"
+                  : "text-red-700"
+                }`}
             >
-              {bill.status === "uploaded" ? "Verified" : "Processing"}
+              {bill.status === "Success" ? "Verified" : "Failed"}
             </Text>
           </View>
         </View>

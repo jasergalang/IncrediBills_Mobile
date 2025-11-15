@@ -37,7 +37,7 @@ export default function UploadRecent({ waterBills, removeUpload }) {
             <TouchableOpacity
               key={bill._id}
               onPress={() =>
-                navigation.navigate("WaterBillDetails", { bill })
+                navigation.navigate("WaterBillDetails", { id: bill._id })
               }
               className="bg-white rounded-2xl p-4 border border-slate-200"
             >

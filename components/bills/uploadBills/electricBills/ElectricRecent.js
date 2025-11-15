@@ -40,7 +40,7 @@ export default function ElectricRecent({ electricBills, removeUpload }) {
             <TouchableOpacity
               key={bill._id}
               onPress={() =>
-                navigation.navigate("ElectricBillDetails", { bill })
+                navigation.navigate("ElectricBillDetails", { id: bill._id })
               }
               className="bg-white rounded-2xl p-4 border border-slate-200"
             >
