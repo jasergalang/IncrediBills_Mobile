@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView, StatusBar, View } from "react-native";
 import * as ImagePicker from "expo-image-picker";
@@ -10,42 +10,32 @@ import ElectricRecent from "../../../components/bills/uploadBills/electricBills/
 import ElectricTips from "../../../components/bills/uploadBills/electricBills/ElectricTips";
 import baseURL from "../../../assets/common/baseUrl";
 import { useAuth } from "../../../context/auth";
-
-const recentUploads = [
-  {
-    id: 1,
-    name: "October Electric Bill.png",
-    size: "2.1 MB",
-    date: "Oct 12 at 9:30 AM",
-    status: "uploaded",
-  },
-  {
-    id: 2,
-    name: "September Electric Bill.pdf",
-    size: "1.5 MB",
-    date: "Sep 18 at 1:10 PM",
-    status: "uploaded",
-  },
-  {
-    id: 3,
-    name: "August Electric Bill.jpg",
-    size: "2.8 MB",
-    date: "Aug 8 at 8:45 AM",
-    status: "uploaded",
-  },
-  {
-    id: 4,
-    name: "July Electric Bill.png",
-    size: "2.0 MB",
-    date: "Jul 3 at 10:20 AM",
-    status: "uploading",
-  },
-];
-
 export default function ElectricBills({ navigation }) {
   const category = { name: "Electricity", icon: "⚡", color: "amber" };
-  const [uploads, setUploads] = useState(recentUploads);
+  const [uploads, setUploads] = useState([]);
   const { token, getToken } = useAuth();
+  const [electricBills, setElectricBills] = useState({ count: 0, bills: [] });
+
+  useEffect(() => {
+    fetchElectricBills();
+  }, []);
+
+  const fetchElectricBills = async () => {
+    const userToken = token || (await getToken());
+
+    try {
+      const res = await fetch(`${baseURL}/api/electric-bill/all`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      const data = await res.json();
+      setElectricBills(data);
+    } catch (err) {
+      console.error("Error fetching bills:", err);
+    }
+  };
   const uploadBill = async (uri) => {
     try {
       const formData = new FormData();
@@ -58,7 +48,7 @@ export default function ElectricBills({ navigation }) {
         name: filename,
         type,
       });
-      
+
       const userToken = token || (await getToken());
       if (!userToken) {
         alert("You must be logged in to upload bills.");
@@ -76,6 +66,8 @@ export default function ElectricBills({ navigation }) {
 
       const data = await response.json();
       console.log("Upload response:", data);
+
+      fetchElectricBills();
 
       if (response.ok) {
         alert("Bill uploaded successfully!");
@@ -115,7 +107,10 @@ export default function ElectricBills({ navigation }) {
   };
 
   const removeUpload = (id) => {
-    setUploads(uploads.filter((item) => item.id !== id));
+    setElectricBills((prev) => ({
+      count: prev.count - 1,
+      bills: prev.bills.filter((bill) => bill._id !== id),
+    }));
   };
 
   return (
@@ -128,7 +123,7 @@ export default function ElectricBills({ navigation }) {
           <ElectricBox pickImage={pickImage} category={category} />
           <ElectricActions pickImage={pickImage} takePhoto={takePhoto} />
         </View>
-        <ElectricRecent uploads={uploads} removeUpload={removeUpload} />
+        <ElectricRecent electricBills={electricBills} removeUpload={removeUpload} />
         <ElectricTips category={category} />
       </ScrollView>
     </SafeAreaView>

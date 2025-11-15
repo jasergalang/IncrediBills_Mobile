@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView, StatusBar, View } from "react-native";
 import * as ImagePicker from "expo-image-picker";
@@ -11,42 +11,31 @@ import UploadTips from "../../../components/bills/uploadBills/waterBills/WaterTi
 import baseURL from "../../../assets/common/baseUrl";
 import { useAuth } from "../../../context/auth";
 
-const recentUploads = [
-  {
-    id: 1,
-    name: "October Water Bill.png",
-    size: "2.5 MB",
-    date: "Oct 15 at 10:30 AM",
-    status: "uploaded",
-  },
-  {
-    id: 2,
-    name: "September Water Bill.pdf",
-    size: "1.8 MB",
-    date: "Sep 20 at 2:15 PM",
-    status: "uploaded",
-  },
-  {
-    id: 3,
-    name: "August Water Bill.jpg",
-    size: "3.2 MB",
-    date: "Aug 10 at 9:45 AM",
-    status: "uploaded",
-  },
-  {
-    id: 4,
-    name: "July Water Bill.png",
-    size: "2.1 MB",
-    date: "Jul 5 at 11:20 AM",
-    status: "uploading",
-  },
-];
-
 export default function UploadBill({ navigation }) {
   const category = { name: "Water", icon: "💧", color: "blue" };
-  const [uploads, setUploads] = useState(recentUploads);
+  const [uploads, setUploads] = useState([]);
   const { token, getToken } = useAuth();
+  const [waterBills, setWaterBills] = useState({ count: 0, bills: [] });
 
+  useEffect(() => {
+    fetchWaterBills();
+  }, []);
+
+  const fetchWaterBills = async () => {
+    const userToken = token || (await getToken());
+    try {
+      const res = await fetch(`${baseURL}/api/water-bill/all`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      const data = await res.json();
+      setWaterBills(data);
+    } catch (err) {
+      console.error("Error fetching bills:", err);
+    }
+  }
   const uploadBill = async (uri) => {
     try {
       const formData = new FormData();
@@ -77,6 +66,8 @@ export default function UploadBill({ navigation }) {
 
       const data = await response.json();
       console.log("Upload response:", data);
+
+      fetchWaterBills();
 
       if (response.ok) {
         alert("Bill uploaded successfully!");
@@ -116,7 +107,10 @@ export default function UploadBill({ navigation }) {
   };
 
   const removeUpload = (id) => {
-    setUploads(uploads.filter((item) => item.id !== id));
+    setWaterBills((prev) => ({
+      count: prev.count - 1,
+      bills: prev.bills.filter((bill) => bill._id !== id),
+    }));
   };
 
   return (
@@ -129,7 +123,8 @@ export default function UploadBill({ navigation }) {
           <UploadBox pickImage={pickImage} category={category} />
           <UploadActions pickImage={pickImage} takePhoto={takePhoto} />
         </View>
-        <UploadRecent uploads={uploads} removeUpload={removeUpload} />
+        {/* <UploadRecent waterBills={waterBills} removeUpload={removeUpload}/> */}
+        <UploadRecent waterBills={waterBills.bills} removeUpload={removeUpload} />
         <UploadTips category={category} />
       </ScrollView>
     </SafeAreaView>
