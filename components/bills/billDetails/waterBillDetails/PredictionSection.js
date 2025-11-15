@@ -24,7 +24,7 @@ export default function PredictionSection({ bill }) {
     nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
     formattedPredictedDate = nextMonthDate.toLocaleString("default", { month: "long", year: "numeric" });
   }
-  
+
   return (
     <View className="px-4 pb-4">
       <View className="flex-row items-center gap-2 mb-3">
@@ -100,7 +100,7 @@ export default function PredictionSection({ bill }) {
               </View>
             </View>
             <Text className="text-2xl font-bold text-indigo-600">
-              {bill.predictedConsumption} m³
+              {bill.predictedConsumption.toFixed(2)} m³
             </Text>
             <Text className="text-xs text-slate-500 mt-1">
               {consumptionDifference > 0 ? "+" : ""}{Math.abs(consumptionDifference).toFixed(1)} m³ vs current

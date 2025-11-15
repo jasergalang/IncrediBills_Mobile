@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, StatusBar, View } from "react-native";
+import { ScrollView, StatusBar, View, Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import ElectricHeader from "../../../components/bills/uploadBills/electricBills/ElectricHeader";
 import ElectricSummaryCards from "../../../components/bills/uploadBills/electricBills/ElectricSummaryCards";
@@ -44,7 +44,7 @@ export default function ElectricBills({ navigation }) {
       const type = match ? `image/${match[1]}` : `image`;
 
       formData.append("billImage", {
-        uri,
+        uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
         name: filename,
         type,
       });
@@ -58,7 +58,6 @@ export default function ElectricBills({ navigation }) {
       const response = await fetch(`${baseURL}/api/electric-bill/upload`, {
         method: "POST",
         headers: {
-          "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${userToken}`,
         },
         body: formData,
@@ -66,6 +65,19 @@ export default function ElectricBills({ navigation }) {
 
       const data = await response.json();
       console.log("Upload response:", data);
+      // console.log("OCR Data:", data.ocrData);
+
+      try {
+        const predRes = await fetch(`${baseURL}/api/electric-bill/predict`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${userToken}` },
+        });
+
+        const predData = await predRes.json();
+        console.log("Prediction response:", predData);
+      } catch (err) {
+        console.error("Prediction failed:", err);
+      }
 
       fetchElectricBills();
 
@@ -83,7 +95,7 @@ export default function ElectricBills({ navigation }) {
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.IMAGE,
-      allowsEditing: true,
+      allowsEditing: false,
       quality: 1,
     });
     if (!result.canceled) {
@@ -123,7 +135,7 @@ export default function ElectricBills({ navigation }) {
           <ElectricBox pickImage={pickImage} category={category} />
           <ElectricActions pickImage={pickImage} takePhoto={takePhoto} />
         </View>
-        <ElectricRecent electricBills={electricBills} removeUpload={removeUpload} />
+        <ElectricRecent electricBills={electricBills.bills} removeUpload={removeUpload} />
         <ElectricTips category={category} />
       </ScrollView>
     </SafeAreaView>

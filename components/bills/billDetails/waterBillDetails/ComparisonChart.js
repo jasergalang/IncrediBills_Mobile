@@ -28,7 +28,7 @@ export default function ComparisonChart({ bill }) {
         <View>
           <View className="flex-row items-center justify-between mb-2">
             <Text className="text-sm font-semibold text-slate-700">Predicted Next Month</Text>
-            <Text className="text-sm font-bold text-green-600">{bill.predictedConsumption} m³</Text>
+            <Text className="text-sm font-bold text-green-600">{bill.predictedConsumption.toFixed(2)} m³</Text>
           </View>
           <View className="h-3 bg-slate-100 rounded-full overflow-hidden">
             <View

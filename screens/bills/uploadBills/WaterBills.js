@@ -42,12 +42,7 @@ export default function UploadBill({ navigation }) {
       const filename = uri.split("/").pop();
       const match = /\.(\w+)$/.exec(filename);
       const type = match ? `image/${match[1]}` : `image`;
-
-      // formData.append("billImage", {
-      //   uri,
-      //   name: filename,
-      //   type,
-      // });
+  
       formData.append("billImage", {
         uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
         name: filename,
@@ -64,7 +59,6 @@ export default function UploadBill({ navigation }) {
       const response = await fetch(`${baseURL}/api/water-bill/upload`, {
         method: "POST",
         headers: {
-          // "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${userToken}`,
         },
         body: formData,
@@ -73,6 +67,19 @@ export default function UploadBill({ navigation }) {
       const data = await response.json();
       console.log("Upload response:", data);
       // console.log("OCR Data:", data.ocrData);
+
+      try {
+        const predRes = await fetch(`${baseURL}/api/water-bill/predict`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${userToken}` },
+        });
+
+        const predData = await predRes.json();
+        console.log("Prediction response:", predData);
+      } catch (err) {
+        console.error("Prediction failed:", err);
+      }
+
 
       fetchWaterBills();
 
@@ -130,7 +137,6 @@ export default function UploadBill({ navigation }) {
           <UploadBox pickImage={pickImage} category={category} />
           <UploadActions pickImage={pickImage} takePhoto={takePhoto} />
         </View>
-        {/* <UploadRecent waterBills={waterBills} removeUpload={removeUpload}/> */}
         <UploadRecent waterBills={waterBills.bills} removeUpload={removeUpload} />
         <UploadTips category={category} />
       </ScrollView>

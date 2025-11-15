@@ -12,7 +12,6 @@ export default function ComparisonChart({ bill }) {
         Usage Comparison
       </Text>
       <View className="bg-white rounded-2xl p-5 border border-slate-200">
-        {/* Current Month */}
         <View className="mb-4">
           <View className="flex-row items-center justify-between mb-2">
             <Text className="text-sm font-semibold text-slate-700">
@@ -30,14 +29,13 @@ export default function ComparisonChart({ bill }) {
           </View>
         </View>
 
-        {/* Predicted Next Month */}
         <View>
           <View className="flex-row items-center justify-between mb-2">
             <Text className="text-sm font-semibold text-slate-700">
               Predicted Next Month
             </Text>
             <Text className="text-sm font-bold text-orange-600">
-              {bill.predictedConsumption} kWh
+              {bill.predictedConsumption.toFixed(2)} kWh
             </Text>
           </View>
           <View className="h-3 bg-slate-100 rounded-full overflow-hidden">

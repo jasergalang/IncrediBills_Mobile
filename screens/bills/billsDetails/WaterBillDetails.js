@@ -21,35 +21,35 @@ export default function WaterBillDetails({ route, navigation }) {
 
   const fetchBillDetails = async () => {
     const userToken = token || (await getToken());
+
     try {
       const res = await fetch(`${baseURL}/api/water-bill/uploaded/${id}`, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
+      
       if (!res.ok) throw new Error("Failed to fetch bill");
-
       const data = await res.json();
 
-      let predictedData = { predictedCost: data.cost * 1.1, predictedConsumption: data.consumption * 1.1}; 
-      try {
-        const predRes = await fetch(`${baseURL}/api/water-bill/predict`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        });
+      const predRes = await fetch(`${baseURL}/api/water-bill/predictions`, {
+        headers: { Authorization: `Bearer ${userToken}` },
+      });
 
-        if (predRes.ok) {
-          const predJson = await predRes.json();
-          predictedData = {
-            predictedCost: predJson.prediction.predictedCost,
-            predictedConsumption: predJson.prediction.predictedConsumption,
-            predictedDate: predJson.prediction.predictedDate,
-          };
-        } else {
-          console.warn("Prediction fetch failed, using fallback:", await predRes.json());
-        }
-      } catch (err) {
-        console.error("Error fetching prediction:", err);
+      let matchedPrediction = null;
+
+      if (predRes.ok) {
+        const predJson = await predRes.json();
+
+        const billDate = new Date(data.date);
+        const billMonth = billDate.getMonth();
+        const billYear = billDate.getFullYear();
+
+        const targetMonth = billMonth + 1 === 12 ? 0 : billMonth + 1;
+        const targetYear = billMonth + 1 === 12 ? billYear + 1 : billYear;
+
+        matchedPrediction = predJson.predictions.find(pred => {
+          const p = new Date(pred.predictedDate);
+          return p.getMonth() === targetMonth && p.getFullYear() === targetYear;
+        });
       }
 
       const formattedBill = {
@@ -59,12 +59,14 @@ export default function WaterBillDetails({ route, navigation }) {
         scannedConsumption: data.consumption,
         scannedDate: new Date(data.date).toLocaleDateString(),
         status: data.status,
-        predictedCost: predictedData.predictedCost,
-        predictedConsumption: predictedData.predictedConsumption,
-        predictedDate: predictedData.predictedDate,
+
+        predictedCost: matchedPrediction?.predictedCost || data.cost * 1.1,
+        predictedConsumption: matchedPrediction?.predictedConsumption || data.consumption * 1.1,
+        predictedDate: matchedPrediction?.predictedDate || null,
       };
 
       setBill(formattedBill);
+
     } catch (err) {
       console.error("Error fetching bill:", err);
     } finally {

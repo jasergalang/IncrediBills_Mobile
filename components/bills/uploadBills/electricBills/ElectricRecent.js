@@ -20,7 +20,7 @@ export default function ElectricRecent({ electricBills, removeUpload }) {
           </Text>
 
           <Text className="text-sm text-slate-600">
-            {electricBills.count} files uploaded
+            {electricBills.length} files uploaded
           </Text>
         </View>
 
@@ -32,7 +32,7 @@ export default function ElectricRecent({ electricBills, removeUpload }) {
       </View>
 
       <View className="space-y-3">
-        {electricBills.bills.map((bill) => {
+        {electricBills.map((bill) => {
           const fileUrl = bill.billImage?.[0]?.url;
           const fileName = getFilename(fileUrl);
 

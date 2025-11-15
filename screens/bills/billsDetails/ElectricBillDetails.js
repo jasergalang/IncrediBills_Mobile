@@ -27,9 +27,29 @@ export default function ElectricBillDetails({ route, navigation }) {
       });
 
       if (!res.ok) throw new Error("Failed to fetch bill");
-
       const data = await res.json();
 
+      const predRes = await fetch(`${baseURL}/api/electric-bill/predictions`, {
+        headers: { Authorization: `Bearer ${userToken}` },
+      });
+
+      let matchedPrediction = null;
+
+      if (predRes.ok) {
+        const predJson = await predRes.json();
+
+        const billDate = new Date(data.date);
+        const billMonth = billDate.getMonth();
+        const billYear = billDate.getFullYear();
+
+        const targetMonth = billMonth + 1 === 12 ? 0 : billMonth + 1;
+        const targetYear = billMonth + 1 === 12 ? billYear + 1 : billYear;
+
+        matchedPrediction = predJson.predictions.find(pred => {
+          const p = new Date(pred.predictedDate);
+          return p.getMonth() === targetMonth && p.getFullYear() === targetYear;
+        });
+      }
 
       const formattedBill = {
         _id: data._id,
@@ -38,8 +58,9 @@ export default function ElectricBillDetails({ route, navigation }) {
         scannedConsumption: data.consumption,
         scannedDate: new Date(data.date).toLocaleDateString(),
         status: data.status,
-        predictedCost: data.cost * 1.1,
-        predictedConsumption: data.consumption * 1.1, 
+        predictedCost: matchedPrediction?.predictedCost || data.cost * 1.1,
+        predictedConsumption: matchedPrediction?.predictedConsumption || data.consumption * 1.1,
+        predictedDate: matchedPrediction?.predictedDate || null,
       };
 
       setBill(formattedBill);
