@@ -25,10 +25,32 @@ export default function WaterBillDetails({ route, navigation }) {
       const res = await fetch(`${baseURL}/api/water-bill/uploaded/${id}`, {
         headers: { Authorization: `Bearer ${userToken}` },
       });
-
       if (!res.ok) throw new Error("Failed to fetch bill");
 
       const data = await res.json();
+
+      let predictedData = { predictedCost: data.cost * 1.1, predictedConsumption: data.consumption * 1.1}; 
+      try {
+        const predRes = await fetch(`${baseURL}/api/water-bill/predict`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        });
+
+        if (predRes.ok) {
+          const predJson = await predRes.json();
+          predictedData = {
+            predictedCost: predJson.prediction.predictedCost,
+            predictedConsumption: predJson.prediction.predictedConsumption,
+            predictedDate: predJson.prediction.predictedDate,
+          };
+        } else {
+          console.warn("Prediction fetch failed, using fallback:", await predRes.json());
+        }
+      } catch (err) {
+        console.error("Error fetching prediction:", err);
+      }
 
       const formattedBill = {
         _id: data._id,
@@ -37,8 +59,9 @@ export default function WaterBillDetails({ route, navigation }) {
         scannedConsumption: data.consumption,
         scannedDate: new Date(data.date).toLocaleDateString(),
         status: data.status,
-        predictedCost: data.cost * 1.1,
-        predictedConsumption: data.consumption * 1.1,
+        predictedCost: predictedData.predictedCost,
+        predictedConsumption: predictedData.predictedConsumption,
+        predictedDate: predictedData.predictedDate,
       };
 
       setBill(formattedBill);
@@ -47,8 +70,8 @@ export default function WaterBillDetails({ route, navigation }) {
     } finally {
       setLoading(false);
     }
-
   };
+
 
   if (loading) {
     return (
@@ -59,7 +82,7 @@ export default function WaterBillDetails({ route, navigation }) {
     );
   }
 
-  if (!bill) { 
+  if (!bill) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-slate-50">
         <Text>Failed to load bill details.</Text>
@@ -68,18 +91,18 @@ export default function WaterBillDetails({ route, navigation }) {
   }
 
   return (
-      <SafeAreaView className="flex-1 bg-slate-50">
-        <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
+    <SafeAreaView className="flex-1 bg-slate-50">
+      <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
 
-        <DetailsHeader navigation={navigation} billName={bill.name} />
+      <DetailsHeader navigation={navigation} billName={bill.name} />
 
-        <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-          <BillInfoCard bill={bill} />
-          <ScannedDataSection bill={bill} />
-          <PredictionSection bill={bill} />
-          <ComparisonChart bill={bill} />
-          <TipsSection />
-        </ScrollView>
-      </SafeAreaView>
-    );
-  }
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <BillInfoCard bill={bill} />
+        <ScannedDataSection bill={bill} />
+        <PredictionSection bill={bill} />
+        <ComparisonChart bill={bill} />
+        <TipsSection />
+      </ScrollView>
+    </SafeAreaView>
+  );
+}

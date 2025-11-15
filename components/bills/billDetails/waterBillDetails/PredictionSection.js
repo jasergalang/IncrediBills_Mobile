@@ -4,15 +4,27 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function PredictionSection({ bill }) {
-  const costDifference = bill.predictedCost - bill.scannedCost;
-  const consumptionDifference =
-    bill.predictedConsumption - bill.scannedConsumption;
-  const costPercentage = ((costDifference / bill.scannedCost) * 100).toFixed(1);
-  const consumptionPercentage = (
-    (consumptionDifference / bill.scannedConsumption) *
-    100
-  ).toFixed(1);
+  if (!bill) return null;
 
+  const costDifference = bill.predictedCost - bill.scannedCost;
+  const consumptionDifference = bill.predictedConsumption - bill.scannedConsumption;
+  const costPercentage = bill.scannedCost
+    ? ((costDifference / bill.scannedCost) * 100).toFixed(1)
+    : "0.0";
+  const consumptionPercentage = bill.scannedConsumption
+    ? ((consumptionDifference / bill.scannedConsumption) * 100).toFixed(1)
+    : "0.0";
+
+  let formattedPredictedDate = "";
+  if (bill.predictedDate) {
+    const date = new Date(bill.predictedDate);
+    formattedPredictedDate = date.toLocaleString("default", { month: "long", year: "numeric" });
+  } else {
+    const nextMonthDate = new Date();
+    nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+    formattedPredictedDate = nextMonthDate.toLocaleString("default", { month: "long", year: "numeric" });
+  }
+  
   return (
     <View className="px-4 pb-4">
       <View className="flex-row items-center gap-2 mb-3">
@@ -33,12 +45,8 @@ export default function PredictionSection({ bill }) {
             <Ionicons name="stats-chart" size={20} color="#fff" />
           </View>
           <View>
-            <Text className="text-sm font-semibold text-slate-900">
-              November 2024
-            </Text>
-            <Text className="text-xs text-slate-600">
-              Based on your usage pattern
-            </Text>
+            <Text className="text-sm font-semibold text-slate-900">{formattedPredictedDate}</Text>
+            <Text className="text-xs text-slate-600">Based on your usage pattern</Text>
           </View>
         </View>
 
@@ -47,9 +55,8 @@ export default function PredictionSection({ bill }) {
             <View className="flex-row items-center justify-between mb-2">
               <Text className="text-sm text-slate-600">Predicted Cost</Text>
               <View
-                className={`flex-row items-center gap-1 px-2 py-1 rounded-full ${
-                  costDifference > 0 ? "bg-red-100" : "bg-green-100"
-                }`}
+                className={`flex-row items-center gap-1 px-2 py-1 rounded-full ${costDifference > 0 ? "bg-red-100" : "bg-green-100"
+                  }`}
               >
                 <Ionicons
                   name={costDifference > 0 ? "arrow-up" : "arrow-down"}
@@ -57,9 +64,8 @@ export default function PredictionSection({ bill }) {
                   color={costDifference > 0 ? "#dc2626" : "#16a34a"}
                 />
                 <Text
-                  className={`text-xs font-bold ${
-                    costDifference > 0 ? "text-red-600" : "text-green-600"
-                  }`}
+                  className={`text-xs font-bold ${costDifference > 0 ? "text-red-600" : "text-green-600"
+                    }`}
                 >
                   {Math.abs(costPercentage)}%
                 </Text>
@@ -69,20 +75,16 @@ export default function PredictionSection({ bill }) {
               ₱{bill.predictedCost.toFixed(2)}
             </Text>
             <Text className="text-xs text-slate-500 mt-1">
-              {costDifference > 0 ? "+" : ""}₱
-              {Math.abs(costDifference).toFixed(2)} vs current
+              {costDifference > 0 ? "+" : ""}₱{Math.abs(costDifference).toFixed(2)} vs current
             </Text>
           </View>
 
           <View className="bg-white/70 rounded-xl p-4">
             <View className="flex-row items-center justify-between mb-2">
-              <Text className="text-sm text-slate-600">
-                Predicted Consumption
-              </Text>
+              <Text className="text-sm text-slate-600">Predicted Consumption</Text>
               <View
-                className={`flex-row items-center gap-1 px-2 py-1 rounded-full ${
-                  consumptionDifference > 0 ? "bg-red-100" : "bg-green-100"
-                }`}
+                className={`flex-row items-center gap-1 px-2 py-1 rounded-full ${consumptionDifference > 0 ? "bg-red-100" : "bg-green-100"
+                  }`}
               >
                 <Ionicons
                   name={consumptionDifference > 0 ? "arrow-up" : "arrow-down"}
@@ -90,11 +92,8 @@ export default function PredictionSection({ bill }) {
                   color={consumptionDifference > 0 ? "#dc2626" : "#16a34a"}
                 />
                 <Text
-                  className={`text-xs font-bold ${
-                    consumptionDifference > 0
-                      ? "text-red-600"
-                      : "text-green-600"
-                  }`}
+                  className={`text-xs font-bold ${consumptionDifference > 0 ? "text-red-600" : "text-green-600"
+                    }`}
                 >
                   {Math.abs(consumptionPercentage)}%
                 </Text>
@@ -104,8 +103,7 @@ export default function PredictionSection({ bill }) {
               {bill.predictedConsumption} m³
             </Text>
             <Text className="text-xs text-slate-500 mt-1">
-              {consumptionDifference > 0 ? "+" : ""}
-              {Math.abs(consumptionDifference).toFixed(1)} m³ vs current
+              {consumptionDifference > 0 ? "+" : ""}{Math.abs(consumptionDifference).toFixed(1)} m³ vs current
             </Text>
           </View>
         </View>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, StatusBar, View } from "react-native";
+import { ScrollView, StatusBar, View, Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import UploadHeader from "../../../components/bills/uploadBills/waterBills/WaterHeader";
 import UploadSummaryCards from "../../../components/bills/uploadBills/waterBills/WaterSummaryCards";
@@ -43,11 +43,17 @@ export default function UploadBill({ navigation }) {
       const match = /\.(\w+)$/.exec(filename);
       const type = match ? `image/${match[1]}` : `image`;
 
+      // formData.append("billImage", {
+      //   uri,
+      //   name: filename,
+      //   type,
+      // });
       formData.append("billImage", {
-        uri,
+        uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
         name: filename,
         type,
       });
+
 
       const userToken = token || (await getToken());
       if (!userToken) {
@@ -58,7 +64,7 @@ export default function UploadBill({ navigation }) {
       const response = await fetch(`${baseURL}/api/water-bill/upload`, {
         method: "POST",
         headers: {
-          "Content-Type": "multipart/form-data",
+          // "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${userToken}`,
         },
         body: formData,
@@ -66,6 +72,7 @@ export default function UploadBill({ navigation }) {
 
       const data = await response.json();
       console.log("Upload response:", data);
+      // console.log("OCR Data:", data.ocrData);
 
       fetchWaterBills();
 
@@ -83,7 +90,7 @@ export default function UploadBill({ navigation }) {
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.IMAGE,
-      allowsEditing: true,
+      allowsEditing: false,
       quality: 1,
     });
     if (!result.canceled) {

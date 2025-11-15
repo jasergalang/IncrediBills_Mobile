@@ -1,27 +1,21 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 
 export default function ComparisonChart({ bill }) {
-  const maxValue = Math.max(bill.scannedConsumption, bill.predictedConsumption);
-  const currentPercent = (bill.scannedConsumption / maxValue) * 100;
-  const predictedPercent = (bill.predictedConsumption / maxValue) * 100;
+  if (!bill) return null;
+
+  const maxValue = Math.max(bill.scannedConsumption || 0, bill.predictedConsumption || 0, 1); 
+  const currentPercent = ((bill.scannedConsumption || 0) / maxValue) * 100;
+  const predictedPercent = ((bill.predictedConsumption || 0) / maxValue) * 100;
 
   return (
     <View className="px-4 pb-4">
-      <Text className="text-base font-bold text-slate-900 mb-3">
-        Usage Comparison
-      </Text>
+      <Text className="text-base font-bold text-slate-900 mb-3">Usage Comparison</Text>
       <View className="bg-white rounded-2xl p-5 border border-slate-200">
-        {/* Current Month */}
         <View className="mb-4">
           <View className="flex-row items-center justify-between mb-2">
-            <Text className="text-sm font-semibold text-slate-700">
-              Current Month
-            </Text>
-            <Text className="text-sm font-bold text-blue-600">
-              {bill.scannedConsumption} m³
-            </Text>
+            <Text className="text-sm font-semibold text-slate-700">Current Month</Text>
+            <Text className="text-sm font-bold text-blue-600">{bill.scannedConsumption} m³</Text>
           </View>
           <View className="h-3 bg-slate-100 rounded-full overflow-hidden">
             <View
@@ -31,15 +25,10 @@ export default function ComparisonChart({ bill }) {
           </View>
         </View>
 
-        {/* Predicted Next Month */}
         <View>
           <View className="flex-row items-center justify-between mb-2">
-            <Text className="text-sm font-semibold text-slate-700">
-              Predicted Next Month
-            </Text>
-            <Text className="text-sm font-bold text-green-600">
-              {bill.predictedConsumption} m³
-            </Text>
+            <Text className="text-sm font-semibold text-slate-700">Predicted Next Month</Text>
+            <Text className="text-sm font-bold text-green-600">{bill.predictedConsumption} m³</Text>
           </View>
           <View className="h-3 bg-slate-100 rounded-full overflow-hidden">
             <View
