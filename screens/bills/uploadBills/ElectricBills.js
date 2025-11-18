@@ -130,7 +130,7 @@ export default function ElectricBills({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
       <ElectricHeader navigation={navigation} category={category} />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <ElectricSummaryCards category={category} />
+        <ElectricSummaryCards electricBills={electricBills} />
         <View className="mx-4">
           <ElectricBox pickImage={pickImage} category={category} />
           <ElectricActions pickImage={pickImage} takePhoto={takePhoto} />

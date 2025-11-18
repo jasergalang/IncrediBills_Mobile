@@ -132,7 +132,7 @@ export default function UploadBill({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
       <UploadHeader navigation={navigation} category={category} />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <UploadSummaryCards category={category} />
+        <UploadSummaryCards waterBills={waterBills} />
         <View className="mx-4">
           <UploadBox pickImage={pickImage} category={category} />
           <UploadActions pickImage={pickImage} takePhoto={takePhoto} />
