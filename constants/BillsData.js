@@ -56,6 +56,34 @@ export const utilities = [
   },
 ];
 
+export const computeMonthlyTotals = (electricBills, waterBills) => {
+  const getLatestMonthTotal = (bills) => {
+    if (!bills || bills.length === 0) return 0;
+
+    const monthGroups = bills.reduce((acc, bill) => {
+      const date = new Date(bill.date);
+      const ym = `${date.getFullYear()}-${date.getMonth() + 1}`;
+      if (!acc[ym]) acc[ym] = [];
+      acc[ym].push(bill);
+      return acc;
+    }, {});
+
+    const latestMonth = Object.keys(monthGroups).sort().reverse()[0];
+    const latestBills = monthGroups[latestMonth];
+
+    return latestBills.reduce((sum, b) => sum + (b.cost || 0), 0);
+  };
+
+  return {
+    water: getLatestMonthTotal(waterBills),
+    electricity: getLatestMonthTotal(electricBills),
+    gas: 0,
+    fuel: 0,
+    grocery: 0,
+  };
+};
+
+
 export const monthlyData = [
   {
     month: "Jun",
