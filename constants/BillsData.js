@@ -55,7 +55,6 @@ export const utilities = [
     provider: "SM Supermarket",
   },
 ];
-// ...existing code...
 
 export const monthlyData = [
   {
@@ -108,60 +107,43 @@ export const monthlyData = [
   },
 ];
 
-export const recentBills = [
-  {
-    id: 1,
-    type: "water",
-    name: "Water",
-    icon: "💧",
-    provider: "Manila Water",
-    amount: 450,
-    dueDate: "Nov 5, 2024",
-    status: "paid",
-    color: "blue",
-  },
-  {
-    id: 2,
+
+export const formatDate = (date) => {
+  if (!date) return "Unknown Date";
+  return new Date(date).toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
+};
+
+export const transformBills = (electricData, waterData) => {
+  const formattedElectric = electricData.bills.map(b => ({
+    id: b._id,
     type: "electricity",
     name: "Electricity",
     icon: "⚡",
     provider: "Meralco",
-    amount: 2850,
-    dueDate: "Nov 10, 2024",
-    status: "pending",
+    amount: b.cost || 0,
+    dueDate: formatDate(b.date),
+    status: b.status,
     color: "amber",
-  },
-  {
-    id: 3,
-    type: "gas",
-    name: "Kitchen Gas",
-    icon: "🔥",
-    provider: "Petron",
-    amount: 550,
-    dueDate: "Nov 8, 2024",
-    status: "pending",
-    color: "orange",
-  },
-  {
-    id: 4,
-    type: "fuel",
-    name: "Transport Fuel",
-    icon: "⛽",
-    provider: "Shell",
-    amount: 1200,
-    dueDate: "Nov 12, 2024",
-    status: "paid",
-    color: "red",
-  },
-  {
-    id: 5,
-    type: "grocery",
-    name: "Groceries",
-    icon: "🛒",
-    provider: "SM Supermarket",
-    amount: 3500,
-    dueDate: "Nov 15, 2024",
-    status: "pending",
-    color: "green",
-  },
-];
+    createdAt: b.createdAt
+  }));
+
+  const formattedWater = waterData.bills.map(b => ({
+    id: b._id,
+    type: "water",
+    name: "Water",
+    icon: "💧",
+    provider: "Manila Water",
+    amount: b.cost || 0,
+    dueDate: formatDate(b.date),
+    status: b.status,
+    color: "blue",
+    createdAt: b.createdAt
+  }));
+
+  return [...formattedElectric, ...formattedWater].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+};
