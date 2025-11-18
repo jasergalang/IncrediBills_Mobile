@@ -6,7 +6,7 @@ import BillsTotalCard from "../../components/bills/billCategories/BillsTotalCard
 import BillsUtilitiesGrid from "../../components/bills/billCategories/BillsUtilitiesGrid";
 import BillsTrendsChart from "../../components/bills/billCategories/BillsTrendChart";
 import BillsRecentSection from "../../components/bills/billCategories/BillsRecentSection";
-import { utilities, monthlyData, transformBills, computeMonthlyTotals} from "../../constants/BillsData";
+import { utilities, monthlyData, transformBills, computeMonthlyTotals, mergeMonthlyAnalytics } from "../../constants/BillsData";
 import baseURL from "../../assets/common/baseUrl";
 import { useAuth } from "../../context/auth";
 
@@ -28,6 +28,12 @@ export default function BillCategories({ navigation }) {
     grocery: 0,
   });
 
+  const [analytics, setAnalytics] = useState({
+    monthly: [],
+    yearly: []
+  });
+
+
   const handleCategoryPress = (category) => {
     const routes = {
       water: "WaterBills",
@@ -44,29 +50,51 @@ export default function BillCategories({ navigation }) {
     if (!userToken) return;
 
     try {
-      const [electricRes, waterRes] = await Promise.all([
-        fetch(`${baseURL}/api/electric-bill/all`, {
-          headers: { Authorization: `Bearer ${userToken}` }
-        }),
-        fetch(`${baseURL}/api/water-bill/all`, {
-          headers: { Authorization: `Bearer ${userToken}` }
-        }),
-      ]);
+      const [electricRes, waterRes, electricAnalyticsRes, waterAnalyticsRes] =
+        await Promise.all([
+          fetch(`${baseURL}/api/electric-bill/all`, {
+            headers: { Authorization: `Bearer ${userToken}` }
+          }),
+          fetch(`${baseURL}/api/water-bill/all`, {
+            headers: { Authorization: `Bearer ${userToken}` }
+          }),
+          fetch(`${baseURL}/api/electric-bill/analytics`, {
+            headers: { Authorization: `Bearer ${userToken}` }
+          }),
+          fetch(`${baseURL}/api/water-bill/analytics`, {
+            headers: { Authorization: `Bearer ${userToken}` }
+          }),
+        ]);
 
       const electricData = await electricRes.json();
       const waterData = await waterRes.json();
+      const electricAnalytics = await electricAnalyticsRes.json();
+      const waterAnalytics = await waterAnalyticsRes.json();
 
       const allBills = transformBills(electricData, waterData);
       setRecentBills(allBills);
 
-      // NEW: compute real totals
       const totals = computeMonthlyTotals(
         electricData.bills,
         waterData.bills
       );
       setRealTotals(totals);
+
+      const mergedMonthly = mergeMonthlyAnalytics(
+        waterAnalytics.monthly,
+        electricAnalytics.monthly
+      );
+
+      setAnalytics({
+        monthly: mergedMonthly,
+        yearly: {
+          water: waterAnalytics.yearly,
+          electricity: electricAnalytics.yearly
+        }
+      });
+
     } catch (err) {
-      console.error("Error fetching bills:", err);
+      console.error("Error fetching analytics:", err);
     }
   };
 
@@ -75,7 +103,6 @@ export default function BillCategories({ navigation }) {
       ? recentBills
       : recentBills.filter((bill) => bill.type === activeTab);
 
-  // const totalAmount = utilities.reduce((sum, util) => sum + util.amount, 0);
   const totalAmount = Object.values(realTotals).reduce((sum, v) => sum + v, 0);
 
   const dynamicUtilities = utilities.map(u => ({
@@ -95,7 +122,7 @@ export default function BillCategories({ navigation }) {
         <BillsTrendsChart
           timeRange={timeRange}
           setTimeRange={setTimeRange}
-          monthlyData={monthlyData}
+          monthlyData={analytics.monthly}
         />
         <BillsRecentSection
           activeTab={activeTab}

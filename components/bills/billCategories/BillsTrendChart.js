@@ -1,6 +1,11 @@
 import React from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 
+const formatMonth = (key) => {
+  const [year, month] = key.split("-");
+  return new Date(year, month - 1).toLocaleString("en-US", { month: "short" });
+};
+
 export default function BillsTrendsChart({
   timeRange,
   setTimeRange,
@@ -23,14 +28,12 @@ export default function BillsTrendsChart({
           <TouchableOpacity
             key={range}
             onPress={() => setTimeRange(range)}
-            className={`flex-1 py-2 rounded-lg ${
-              timeRange === range ? "bg-blue-600" : "bg-slate-100"
-            }`}
+            className={`flex-1 py-2 rounded-lg ${timeRange === range ? "bg-blue-600" : "bg-slate-100"
+              }`}
           >
             <Text
-              className={`text-center text-sm font-semibold ${
-                timeRange === range ? "text-white" : "text-slate-600"
-              }`}
+              className={`text-center text-sm font-semibold ${timeRange === range ? "text-white" : "text-slate-600"
+                }`}
             >
               {range.charAt(0).toUpperCase() + range.slice(1)}
             </Text>
@@ -95,7 +98,8 @@ export default function BillsTrendsChart({
                 </View>
               </View>
               <Text className="text-xs font-semibold text-slate-600">
-                {data.month}
+                {/* {data.month} */}
+                 {formatMonth(data.month)}
               </Text>
             </View>
           ))}
