@@ -112,17 +112,17 @@ export default function BillsRecentSection({
               <View>
                 <View
                   className={`px-3 py-1 rounded-full ${
-                    bill.status === "paid" ? "bg-green-100" : "bg-amber-100"
+                    bill.status === "Success" ? "bg-green-100" : "bg-red-100"
                   }`}
                 >
                   <Text
                     className={`text-xs font-semibold ${
-                      bill.status === "paid"
+                      bill.status === "Success"
                         ? "text-green-700"
-                        : "text-amber-700"
+                        : "text-red-700"
                     }`}
                   >
-                    {bill.status === "paid" ? "✓ Paid" : "⏳ Pending"}
+                    {bill.status === "Success" ? "✓ Verified" : "X Failed"}
                   </Text>
                 </View>
               </View>
