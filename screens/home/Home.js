@@ -22,6 +22,7 @@ export default function Home({ navigation }) {
   const { user } = useAuth();
   const [recentBills, setRecentBills] = useState([]);
   const [spendingData, setSpendingData] = useState([])
+  const [upcomingBills, setUpcomingBills] = useState([]);
 
   const [userData, setUserData] = useState({
     name: "",
@@ -37,24 +38,6 @@ export default function Home({ navigation }) {
     efficiency: 0,
   });
 
-  const upcomingBills = [
-    {
-      id: 1,
-      type: "Electricity",
-      amount: 3100,
-      dueDate: "Dec 5",
-      icon: "⚡",
-      color: "amber",
-    },
-    {
-      id: 2,
-      type: "Water",
-      amount: 520,
-      dueDate: "Dec 8",
-      icon: "💧",
-      color: "blue",
-    },
-  ];
   const fetchUserProfile = async () => {
     if (!user?.token) return;
 
@@ -103,11 +86,6 @@ export default function Home({ navigation }) {
         (waterRes.data && waterRes.data.bills) || []
       );
 
-      const getLatestBill = (bills) => {
-        if (!Array.isArray(bills) || bills.length === 0) return null;
-        return bills.reduce((latest, b) => (new Date(b.date) > new Date(latest.date) ? b : latest), bills[0]);
-      };
-
       const latestElectric = getLatestBill(electricData.bills);
       const latestWater = getLatestBill(waterData.bills);
 
@@ -124,7 +102,7 @@ export default function Home({ navigation }) {
         return {
           category: u.name,
           amount: amt,
-          percent: 0, 
+          percent: 0,
           icon: u.icon,
           color: u.color,
         };
@@ -150,6 +128,46 @@ export default function Home({ navigation }) {
         color: b.color,
       }));
       setRecentBills(mapped.slice(0, 5));
+      const mapPredToBillDate = (preds) =>
+        (Array.isArray(preds) ? preds : []).map((p) => ({ ...p, date: p.predictedDate }));
+
+      const latestPredElectric = getLatestBill(mapPredToBillDate(electricPredictions));
+      const latestPredWater = getLatestBill(mapPredToBillDate(waterPredictions));
+
+      const formatMonthYear = (d) => {
+        if (!d) return "";
+        try {
+          return new Date(d).toLocaleString("en-US", { month: "long", year: "numeric" });
+        } catch {
+          return "";
+        }
+      };
+
+      const upcoming = [];
+      if (latestPredElectric) {
+        const util = utilities.find((u) => u.id === "electricity") || {};
+        upcoming.push({
+          id: "electricity",
+          type: util.name || "Electricity",
+          amount: Number(latestPredElectric.predictedCost || 0),
+          dueDate: formatMonthYear(latestPredElectric.date),
+          icon: util.icon || "⚡",
+          color: util.color || "amber",
+        });
+      }
+      if (latestPredWater) {
+        const util = utilities.find((u) => u.id === "water") || {};
+        upcoming.push({
+          id: "water",
+          type: util.name || "Water",
+          amount: Number(latestPredWater.predictedCost || 0),
+          dueDate: formatMonthYear(latestPredWater.date),
+          icon: util.icon || "💧",
+          color: util.color || "blue",
+        });
+      }
+
+      setUpcomingBills(upcoming);
 
       const matchPrediction = (latestBill, predictions) => {
         if (!latestBill) return null;
