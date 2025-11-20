@@ -29,6 +29,21 @@ export default function BillCategories({ navigation }) {
     yearly: []
   });
 
+  const [computedChanges, setComputedChanges] = useState({
+    water: 0,
+    electricity: 0,
+    gas: 0,
+    fuel: 0,
+    grocery: 0,
+  });
+
+  const [latestAmounts, setLatestAmounts] = useState({
+    water: 0,
+    electricity: 0,
+    gas: 0,
+    fuel: 0,
+    grocery: 0,
+  });
 
   const handleCategoryPress = (category) => {
     const routes = {
@@ -40,7 +55,6 @@ export default function BillCategories({ navigation }) {
     };
     navigation.navigate(routes[category.id] || "BillCategories", { category });
   };
-
   const fetchAllBills = async () => {
     const userToken = token || (await getToken());
     if (!userToken) return;
@@ -66,6 +80,58 @@ export default function BillCategories({ navigation }) {
       const waterData = await waterRes.json();
       const electricAnalytics = await electricAnalyticsRes.json();
       const waterAnalytics = await waterAnalyticsRes.json();
+
+      const [electricPredRes, waterPredRes] = await Promise.all([
+        fetch(`${baseURL}/api/electric-bill/predictions`, {
+          headers: { Authorization: `Bearer ${userToken}` }
+        }),
+        fetch(`${baseURL}/api/water-bill/predictions`, {
+          headers: { Authorization: `Bearer ${userToken}` }
+        })
+      ]);
+
+      const electricPredJson = electricPredRes.ok ? await electricPredRes.json() : { predictions: [] };
+      const waterPredJson = waterPredRes.ok ? await waterPredRes.json() : { predictions: [] };
+
+      const getLatestBill = (bills) => {
+        if (!bills || bills.length === 0) return null;
+        return bills.reduce((latest, b) => {
+          return new Date(b.date) > new Date(latest.date) ? b : latest;
+        }, bills[0]);
+      };
+
+      const computeChange = (latestBill, predictions) => {
+        if (!latestBill) return 0;
+        const match = (predictions || []).find((pred) => {
+          const p = new Date(pred.predictedDate);
+          const b = new Date(latestBill.date);
+          return p.getMonth() === b.getMonth() && p.getFullYear() === b.getFullYear();
+        });
+        const predictedCost = match?.predictedCost ?? (latestBill.cost ? latestBill.cost * 1.1 : 0);
+        const scanned = latestBill.cost || 0;
+        if (!predictedCost || !scanned) return 0;
+        const change = ((scanned - predictedCost) / predictedCost) * 100;
+        Math.round(change * 10) / 10;
+
+        return change.toFixed(2);
+      };
+
+      const latestElectric = getLatestBill(electricData.bills);
+      const latestWater = getLatestBill(waterData.bills);
+      const electricChange = computeChange(latestElectric, electricPredJson.predictions);
+      const waterChange = computeChange(latestWater, waterPredJson.predictions);
+
+      setComputedChanges((prev) => ({
+        ...prev,
+        electricity: electricChange,
+        water: waterChange,
+      }));
+
+      setLatestAmounts((prev) => ({
+        ...prev,
+        electricity: latestElectric?.cost || 0,
+        water: latestWater?.cost || 0,
+      }));
 
       const allBills = transformBills(electricData, waterData);
       setRecentBills(allBills);
@@ -97,29 +163,34 @@ export default function BillCategories({ navigation }) {
   useEffect(() => {
     fetchAllBills();
   }, []);
-  
+
   const filteredBills =
     activeTab === "all"
       ? recentBills
       : recentBills.filter((bill) => bill.type === activeTab);
 
-  const totalAmount = Object.values(realTotals).reduce((sum, v) => sum + v, 0);
+  const totalAmount = Object.values(latestAmounts).reduce((sum, v) => sum + v, 0);
+  const totalChange = Object.values(computedChanges).reduce((sum, v) => sum + parseFloat(v), 0);
 
   const dynamicUtilities = utilities.map(u => ({
     ...u,
-    amount: realTotals[u.id] || 0
+    amount: latestAmounts[u.id] || realTotals[u.id] || 0,
+    change: computedChanges[u.id] ?? u.change
   }));
+
+
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
       <BillsHeader />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <BillsTotalCard totalAmount={totalAmount} />
+        <BillsTotalCard totalAmount={totalAmount} totalChange={totalChange} />
         <BillsUtilitiesGrid
           utilities={dynamicUtilities}
           onPress={handleCategoryPress}
         />
         <BillsTrendsChart
+          totalChange={totalChange}
           timeRange={timeRange}
           setTimeRange={setTimeRange}
           monthlyData={analytics.monthly}
