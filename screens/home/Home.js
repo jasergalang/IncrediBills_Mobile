@@ -16,9 +16,11 @@ import AchievementsBanner from "../../components/home/AchievementsBanner";
 import { useAuth } from "../../context/auth";
 import axios from "axios";
 import baseURL from "../../assets/common/baseUrl";
+import { transformBills } from "../../constants/BillsData";
 export default function Home({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuth();
+  const [recentBills, setRecentBills] = useState([]);
 
   const [userData, setUserData] = useState({
     name: "",
@@ -33,36 +35,6 @@ export default function Home({ navigation }) {
     billsUploaded: 0,
     efficiency: 0,
   });
-
-  const recentBills = [
-    {
-      id: 1,
-      type: "Electricity",
-      amount: 2850,
-      date: "Nov 5",
-      status: "paid",
-      icon: "⚡",
-      color: "amber",
-    },
-    {
-      id: 2,
-      type: "Water",
-      amount: 450,
-      date: "Nov 3",
-      status: "paid",
-      icon: "💧",
-      color: "blue",
-    },
-    {
-      id: 3,
-      type: "Internet",
-      amount: 1699,
-      date: "Nov 1",
-      status: "paid",
-      icon: "📡",
-      color: "purple",
-    },
-  ];
 
   const upcomingBills = [
     {
@@ -160,6 +132,20 @@ export default function Home({ navigation }) {
       const latestElectric = getLatestBill(electricData.bills);
       const latestWater = getLatestBill(waterData.bills);
 
+      const allBills = transformBills(electricData, waterData);
+
+      const sorted = allBills.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const mapped = sorted.map((b) => ({
+        id: b.id,
+        type: b.name,
+        amount: b.amount,
+        date: b.dueDate,
+        status: b.status || "paid",
+        icon: b.icon,
+        color: b.color,
+      }));
+
+      setRecentBills(mapped.slice(0, 5));
       const matchPrediction = (latestBill, predictions) => {
         if (!latestBill) return null;
         return (predictions || []).find((pred) => {
@@ -207,6 +193,7 @@ export default function Home({ navigation }) {
   useEffect(() => {
     homeData();
   }, []);
+
 
   const onRefresh = () => {
     setRefreshing(true);
