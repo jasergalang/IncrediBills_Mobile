@@ -6,7 +6,7 @@ import BillsTotalCard from "../../components/bills/billCategories/BillsTotalCard
 import BillsUtilitiesGrid from "../../components/bills/billCategories/BillsUtilitiesGrid";
 import BillsTrendsChart from "../../components/bills/billCategories/BillsTrendChart";
 import BillsRecentSection from "../../components/bills/billCategories/BillsRecentSection";
-import { utilities, monthlyData, transformBills, computeMonthlyTotals, mergeMonthlyAnalytics } from "../../constants/BillsData";
+import { utilities, transformBills, computeMonthlyTotals, mergeMonthlyAnalytics } from "../../constants/BillsData";
 import baseURL from "../../assets/common/baseUrl";
 import { useAuth } from "../../context/auth";
 
@@ -15,10 +15,6 @@ export default function BillCategories({ navigation }) {
   const [timeRange, setTimeRange] = useState("month");
   const [recentBills, setRecentBills] = useState([]);
   const { token, getToken } = useAuth();
-
-  useEffect(() => {
-    fetchAllBills();
-  }, []);
 
   const [realTotals, setRealTotals] = useState({
     water: 0,
@@ -98,6 +94,10 @@ export default function BillCategories({ navigation }) {
     }
   };
 
+  useEffect(() => {
+    fetchAllBills();
+  }, []);
+  
   const filteredBills =
     activeTab === "all"
       ? recentBills

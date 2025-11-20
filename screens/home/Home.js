@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   StatusBar,
@@ -7,21 +7,25 @@ import {
 } from "react-native";
 import HomeHeader from "../../components/home/HomeHeader";
 import WelcomeCard from "../../components/home/WelcomeCard";
-import StatsCards from "../../components/home/StatsCards"; // <-- Make sure this matches your filename!
+import StatsCards from "../../components/home/StatsCards";
 import QuickActions from "../../components/home/QuickActions";
 import RecentBills from "../../components/home/RecentBills";
 import SpendingOverview from "../../components/home/SpendingOverview";
 import UpcomingBills from "../../components/home/UpcomingBills";
 import AchievementsBanner from "../../components/home/AchievementsBanner";
-
+import { useAuth } from "../../context/auth";
+import axios from "axios";
+import baseURL from "../../assets/common/baseUrl";
 export default function Home({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
+  const { user } = useAuth();
 
-  const userData = {
-    name: "Juan Dela Cruz",
-    level: 12,
-    points: 850,
-  };
+  const [userData, setUserData] = useState({
+    name: "",
+    profilePic: null,
+    level: 0,
+    points: 0,
+  });
 
   const statsData = {
     totalSpent: 8250,
@@ -110,6 +114,30 @@ export default function Home({ navigation }) {
       color: "slate",
     },
   ];
+  const fetchUserProfile = async () => {
+    if (!user?.token) return;
+
+    try {
+      const res = await axios.get(`${baseURL}/api/user/profile`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+
+      const u = res.data.user;
+
+      setUserData({
+        name: `${u.firstName || ""} ${u.lastName || ""}`.trim(),
+        profilePic: u.profilePic?.[0]?.url || null,
+        level: u.level || 0,
+        points: u.points || 0,
+      });
+    } catch (error) {
+      console.log("Fetch user error:", error.response?.data || error.message);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
 
   const onRefresh = () => {
     setRefreshing(true);

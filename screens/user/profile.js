@@ -11,11 +11,14 @@ import ProfileAvatarCard from "../../components/user/profile/ProfileAvatar";
 import PersonalInformation from "../../components/user/profile/PersonalInformation";
 import SecuritySection from "../../components/user/profile/SecuritySection";
 import AccountActions from "../../components/user/profile/AccountActions";
+
 import axios from "axios";
-import baseURL from "../../assets/common/baseUrl"
-import * as ImagePicker from 'expo-image-picker';
+import baseURL from "../../assets/common/baseUrl";
+import * as ImagePicker from "expo-image-picker";
+
 export default function Profile({ navigation }) {
     const { logout, user, updateProfile } = useAuth();
+
     const [isEditing, setIsEditing] = useState(false);
     const [showChangePassword, setShowChangePassword] = useState(false);
 
@@ -25,37 +28,36 @@ export default function Profile({ navigation }) {
     const [lastName, setLastName] = useState("");
     const [profilePic, setProfilePic] = useState(null);
 
-    const name = `${firstName} ${lastName}`;
+    const name = `${firstName} ${lastName}`.trim();
 
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-  
+
+    const fetchUserProfile = async () => {
+        if (!user?.token) return;
+
+        try {
+            const response = await axios.get(`${baseURL}/api/user/profile`, {
+                headers: { Authorization: `Bearer ${user.token}` },
+            });
+
+            const u = response.data.user;
+            setEmail(u.email || "");
+            setUsername(u.username || "");
+            setFirstName(u.firstName || "");
+            setLastName(u.lastName || "");
+            setProfilePic(u.profilePic?.[0]?.url || null);
+
+        } catch (error) {
+            console.error(error.response?.data || error.message);
+            Alert.alert("Error", "Failed to fetch profile. Please try again.");
+        }
+    };
+
     useEffect(() => {
-        if (!user?.token) return; 
-
-        const fetchProfile = async () => {
-            try {
-                const response = await axios.get(`${baseURL}/api/user/profile`, {
-                    headers: {
-                        Authorization: `Bearer ${user.token}`,
-                    },
-                });
-
-                const u = response.data.user;
-                setEmail(u.email || "");
-                setUsername(u.username || "");
-                setFirstName(u.firstName || "");
-                setLastName(u.lastName || "");
-                setProfilePic(u.profilePic?.[0]?.url || null);
-            } catch (error) {
-                console.error(error.response?.data || error.message);
-                Alert.alert("Error", "Failed to fetch profile. Please try again.");
-            }
-        };
-
-        fetchProfile();
-    }, [user?.token]);
+        fetchUserProfile();
+    }, []);
 
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
@@ -66,7 +68,7 @@ export default function Profile({ navigation }) {
         });
 
         if (!result.canceled) {
-            setProfileImage(result.assets[0].uri);
+            setProfilePic(result.assets[0].uri); 
         }
     };
 
@@ -79,7 +81,7 @@ export default function Profile({ navigation }) {
             formData.append("username", username);
 
             if (profilePic && !profilePic.startsWith("http")) {
-                const filename = profileImage.split("/").pop();
+                const filename = profilePic.split("/").pop();
                 const match = /\.(\w+)$/.exec(filename);
                 const type = match ? `image/${match[1]}` : `image`;
 
@@ -100,61 +102,32 @@ export default function Profile({ navigation }) {
             updateProfile(response.data.user);
             Alert.alert("Success", "Profile updated successfully!");
             setIsEditing(false);
+
         } catch (error) {
             console.error(error.response?.data || error.message);
-            Alert.alert("Error", "Failed to update profile. Please try again.");
+            Alert.alert("Error", "Failed to update profile.");
         }
     };
-
-
-    // const handleSaveProfile = async () => {
-    //     try {
-    //         const response = await axios.put(
-    //             `${baseURL}/api/user/update`,
-    //             { firstName, lastName, email, username },
-    //             {
-    //                 headers: {
-    //                     Authorization: `Bearer ${user.token}`,
-    //                     "Content-Type": "application/json",
-    //                 },
-    //             }
-    //         );
-
-    //         // Update auth context state
-    //         updateProfile(response.data.user);
-
-    //         Alert.alert("Success", "Profile updated successfully!");
-    //         setIsEditing(false);
-    //     } catch (error) {
-    //         console.error(error.response?.data || error.message);
-    //         Alert.alert("Error", "Failed to update profile. Please try again.");
-    //     }
-    // };
 
     const handleChangePassword = async () => {
         if (newPassword !== confirmPassword) {
-            Alert.alert("Error", "New passwords do not match!");
+            Alert.alert("Error", "Passwords do not match.");
             return;
         }
         if (newPassword.length < 6) {
-            Alert.alert("Error", "Password must be at least 6 characters!");
+            Alert.alert("Error", "Password must be at least 6 characters.");
             return;
         }
-        try {
-            // Add your API call here
-            // await changePassword({ currentPassword, newPassword });
-            Alert.alert("Success", "Password changed successfully!");
-            setShowChangePassword(false);
-            setCurrentPassword("");
-            setNewPassword("");
-            setConfirmPassword("");
-        } catch (error) {
-            Alert.alert("Error", "Failed to change password. Please try again.");
-        }
+
+        Alert.alert("Success", "Password changed successfully!");
+        setShowChangePassword(false);
+        setCurrentPassword("");
+        setNewPassword("");
+        setConfirmPassword("");
     };
 
     const handleLogout = () => {
-        Alert.alert("Logout", "Are you sure you want to logout?", [
+        Alert.alert("Logout", "Are you sure?", [
             { text: "Cancel", style: "cancel" },
             {
                 text: "Logout",
@@ -178,7 +151,13 @@ export default function Profile({ navigation }) {
             />
 
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-                <ProfileAvatarCard name={name} username={username} image={profilePic} />
+                <ProfileAvatarCard
+                    name={name}
+                    username={username}
+                    image={profilePic}
+                    pickImage={pickImage}
+                    isEditing={isEditing}
+                />
 
                 <PersonalInformation
                     isEditing={isEditing}
