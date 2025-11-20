@@ -27,12 +27,12 @@ export default function Home({ navigation }) {
     points: 0,
   });
 
-  const statsData = {
-    totalSpent: 8250,
-    savedAmount: 1850,
-    billsPaid: 24,
-    efficiency: 92,
-  };
+  const [statsData, setStatsData] = useState({
+    totalSpent: 0,
+    savedAmount: 0,
+    billsUploaded: 0,
+    efficiency: 0,
+  });
 
   const recentBills = [
     {
@@ -134,14 +134,85 @@ export default function Home({ navigation }) {
       console.log("Fetch user error:", error.response?.data || error.message);
     }
   };
+  const getLatestBill = (bills) => {
+    if (!Array.isArray(bills) || bills.length === 0) return null;
+    return bills.reduce((latest, b) => {
+      return new Date(b.date) > new Date(latest.date) ? b : latest;
+    }, bills[0]);
+  };
+
+  const homeData = async () => {
+    if (!user?.token) return;
+
+    try {
+      const [electricRes, waterRes, electricPredRes, waterPredRes] = await Promise.all([
+        axios.get(`${baseURL}/api/electric-bill/all`, { headers: { Authorization: `Bearer ${user.token}` } }),
+        axios.get(`${baseURL}/api/water-bill/all`, { headers: { Authorization: `Bearer ${user.token}` } }),
+        axios.get(`${baseURL}/api/electric-bill/predictions`, { headers: { Authorization: `Bearer ${user.token}` } }),
+        axios.get(`${baseURL}/api/water-bill/predictions`, { headers: { Authorization: `Bearer ${user.token}` } }),
+      ]);
+
+      const electricData = electricRes.data || { bills: [] };
+      const waterData = waterRes.data || { bills: [] };
+      const electricPredictions = (electricPredRes.data && electricPredRes.data.predictions) || [];
+      const waterPredictions = (waterPredRes.data && waterPredRes.data.predictions) || [];
+
+      const latestElectric = getLatestBill(electricData.bills);
+      const latestWater = getLatestBill(waterData.bills);
+
+      const matchPrediction = (latestBill, predictions) => {
+        if (!latestBill) return null;
+        return (predictions || []).find((pred) => {
+          const p = new Date(pred.predictedDate);
+          const b = new Date(latestBill.date);
+          return p.getMonth() === b.getMonth() && p.getFullYear() === b.getFullYear();
+        });
+      };
+
+      const computeForLatest = (latestBill, predictions) => {
+        if (!latestBill) return { scanned: 0, predicted: 0, diff: 0 };
+        const scanned = Number(latestBill.cost || 0);
+        const match = matchPrediction(latestBill, predictions);
+        const predicted = match?.predictedCost ?? (scanned ? scanned * 1.1 : 0);
+        const diff = predicted - scanned;
+        return { scanned, predicted, diff };
+      };
+
+      const e = computeForLatest(latestElectric, electricPredictions);
+      const w = computeForLatest(latestWater, waterPredictions);
+
+      const totalSpent = Number(e.scanned || 0) + Number(w.scanned || 0);
+
+      const savedAmount = [e.diff, w.diff].reduce((s, v) => s + (v > 0 ? v : 0), 0);
+
+      const billsUploaded =
+        (Array.isArray(electricData.bills) ? electricData.bills.length : 0) +
+        (Array.isArray(waterData.bills) ? waterData.bills.length : 0);
+
+      setStatsData((prev) => ({
+        ...prev,
+        totalSpent: Math.round(totalSpent * 100) / 100,
+        savedAmount: Math.round(savedAmount * 100) / 100,
+        billsUploaded,
+      }));
+    } catch (err) {
+      console.log("homeData error:", err?.response?.data || err.message || err);
+    }
+  };
 
   useEffect(() => {
     fetchUserProfile();
   }, []);
 
+  useEffect(() => {
+    homeData();
+  }, []);
+
   const onRefresh = () => {
     setRefreshing(true);
-    setTimeout(() => setRefreshing(false), 2000);
+    Promise.resolve()
+      .then(() => Promise.all([fetchUserProfile(), homeData()]))
+      .finally(() => setTimeout(() => setRefreshing(false), 800));
   };
 
   return (
