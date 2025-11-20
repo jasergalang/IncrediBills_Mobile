@@ -16,11 +16,12 @@ import AchievementsBanner from "../../components/home/AchievementsBanner";
 import { useAuth } from "../../context/auth";
 import axios from "axios";
 import baseURL from "../../assets/common/baseUrl";
-import { transformBills } from "../../constants/BillsData";
+import { transformBills, computeMonthlyTotals, utilities } from "../../constants/BillsData";
 export default function Home({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuth();
   const [recentBills, setRecentBills] = useState([]);
+  const [spendingData, setSpendingData] = useState([])
 
   const [userData, setUserData] = useState({
     name: "",
@@ -52,38 +53,6 @@ export default function Home({ navigation }) {
       dueDate: "Dec 8",
       icon: "💧",
       color: "blue",
-    },
-  ];
-
-  const spendingData = [
-    {
-      category: "Electricity",
-      amount: 2850,
-      percent: 35,
-      icon: "⚡",
-      color: "amber",
-    },
-    { category: "Water", amount: 450, percent: 5, icon: "💧", color: "blue" },
-    {
-      category: "Internet",
-      amount: 1699,
-      percent: 21,
-      icon: "📡",
-      color: "purple",
-    },
-    {
-      category: "Groceries",
-      amount: 2200,
-      percent: 27,
-      icon: "🛒",
-      color: "green",
-    },
-    {
-      category: "Others",
-      amount: 1051,
-      percent: 12,
-      icon: "📊",
-      color: "slate",
     },
   ];
   const fetchUserProfile = async () => {
@@ -129,11 +98,47 @@ export default function Home({ navigation }) {
       const electricPredictions = (electricPredRes.data && electricPredRes.data.predictions) || [];
       const waterPredictions = (waterPredRes.data && waterPredRes.data.predictions) || [];
 
+      const totals = computeMonthlyTotals(
+        (electricRes.data && electricRes.data.bills) || [],
+        (waterRes.data && waterRes.data.bills) || []
+      );
+
+      const getLatestBill = (bills) => {
+        if (!Array.isArray(bills) || bills.length === 0) return null;
+        return bills.reduce((latest, b) => (new Date(b.date) > new Date(latest.date) ? b : latest), bills[0]);
+      };
+
       const latestElectric = getLatestBill(electricData.bills);
       const latestWater = getLatestBill(waterData.bills);
 
-      const allBills = transformBills(electricData, waterData);
+      const latestAmounts = {
+        electricity: latestElectric?.cost ?? totals.electricity ?? utilities.find(u => u.id === 'electricity')?.amount ?? 0,
+        water: latestWater?.cost ?? totals.water ?? utilities.find(u => u.id === 'water')?.amount ?? 0,
+        gas: totals.gas ?? utilities.find(u => u.id === 'gas')?.amount ?? 0,
+        fuel: totals.fuel ?? utilities.find(u => u.id === 'fuel')?.amount ?? 0,
+        grocery: totals.grocery ?? utilities.find(u => u.id === 'grocery')?.amount ?? 0,
+      };
 
+      const spendingArr = utilities.map((u) => {
+        const amt = Number(latestAmounts[u.id] || 0);
+        return {
+          category: u.name,
+          amount: amt,
+          percent: 0, 
+          icon: u.icon,
+          color: u.color,
+        };
+      });
+
+      const totalAll = spendingArr.reduce((s, it) => s + (Number(it.amount) || 0), 0) || 0;
+      const spendingComputed = spendingArr.map((it) => ({
+        ...it,
+        percent: totalAll > 0 ? Math.round((it.amount / totalAll) * 100) : 0,
+      }));
+
+      setSpendingData(spendingComputed);
+
+      const allBills = transformBills(electricData, waterData);
       const sorted = allBills.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       const mapped = sorted.map((b) => ({
         id: b.id,
@@ -144,8 +149,8 @@ export default function Home({ navigation }) {
         icon: b.icon,
         color: b.color,
       }));
-
       setRecentBills(mapped.slice(0, 5));
+
       const matchPrediction = (latestBill, predictions) => {
         if (!latestBill) return null;
         return (predictions || []).find((pred) => {
@@ -168,7 +173,6 @@ export default function Home({ navigation }) {
       const w = computeForLatest(latestWater, waterPredictions);
 
       const totalSpent = Number(e.scanned || 0) + Number(w.scanned || 0);
-
       const savedAmount = [e.diff, w.diff].reduce((s, v) => s + (v > 0 ? v : 0), 0);
 
       const billsUploaded =
@@ -185,7 +189,6 @@ export default function Home({ navigation }) {
       console.log("homeData error:", err?.response?.data || err.message || err);
     }
   };
-
   useEffect(() => {
     fetchUserProfile();
   }, []);
