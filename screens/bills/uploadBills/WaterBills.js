@@ -16,6 +16,7 @@ export default function UploadBill({ navigation }) {
   const [uploads, setUploads] = useState([]);
   const { token, getToken } = useAuth();
   const [waterBills, setWaterBills] = useState({ count: 0, bills: [] });
+  const { refreshBills } = useBills();
 
   useEffect(() => {
     fetchWaterBills();

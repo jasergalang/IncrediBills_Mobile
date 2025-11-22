@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   StatusBar,
@@ -17,7 +17,7 @@ import { useAuth } from "../../context/auth";
 import axios from "axios";
 import baseURL from "../../assets/common/baseUrl";
 import { useBills } from "../../hooks/useBills";
-
+import { useFocusEffect } from "@react-navigation/native";
 export default function Home({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuth();
@@ -33,7 +33,7 @@ export default function Home({ navigation }) {
     spendingData,
     upcomingBills,
     statsData,
-    refreshBills,   
+    refreshBills,
   } = useBills();
   const fetchUserProfile = async () => {
     if (!user?.token) return;
@@ -61,18 +61,25 @@ export default function Home({ navigation }) {
     fetchUserProfile();
   }, []);
 
- const onRefresh = async () => {
+  const onRefresh = async () => {
     setRefreshing(true);
 
     try {
       await Promise.all([
         fetchUserProfile(),
-        refreshBills(),   
+        refreshBills(),
       ]);
     } finally {
       setTimeout(() => setRefreshing(false), 800);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshBills();
+    }, [])
+  );
+
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
