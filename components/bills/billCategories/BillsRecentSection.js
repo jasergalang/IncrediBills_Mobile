@@ -106,7 +106,7 @@ export default function BillsRecentSection({
               <View>
                 <Text className="text-xs text-slate-600 mb-1">Due Date</Text>
                 <Text className="text-sm font-semibold text-slate-900">
-                  {bill.dueDate}
+                  {bill.date}
                 </Text>
               </View>
               <View>

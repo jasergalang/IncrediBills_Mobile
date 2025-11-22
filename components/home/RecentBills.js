@@ -24,7 +24,7 @@ export default function RecentBills({ bills, navigation }) {
               <Text className="text-2xl">{bill.icon}</Text>
             </View>
             <View className="flex-1">
-              <Text className="font-semibold text-slate-900">{bill.type}</Text>
+              <Text className="font-semibold text-slate-900">{bill.name} Bill</Text>
               <Text className="text-xs text-slate-600">{bill.date}</Text>
             </View>
             <View className="items-end">

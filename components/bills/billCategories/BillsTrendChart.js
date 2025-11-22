@@ -1,6 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 
+
 const formatMonth = (key) => {
   const [year, month] = key.split("-");
   return new Date(year, month - 1).toLocaleString("en-US", { month: "short" });

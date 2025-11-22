@@ -1,3 +1,5 @@
+import { utilities } from "../constants/utilities";
+
 export function getLatestBill(bills) {
   if (!bills || bills.length === 0) return null;
   return bills.reduce((latest, b) =>
@@ -13,6 +15,39 @@ export function formatBillDate(date) {
   });
 }
 
+// export function transformBills(electricData, waterData) {
+//   const formatDate = (date) =>
+//     new Date(date).toLocaleDateString("en-US", {
+//       month: "long",
+//       year: "numeric",
+//     });
+
+//   const electric = electricData.bills.map((b) => ({
+//     id: b._id,
+//     type: "electricity",
+//     icon: "⚡",
+//     color: "amber",
+//     amount: b.cost || 0,
+//     date: formatDate(b.date),
+//     createdAt: b.createdAt,
+//     status: b.status,
+//   }));
+
+//   const water = waterData.bills.map((b) => ({
+//     id: b._id,
+//     type: "water",
+//     icon: "💧",
+//     color: "blue",
+//     amount: b.cost || 0,
+//     date: formatDate(b.date),
+//     createdAt: b.createdAt,
+//     status: b.status,
+//   }));
+
+//   return [...electric, ...water].sort(
+//     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+//   );
+// }
 export function transformBills(electricData, waterData) {
   const formatDate = (date) =>
     new Date(date).toLocaleDateString("en-US", {
@@ -20,27 +55,24 @@ export function transformBills(electricData, waterData) {
       year: "numeric",
     });
 
-  const electric = electricData.bills.map((b) => ({
-    id: b._id,
-    type: "electricity",
-    icon: "⚡",
-    color: "amber",
-    amount: b.cost || 0,
-    date: formatDate(b.date),
-    createdAt: b.createdAt,
-    status: b.status,
-  }));
+  const mapBill = (bill, typeId) => {
+    const util = utilities.find((u) => u.id === typeId);
+    return {
+      id: bill._id,
+      type: typeId,
+      name: util?.name || typeId,
+      provider: util?.provider || "",
+      icon: util?.icon || "",
+      color: util?.color || "gray",
+      amount: bill.cost || 0,
+      date: formatDate(bill.date),
+      createdAt: bill.createdAt,
+      status: bill.status,
+    };
+  };
 
-  const water = waterData.bills.map((b) => ({
-    id: b._id,
-    type: "water",
-    icon: "💧",
-    color: "blue",
-    amount: b.cost || 0,
-    date: formatDate(b.date),
-    createdAt: b.createdAt,
-    status: b.status,
-  }));
+  const electric = electricData.bills.map((b) => mapBill(b, "electricity"));
+  const water = waterData.bills.map((b) => mapBill(b, "water"));
 
   return [...electric, ...water].sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
