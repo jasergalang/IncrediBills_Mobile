@@ -28,6 +28,8 @@ export function useBills() {
   const [computedChanges, setComputedChanges] = useState({});
   const [analytics, setAnalytics] = useState({ monthly: [], yearly: {} });
 
+  const [categories, setCategories] = useState([]);
+
   // Unified safe fetch function
   const safeFetch = async (url, headers, fallback = {}) => {
     try {
@@ -138,6 +140,8 @@ export function useBills() {
       };
     });
     setSpendingData(spending);
+    setCategories(spending);
+    
 
     // Stats cards
     const electricPredicted = predictedElectric?.predictedCost ?? electricCost * 1.1;
@@ -174,6 +178,7 @@ export function useBills() {
   return {
     recentBills,
     spendingData,
+    categories,
     upcomingBills,
     statsData,
     latestAmounts,

@@ -15,9 +15,17 @@ export default function SpendingTrendsChart({ spendingData }) {
             return (
               <View key={idx} className="flex-1 items-center">
                 <View className="w-full" style={{ height: "100%" }}>
-                  <View
+                  {/* <View
                     className="w-full bg-gradient-to-t from-blue-500 to-blue-400 rounded-t"
                     style={{ height: `${height}%`, marginTop: "auto" }}
+                  /> */}
+                  <View
+                    className="w-full rounded-t"
+                    style={{
+                      height: `${height}%`,
+                      marginTop: "auto",
+                      backgroundColor: idx % 2 === 0 ? "#467bcfff" : "#8cbaf5ff",
+                    }}
                   />
                 </View>
                 <Text className="text-xs font-semibold text-slate-600 mt-2">

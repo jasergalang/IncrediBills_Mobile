@@ -11,11 +11,11 @@ import TipsSection from "../../components/analytics/TipsSection";
 import GameKPICards from "../../components/analytics/GameKPICards";
 import AchievementsProgress from "../../components/analytics/AchievementsProgress";
 import RecentRewards from "../../components/analytics/RecentRewards";
-
+import { useBills } from "../../hooks/useBills";
 export default function Analytics({ navigation }) {
   const [dateRange, setDateRange] = useState("month");
   const [activeTab, setActiveTab] = useState("utility"); // utility, games
-
+  const { categories } = useBills();
   // KPI Data
   const utilityKPI = {
     totalSpending: 8250,
@@ -39,27 +39,6 @@ export default function Analytics({ navigation }) {
     { month: "Sep", amount: 7230 },
     { month: "Oct", amount: 7835 },
     { month: "Nov", amount: 8250 },
-  ];
-
-  // Category breakdown
-  const categories = [
-    {
-      name: "Electricity",
-      amount: 2850,
-      percent: 35,
-      icon: "⚡",
-      color: "amber",
-    },
-    {
-      name: "Groceries",
-      amount: 2200,
-      percent: 27,
-      icon: "🛒",
-      color: "emerald",
-    },
-    { name: "Transport", amount: 1020, percent: 12, icon: "⛽", color: "gray" },
-    { name: "Water", amount: 450, percent: 5, icon: "💧", color: "blue" },
-    { name: "Others", amount: 1180, percent: 14, icon: "📊", color: "slate" },
   ];
 
   // Anomalies
