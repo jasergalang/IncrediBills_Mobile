@@ -1,0 +1,59 @@
+export function getLatestBill(bills) {
+  if (!bills || bills.length === 0) return null;
+  return bills.reduce((latest, b) =>
+    new Date(b.date) > new Date(latest.date) ? b : latest
+  );
+}
+
+export function formatBillDate(date) {
+  if (!date) return "";
+  return new Date(date).toLocaleString("en-US", {
+    month: "long",
+    year: "numeric",
+  });
+}
+
+export function transformBills(electricData, waterData) {
+  const formatDate = (date) =>
+    new Date(date).toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
+    });
+
+  const electric = electricData.bills.map((b) => ({
+    id: b._id,
+    type: "electricity",
+    icon: "⚡",
+    color: "amber",
+    amount: b.cost || 0,
+    date: formatDate(b.date),
+    createdAt: b.createdAt,
+    status: b.status,
+  }));
+
+  const water = waterData.bills.map((b) => ({
+    id: b._id,
+    type: "water",
+    icon: "💧",
+    color: "blue",
+    amount: b.cost || 0,
+    date: formatDate(b.date),
+    createdAt: b.createdAt,
+    status: b.status,
+  }));
+
+  return [...electric, ...water].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
+}
+
+export const mergeMonthlyAnalytics = (a, b) => {
+  const all = new Set([...Object.keys(a), ...Object.keys(b)]);
+  const sorted = [...all].sort();
+
+  return sorted.map((m) => ({
+    month: m,
+    water: a[m]?.totalCost || 0,
+    electricity: b[m]?.totalCost || 0,
+  }));
+};
