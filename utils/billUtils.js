@@ -15,39 +15,6 @@ export function formatBillDate(date) {
   });
 }
 
-// export function transformBills(electricData, waterData) {
-//   const formatDate = (date) =>
-//     new Date(date).toLocaleDateString("en-US", {
-//       month: "long",
-//       year: "numeric",
-//     });
-
-//   const electric = electricData.bills.map((b) => ({
-//     id: b._id,
-//     type: "electricity",
-//     icon: "⚡",
-//     color: "amber",
-//     amount: b.cost || 0,
-//     date: formatDate(b.date),
-//     createdAt: b.createdAt,
-//     status: b.status,
-//   }));
-
-//   const water = waterData.bills.map((b) => ({
-//     id: b._id,
-//     type: "water",
-//     icon: "💧",
-//     color: "blue",
-//     amount: b.cost || 0,
-//     date: formatDate(b.date),
-//     createdAt: b.createdAt,
-//     status: b.status,
-//   }));
-
-//   return [...electric, ...water].sort(
-//     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-//   );
-// }
 export function transformBills(electricData, waterData) {
   const formatDate = (date) =>
     new Date(date).toLocaleDateString("en-US", {

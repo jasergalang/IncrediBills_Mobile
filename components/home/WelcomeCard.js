@@ -15,7 +15,7 @@ export default function WelcomeCard({ userData }) {
           <View className="flex-1">
             <Text className="text-white/80 text-sm mb-1">Good Day,</Text>
             <Text className="text-white font-bold text-xl">
-              {userData.name}
+              {userData.firstName} {userData.lastName}
             </Text>
           </View>
           <View className="w-14 h-14 bg-white/20 rounded-full overflow-hidden items-center justify-center">
