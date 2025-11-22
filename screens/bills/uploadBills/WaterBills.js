@@ -10,12 +10,13 @@ import UploadRecent from "../../../components/bills/uploadBills/waterBills/Water
 import UploadTips from "../../../components/bills/uploadBills/waterBills/WaterTips";
 import baseURL from "../../../assets/common/baseUrl";
 import { useAuth } from "../../../context/auth";
-
+import { useBills } from "../../../hooks/useBills";
 export default function UploadBill({ navigation }) {
   const category = { name: "Water", icon: "💧", color: "blue" };
   const [uploads, setUploads] = useState([]);
   const { token, getToken } = useAuth();
   const [waterBills, setWaterBills] = useState({ count: 0, bills: [] });
+  const { refreshBills } = useBills();
 
   useEffect(() => {
     fetchWaterBills();
@@ -82,6 +83,7 @@ export default function UploadBill({ navigation }) {
 
 
       fetchWaterBills();
+      refreshBills();
 
       if (response.ok) {
         alert("Bill uploaded successfully!");
@@ -126,6 +128,8 @@ export default function UploadBill({ navigation }) {
       bills: prev.bills.filter((bill) => bill._id !== id),
     }));
   };
+
+
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">

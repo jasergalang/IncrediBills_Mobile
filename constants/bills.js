@@ -1,0 +1,1 @@
+export const BILL_TYPES = ["water", "electricity", "gas", "fuel", "grocery"];
