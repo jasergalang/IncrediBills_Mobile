@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import {
   createDrawerNavigator,
   DrawerContentScrollView,
@@ -11,6 +11,9 @@ import GameNavigator from "./gameNav";
 import AnalyticsNavigator from "./analyticsNav";
 import BillsNavigator from "./BillsNav";
 import UserNavigator from "./userNav";
+import baseURL from "../assets/common/baseUrl";
+import { useAuth } from "../context/auth";
+import axios from "axios";
 
 const Drawer = createDrawerNavigator();
 
@@ -38,7 +41,36 @@ function CustomDrawerContent(props) {
     { icon: "person", label: "Profile", route: "Profile", badge: null },
   ];
 
+  const { user } = useAuth();
+  const [email, setEmail] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const name = `${firstName} ${lastName}`.trim();
+
   const currentRoute = props.state.routeNames[props.state.index];
+
+   const fetchUserProfile = async () => {
+        if (!user?.token) return;
+
+        try {
+            const response = await axios.get(`${baseURL}/api/user/profile`, {
+                headers: { Authorization: `Bearer ${user.token}` },
+            });
+
+            const u = response.data.user;
+            setEmail(u.email || "");
+            setFirstName(u.firstName || "");
+            setLastName(u.lastName || "");
+
+        } catch (error) {
+            console.error(error.response?.data || error.message);
+            Alert.alert("Error", "Failed to fetch profile. Please try again.");
+        }
+    };
+
+    useEffect(() => {
+        fetchUserProfile();
+    }, []);
 
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
@@ -84,9 +116,9 @@ function CustomDrawerContent(props) {
             </LinearGradient>
             <View>
               <Text className="font-bold text-slate-900 text-sm">
-                Juan Dela Cruz
+                {name}
               </Text>
-              <Text className="text-xs text-slate-600">juan@email.com</Text>
+              <Text className="text-xs text-slate-600">{user.email}</Text>
             </View>
           </View>
           <View className="flex-row items-center justify-between">
