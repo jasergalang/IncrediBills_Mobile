@@ -9,12 +9,21 @@ import BillsRecentSection from "../../components/bills/billCategories/BillsRecen
 import { utilities, transformBills, computeMonthlyTotals, mergeMonthlyAnalytics } from "../../constants/BillsData";
 import baseURL from "../../assets/common/baseUrl";
 import { useAuth } from "../../context/auth";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function BillCategories({ navigation }) {
   const [activeTab, setActiveTab] = useState("all");
   const [timeRange, setTimeRange] = useState("month");
   const [recentBills, setRecentBills] = useState([]);
   const { token, getToken } = useAuth();
+  const isFocused = useIsFocused();
+
+  useEffect(() => {
+    if (isFocused) {
+      fetchAllBills();
+    }
+  }, [isFocused]);
+
 
   const [realTotals, setRealTotals] = useState({
     water: 0,
@@ -160,9 +169,14 @@ export default function BillCategories({ navigation }) {
     }
   };
 
+  // useEffect(() => {
+  //   fetchAllBills();
+  // }, []);
   useEffect(() => {
-    fetchAllBills();
-  }, []);
+    if (isFocused) {
+      fetchAllBills();
+    }
+  }, [isFocused]);
 
   const filteredBills =
     activeTab === "all"

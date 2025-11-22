@@ -266,6 +266,7 @@ import { useAuth } from "../../context/auth";
 import axios from "axios";
 import baseURL from "../../assets/common/baseUrl";
 import { transformBills, computeMonthlyTotals, utilities } from "../../constants/BillsData";
+import { useIsFocused } from "@react-navigation/native";
 
 export default function Home({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
@@ -273,6 +274,13 @@ export default function Home({ navigation }) {
   const [recentBills, setRecentBills] = useState([]);
   const [spendingData, setSpendingData] = useState([]);
   const [upcomingBills, setUpcomingBills] = useState([]);
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (isFocused) {
+      fetchUserProfile();
+      homeData();
+    }
+  }, [isFocused]);
 
   const [userData, setUserData] = useState({
     name: "",
@@ -515,13 +523,20 @@ export default function Home({ navigation }) {
     }
   };
 
-  useEffect(() => {
-    fetchUserProfile();
-  }, []);
+  // useEffect(() => {
+  //   fetchUserProfile();
+  // }, []);
 
+  // useEffect(() => {
+  //   homeData();
+  // }, []);
   useEffect(() => {
-    homeData();
-  }, []);
+    if (isFocused) {
+      fetchUserProfile();
+      homeData();
+    }
+  }, [isFocused]);
+
 
   const onRefresh = () => {
     setRefreshing(true);
