@@ -11,12 +11,14 @@ import ElectricTips from "../../../components/bills/uploadBills/electricBills/El
 import baseURL from "../../../assets/common/baseUrl";
 import { useAuth } from "../../../context/auth";
 import { useBills } from "../../../hooks/useBills";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 export default function ElectricBills({ navigation }) {
   const category = { name: "Electricity", icon: "⚡", color: "amber" };
   const [uploads, setUploads] = useState([]);
   const { token, getToken } = useAuth();
   const [electricBills, setElectricBills] = useState({ count: 0, bills: [] });
   const { refreshBills } = useBills();
+  const { refresh } = useAnalytics();
 
   useEffect(() => {
     fetchElectricBills();
@@ -82,7 +84,8 @@ export default function ElectricBills({ navigation }) {
       }
 
       fetchElectricBills();
-      refreshBills
+      refreshBills();
+      refresh();
 
       if (response.ok) {
         alert("Bill uploaded successfully!");

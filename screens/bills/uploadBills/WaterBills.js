@@ -11,12 +11,14 @@ import UploadTips from "../../../components/bills/uploadBills/waterBills/WaterTi
 import baseURL from "../../../assets/common/baseUrl";
 import { useAuth } from "../../../context/auth";
 import { useBills } from "../../../hooks/useBills";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 export default function UploadBill({ navigation }) {
   const category = { name: "Water", icon: "💧", color: "blue" };
   const [uploads, setUploads] = useState([]);
   const { token, getToken } = useAuth();
   const [waterBills, setWaterBills] = useState({ count: 0, bills: [] });
   const { refreshBills } = useBills();
+  const { refresh } = useAnalytics();
 
   useEffect(() => {
     fetchWaterBills();
@@ -84,6 +86,7 @@ export default function UploadBill({ navigation }) {
 
       fetchWaterBills();
       refreshBills();
+      refresh();
 
       if (response.ok) {
         alert("Bill uploaded successfully!");
