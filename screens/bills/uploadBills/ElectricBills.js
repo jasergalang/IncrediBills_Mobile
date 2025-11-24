@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, StatusBar, View } from "react-native";
+import { ScrollView, StatusBar, View, Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import ElectricHeader from "../../../components/bills/uploadBills/electricBills/ElectricHeader";
 import ElectricSummaryCards from "../../../components/bills/uploadBills/electricBills/ElectricSummaryCards";
@@ -8,51 +8,106 @@ import ElectricBox from "../../../components/bills/uploadBills/electricBills/Ele
 import ElectricActions from "../../../components/bills/uploadBills/electricBills/ElectricActions";
 import ElectricRecent from "../../../components/bills/uploadBills/electricBills/ElectricRecent";
 import ElectricTips from "../../../components/bills/uploadBills/electricBills/ElectricTips";
-
-const recentUploads = [
-  {
-    id: 1,
-    name: "October Electric Bill.png",
-    size: "2.1 MB",
-    date: "Oct 12 at 9:30 AM",
-    status: "uploaded",
-  },
-  {
-    id: 2,
-    name: "September Electric Bill.pdf",
-    size: "1.5 MB",
-    date: "Sep 18 at 1:10 PM",
-    status: "uploaded",
-  },
-  {
-    id: 3,
-    name: "August Electric Bill.jpg",
-    size: "2.8 MB",
-    date: "Aug 8 at 8:45 AM",
-    status: "uploaded",
-  },
-  {
-    id: 4,
-    name: "July Electric Bill.png",
-    size: "2.0 MB",
-    date: "Jul 3 at 10:20 AM",
-    status: "uploading",
-  },
-];
-
+import baseURL from "../../../assets/common/baseUrl";
+import { useAuth } from "../../../context/auth";
+import { useBills } from "../../../hooks/useBills";
+import { useAnalytics } from "../../../hooks/useAnalytics";
 export default function ElectricBills({ navigation }) {
   const category = { name: "Electricity", icon: "⚡", color: "amber" };
-  const [uploads, setUploads] = useState(recentUploads);
+  const [uploads, setUploads] = useState([]);
+  const { token, getToken } = useAuth();
+  const [electricBills, setElectricBills] = useState({ count: 0, bills: [] });
+  const { refreshBills } = useBills();
+  const { refresh } = useAnalytics();
+
+  useEffect(() => {
+    fetchElectricBills();
+  }, []);
+
+  const fetchElectricBills = async () => {
+    const userToken = token || (await getToken());
+
+    try {
+      const res = await fetch(`${baseURL}/api/electric-bill/all`, {
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+      });
+
+      const data = await res.json();
+      setElectricBills(data);
+    } catch (err) {
+      console.error("Error fetching bills:", err);
+    }
+  };
+  const uploadBill = async (uri) => {
+    try {
+      const formData = new FormData();
+      const filename = uri.split("/").pop();
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : `image`;
+
+      formData.append("billImage", {
+        uri: Platform.OS === "android" ? uri : uri.replace("file://", ""),
+        name: filename,
+        type,
+      });
+
+      const userToken = token || (await getToken());
+      if (!userToken) {
+        alert("You must be logged in to upload bills.");
+        return;
+      }
+
+      const response = await fetch(`${baseURL}/api/electric-bill/upload`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${userToken}`,
+        },
+        body: formData,
+      });
+
+      const data = await response.json();
+      console.log("Upload response:", data);
+      // console.log("OCR Data:", data.ocrData);
+
+      try {
+        const predRes = await fetch(`${baseURL}/api/electric-bill/predict`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${userToken}` },
+        });
+
+        const predData = await predRes.json();
+        console.log("Prediction response:", predData);
+      } catch (err) {
+        console.error("Prediction failed:", err);
+      }
+
+      fetchElectricBills();
+      refreshBills();
+      refresh();
+
+      if (response.ok) {
+        alert("Bill uploaded successfully!");
+      } else {
+        alert(`Upload failed: ${data.message}`);
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert("An error occurred during upload.");
+    }
+  };
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.IMAGE,
-      allowsEditing: true,
+      allowsEditing: false,
       quality: 1,
     });
     if (!result.canceled) {
-      console.log("Image selected:", result.assets[0].uri);
-      // Add upload logic here
+      const uri = result.assets[0].uri;
+      console.log("Image selected:", uri);
+      await uploadBill(uri);
     }
   };
 
@@ -63,13 +118,17 @@ export default function ElectricBills({ navigation }) {
       quality: 1,
     });
     if (!result.canceled) {
-      console.log("Photo taken:", result.assets[0].uri);
-      // Add upload logic here
+      const uri = result.assets[0].uri;
+      console.log("Photo taken:", uri);
+      await uploadBill(uri);
     }
   };
 
   const removeUpload = (id) => {
-    setUploads(uploads.filter((item) => item.id !== id));
+    setElectricBills((prev) => ({
+      count: prev.count - 1,
+      bills: prev.bills.filter((bill) => bill._id !== id),
+    }));
   };
 
   return (
@@ -77,12 +136,12 @@ export default function ElectricBills({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
       <ElectricHeader navigation={navigation} category={category} />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <ElectricSummaryCards category={category} />
+        <ElectricSummaryCards electricBills={electricBills} />
         <View className="mx-4">
           <ElectricBox pickImage={pickImage} category={category} />
           <ElectricActions pickImage={pickImage} takePhoto={takePhoto} />
         </View>
-        <ElectricRecent uploads={uploads} removeUpload={removeUpload} />
+        <ElectricRecent electricBills={electricBills.bills} removeUpload={removeUpload} />
         <ElectricTips category={category} />
       </ScrollView>
     </SafeAreaView>

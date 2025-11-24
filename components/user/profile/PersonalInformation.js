@@ -8,8 +8,10 @@ export default function PersonalInformation({
     setEmail,
     username,
     setUsername,
-    name,
-    setName,
+    firstName,
+    setFirstName,
+    lastName,
+    setLastName,
     onSave,
 }) {
     return (
@@ -60,11 +62,11 @@ export default function PersonalInformation({
                         autoCapitalize="none"
                     />
                 ) : (
-                    <Text className="text-base font-semibold text-slate-900">@{username}</Text>
+                    <Text className="text-base font-semibold text-slate-900">{username}</Text>
                 )}
             </View>
 
-            {/* Name */}
+            {/* First Name & Last Name */}
             <View className="bg-white rounded-2xl p-4 mb-3 border border-slate-200">
                 <View className="flex-row items-center mb-2">
                     <Ionicons name="person-outline" size={18} color="#64748b" />
@@ -73,13 +75,22 @@ export default function PersonalInformation({
                     </Text>
                 </View>
                 {isEditing ? (
-                    <TextInput
-                        value={name}
-                        onChangeText={setName}
-                        className="text-base text-slate-900 p-3 bg-slate-50 rounded-lg"
-                    />
+                    <View className="flex-row space-x-2">
+                        <TextInput
+                            value={firstName}
+                            onChangeText={setFirstName}
+                            className="flex-1 text-base text-slate-900 p-3 bg-slate-50 rounded-lg"
+                            placeholder="First Name"
+                        />
+                        <TextInput
+                            value={lastName}
+                            onChangeText={setLastName}
+                            className="flex-1 text-base text-slate-900 p-3 bg-slate-50 rounded-lg"
+                            placeholder="Last Name"
+                        />
+                    </View>
                 ) : (
-                    <Text className="text-base font-semibold text-slate-900">{name}</Text>
+                    <Text className="text-base font-semibold text-slate-900">{firstName} {lastName}</Text>
                 )}
             </View>
 

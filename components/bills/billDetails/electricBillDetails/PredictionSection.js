@@ -5,13 +5,23 @@ import { Ionicons } from "@expo/vector-icons";
 
 export default function PredictionSection({ bill }) {
   const costDifference = bill.predictedCost - bill.scannedCost;
-  const consumptionDifference =
-    bill.predictedConsumption - bill.scannedConsumption;
-  const costPercentage = ((costDifference / bill.scannedCost) * 100).toFixed(1);
-  const consumptionPercentage = (
-    (consumptionDifference / bill.scannedConsumption) *
-    100
-  ).toFixed(1);
+  const consumptionDifference = bill.predictedConsumption - bill.scannedConsumption;
+  const costPercentage = bill.scannedCost
+    ? ((costDifference / bill.scannedCost) * 100).toFixed(1)
+    : "0.0";
+  const consumptionPercentage = bill.scannedConsumption
+    ? ((consumptionDifference / bill.scannedConsumption) * 100).toFixed(1)
+    : "0.0";
+
+  let formattedPredictedDate = "";
+  if (bill.predictedDate) {
+    const date = new Date(bill.predictedDate);
+    formattedPredictedDate = date.toLocaleString("default", { month: "long", year: "numeric" });
+  } else {
+    const nextMonthDate = new Date();
+    nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+    formattedPredictedDate = nextMonthDate.toLocaleString("default", { month: "long", year: "numeric" });
+  }
 
   return (
     <View className="px-4 pb-4">
@@ -33,9 +43,7 @@ export default function PredictionSection({ bill }) {
             <Ionicons name="stats-chart" size={20} color="#fff" />
           </View>
           <View>
-            <Text className="text-sm font-semibold text-slate-900">
-              November 2024
-            </Text>
+            <Text className="text-sm font-semibold text-slate-900">{formattedPredictedDate}</Text>
             <Text className="text-xs text-slate-600">
               Based on your usage pattern
             </Text>
@@ -101,7 +109,7 @@ export default function PredictionSection({ bill }) {
               </View>
             </View>
             <Text className="text-2xl font-bold text-orange-600">
-              {bill.predictedConsumption} kWh
+              {bill.predictedConsumption.toFixed(2)} kWh
             </Text>
             <Text className="text-xs text-slate-500 mt-1">
               {consumptionDifference > 0 ? "+" : ""}

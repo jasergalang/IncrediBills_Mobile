@@ -6,12 +6,10 @@ const BASE_IP =
   extra.BASE_IP || extra.BASEIP || process.env.BASEIP || "192.168.1.5";
 const DEFAULT_PORT = "3000";
 
-function normalize(ip) {
-  if (!ip) return ip;
-  const trimmed = ip.trim().replace(/\/+$/, "");
-  if (trimmed.startsWith("http://") || trimmed.startsWith("https://"))
-    return trimmed;
-  return trimmed;
+{
+  Platform.OS == "android"
+    ? (baseURL = "http://192.168.0.103:3000")
+    : (baseURL = "http://192.168.0.103:3000");
 }
 
 const normalized = normalize(BASE_IP);

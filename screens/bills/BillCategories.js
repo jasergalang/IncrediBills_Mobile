@@ -1,54 +1,75 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView, StatusBar } from "react-native";
 import BillsHeader from "../../components/bills/billCategories/BillsHeader";
 import BillsTotalCard from "../../components/bills/billCategories/BillsTotalCard";
-import BillsUtilitiesGrid from "../../components/bills//billCategories/BillsUtilitiesGrid";
-import BillsTrendsChart from "../../components/bills//billCategories/BillsTrendChart";
-import BillsRecentSection from "../../components/bills//billCategories/BillsRecentSection";
-import { utilities, monthlyData, recentBills } from "../../constants/BillsData"; // Move your data to a constants file or keep here
+import BillsUtilitiesGrid from "../../components/bills/billCategories/BillsUtilitiesGrid";
+import BillsTrendsChart from "../../components/bills/billCategories/BillsTrendChart";
+import BillsRecentSection from "../../components/bills/billCategories/BillsRecentSection";
+import { useBills } from "../../hooks/useBills";
+import { utilities } from "../../constants/utilities";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function BillCategories({ navigation }) {
   const [activeTab, setActiveTab] = useState("all");
   const [timeRange, setTimeRange] = useState("month");
 
-  const handleCategoryPress = (category) => {
-    if (category.id === "water") {
-      navigation.navigate("WaterBills", { category });
-    } else if (category.id === "electricity") {
-      navigation.navigate("ElectricBills", { category });
-    } else if (category.id === "fuel") {
-      navigation.navigate("TransportBills", { category });
-    } else if (category.id === "gas") {
-      navigation.navigate("KitchenGasBills", { category });
-    } else if (category.id === "grocery") {
-      navigation.navigate("GroceryBills", { category });
-    } else {
-      navigation.navigate("BillCategories", { category });
-    }
-  };
+  const {
+    recentBills,
+    latestAmounts,
+    computedChanges,
+    analytics,
+    refreshBills
+  } = useBills();
 
   const filteredBills =
     activeTab === "all"
       ? recentBills
       : recentBills.filter((bill) => bill.type === activeTab);
 
-  const totalAmount = utilities.reduce((sum, util) => sum + util.amount, 0);
+  // ✔ Compute total for all utilities
+  const totalAmount = Object.values(latestAmounts).reduce((total, num) => total + num, 0);
+  const totalChange = Object.values(computedChanges).reduce((total, num) => total + parseFloat(num), 0);
+
+  // ✔ Fill utilities with dynamic amounts & changes
+  const dynamicUtilities = utilities.map((u) => ({
+    ...u,
+    amount: latestAmounts[u.id] || 0,
+    change: computedChanges[u.id] || 0
+  }));
+
+  const handleCategoryPress = (category) => {
+    const routes = {
+      water: "WaterBills",
+      electricity: "ElectricBills",
+      fuel: "TransportBills",
+      gas: "KitchenGasBills",
+      grocery: "GroceryBills",
+    };
+    navigation.navigate(routes[category.id] || "BillCategories", { category });
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      refreshBills();
+    }, [])
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
       <BillsHeader />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <BillsTotalCard totalAmount={totalAmount} />
+        <BillsTotalCard totalAmount={totalAmount} totalChange={totalChange} />
         <BillsUtilitiesGrid
-          utilities={utilities}
+          utilities={dynamicUtilities}
           onPress={handleCategoryPress}
         />
         <BillsTrendsChart
+          totalChange={totalChange}
           timeRange={timeRange}
           setTimeRange={setTimeRange}
-          monthlyData={monthlyData}
+          monthlyData={analytics.monthly}
         />
         <BillsRecentSection
           activeTab={activeTab}

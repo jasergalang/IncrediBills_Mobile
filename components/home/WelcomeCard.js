@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function WelcomeCard({ userData }) {
@@ -13,13 +13,21 @@ export default function WelcomeCard({ userData }) {
       >
         <View className="flex-row items-center justify-between mb-4">
           <View className="flex-1">
-            <Text className="text-white/80 text-sm mb-1">Good Morning,</Text>
+            <Text className="text-white/80 text-sm mb-1">Good Day,</Text>
             <Text className="text-white font-bold text-xl">
-              {userData.name}
+              {userData.firstName} {userData.lastName}
             </Text>
           </View>
-          <View className="w-14 h-14 bg-white/20 rounded-full items-center justify-center">
-            <Text className="text-3xl">👤</Text>
+          <View className="w-14 h-14 bg-white/20 rounded-full overflow-hidden items-center justify-center">
+            {userData.profilePic ? (
+              <Image
+                source={{ uri: userData.profilePic }}
+                className="w-full h-full"
+                resizeMode="cover"
+              />
+            ) : (
+              <Text className="text-3xl">👤</Text>
+            )}
           </View>
         </View>
         <View className="flex-row items-center gap-4">

@@ -7,7 +7,8 @@ export default function RecentBills({ bills, navigation }) {
     <View className="px-4 pb-4">
       <View className="flex-row items-center justify-between mb-3">
         <Text className="text-base font-bold text-slate-900">Recent Bills</Text>
-        <TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Upload")}>
           <Text className="text-sm font-semibold text-blue-600">View All</Text>
         </TouchableOpacity>
       </View>
@@ -23,15 +24,20 @@ export default function RecentBills({ bills, navigation }) {
               <Text className="text-2xl">{bill.icon}</Text>
             </View>
             <View className="flex-1">
-              <Text className="font-semibold text-slate-900">{bill.type}</Text>
+              <Text className="font-semibold text-slate-900">{bill.name} Bill</Text>
               <Text className="text-xs text-slate-600">{bill.date}</Text>
             </View>
             <View className="items-end">
               <Text className="font-bold text-slate-900">
                 ₱{bill.amount.toLocaleString()}
               </Text>
-              <View className="bg-green-100 px-2 py-1 rounded-full mt-1">
-                <Text className="text-xs font-bold text-green-700">Paid</Text>
+              <View>
+                <View className={`px-2 py-1 rounded-full mt-1 ${bill.status === 'Success' ? 'bg-green-100' : 'bg-red-100'}`}>
+                  <Text className={`text-xs font-bold ${bill.status === 'Success' ? 'text-green-700' : 'text-red-700'}`}
+                  >
+                    {bill.status === "Success" ? "✓ Verified" : "X Failed"}
+                  </Text>
+                </View>
               </View>
             </View>
           </View>

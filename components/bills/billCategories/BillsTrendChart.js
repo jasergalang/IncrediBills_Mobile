@@ -1,10 +1,17 @@
 import React from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 
+
+const formatMonth = (key) => {
+  const [year, month] = key.split("-");
+  return new Date(year, month - 1).toLocaleString("en-US", { month: "short" });
+};
+
 export default function BillsTrendsChart({
   timeRange,
   setTimeRange,
   monthlyData,
+  totalChange
 }) {
   return (
     <View className="bg-white rounded-2xl border border-slate-200 mx-4 p-4 mb-4">
@@ -23,14 +30,12 @@ export default function BillsTrendsChart({
           <TouchableOpacity
             key={range}
             onPress={() => setTimeRange(range)}
-            className={`flex-1 py-2 rounded-lg ${
-              timeRange === range ? "bg-blue-600" : "bg-slate-100"
-            }`}
+            className={`flex-1 py-2 rounded-lg ${timeRange === range ? "bg-blue-600" : "bg-slate-100"
+              }`}
           >
             <Text
-              className={`text-center text-sm font-semibold ${
-                timeRange === range ? "text-white" : "text-slate-600"
-              }`}
+              className={`text-center text-sm font-semibold ${timeRange === range ? "text-white" : "text-slate-600"
+                }`}
             >
               {range.charAt(0).toUpperCase() + range.slice(1)}
             </Text>
@@ -95,7 +100,7 @@ export default function BillsTrendsChart({
                 </View>
               </View>
               <Text className="text-xs font-semibold text-slate-600">
-                {data.month}
+                {formatMonth(data.month)}
               </Text>
             </View>
           ))}
@@ -103,8 +108,12 @@ export default function BillsTrendsChart({
       </ScrollView>
       <View className="flex-row justify-between items-center mt-2 pt-2 border-t border-slate-200">
         <Text className="text-xs text-slate-600">Total Spending Trend</Text>
-        <Text className="text-xs font-bold text-green-600">
-          ↓ 12.5% reduction
+        <Text
+          className={`text-xs font-semibold ${totalChange < 0 ? "text-green-600" : "text-red-600"
+            }`}
+        >
+          {totalChange < 0 ? "↓" : "↑"} {Math.abs(totalChange).toFixed(2)}%{" "}
+          {totalChange < 0 ? "saved" : "increase"}
         </Text>
       </View>
     </View>
