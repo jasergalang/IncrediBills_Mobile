@@ -19,14 +19,14 @@ export default function StatsCards({ statsData }) {
           <Text className="text-xl font-bold text-green-600">
             ₱{statsData.savedAmount.toLocaleString()}
           </Text>
-        </View>
+        </View> 
       </View>
       <View className="flex-row gap-3">
         <View className="flex-1 bg-white rounded-2xl p-4 border border-slate-200">
           <Text className="text-2xl mb-2">📄</Text>
-          <Text className="text-sm text-slate-600 mb-1">Bills Paid</Text>
+          <Text className="text-sm text-slate-600 mb-1">Bills Uploaded</Text>
           <Text className="text-xl font-bold text-slate-900">
-            {statsData.billsPaid}
+            {statsData.billsUploaded}
           </Text>
         </View>
         <View className="flex-1 bg-white rounded-2xl p-4 border border-slate-200">

@@ -9,7 +9,7 @@ module.exports = (ctx = {}) => {
     process.env.BASE_IP ??
     config.extra?.BASE_IP ??
     config.extra?.BASEIP ??
-    "192.168.1.12";
+    "192.168.1.9";
 
   const EAS_PROJECT_ID =
     process.env.EAS_PROJECT_ID ??
