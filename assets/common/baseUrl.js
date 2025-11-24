@@ -3,20 +3,20 @@ import Constants from "expo-constants";
 
 const extra = Constants.expoConfig?.extra || Constants.manifest?.extra || {};
 const BASE_IP =
-  extra.BASE_IP || extra.BASEIP || process.env.BASEIP || "192.168.1.5";
+  extra.BASE_IP || extra.BASEIP || process.env.BASEIP || "192.168.1.9";
 const DEFAULT_PORT = "3000";
 
 {
   Platform.OS == "android"
-    ? (baseURL = "http://192.168.0.103:3000")
-    : (baseURL = "http://192.168.0.103:3000");
+    ? (baseURL = "http://192.168.1.9:3000")
+    : (baseURL = "http://192.168.1.9:3000");
 }
 
 const normalized = normalize(BASE_IP);
 
 let baseURL = "";
 if (!normalized) {
-  baseURL = `http://192.168.1.5:${DEFAULT_PORT}`;
+  baseURL = `http://192.168.1.9:${DEFAULT_PORT}`;
 } else if (
   normalized.startsWith("http://") ||
   normalized.startsWith("https://")
