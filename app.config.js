@@ -18,7 +18,9 @@ module.exports = (ctx = {}) => {
 
   return {
     ...config,
-    plugins: [...(config.plugins || []), "expo-font"],
+    plugins: [...(config.plugins || []), "expo-font",
+    "expo-secure-store"
+    ],
     extra: {
       ...(config.extra || {}),
       BASE_IP,

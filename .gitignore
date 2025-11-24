@@ -38,10 +38,10 @@ yarn-error.*
 *.tsbuildinfo
 
 # Android
-/android/app/debug.keystore
-/android/.gradle/
-/android/app/build/
-/android/build/
-/android/app/**/*.iml
-/android/app/src/debug/java/com/incredibills/mobile/ReactNativeFlipper.java
-./android
+# /android/app/debug.keystore
+# /android/.gradle/
+# /android/app/build/
+# /android/build/
+# /android/app/**/*.iml
+# /android/app/src/debug/java/com/incredibills/mobile/ReactNativeFlipper.java
+# ./android
