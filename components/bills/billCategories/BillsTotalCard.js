@@ -1,8 +1,8 @@
 import React from "react";
 import { View, Text } from "react-native";
 
-export default function BillsTotalCard({ totalAmount }) {
-  return (
+export default function BillsTotalCard({ totalAmount, totalChange = 0}) {
+  return (  
     <View className="p-4">
       <View
         className="rounded-2xl p-6"
@@ -24,8 +24,12 @@ export default function BillsTotalCard({ totalAmount }) {
         <Text className="text-3xl font-bold text-slate-900 mb-2">
           ₱{totalAmount.toLocaleString()}
         </Text>
-        <Text className="text-xs text-green-600 font-semibold">
-          ↓ 8.5% from last month
+          <Text
+          className={`text-xs font-semibold ${totalChange < 0 ? "text-green-600" : "text-red-600"
+            }`}
+        >
+          {totalChange < 0 ? "↓" : "↑"} {Math.abs(totalChange).toFixed(2)}%{" "}
+          {totalChange < 0 ? "saved" : "increase"}
         </Text>
       </View>
     </View>

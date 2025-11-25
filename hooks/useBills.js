@@ -1,0 +1,189 @@
+import { useEffect, useState } from "react";
+import axios from "axios";
+import {
+  getLatestBill,
+  transformBills,
+  mergeMonthlyAnalytics,
+  formatBillDate,
+} from "../utils/billUtils";
+import { computeChange } from "../utils/predictionUtils";
+import baseURL from "../assets/common/baseUrl";
+import { useAuth } from "../context/auth";
+import { utilities } from "../constants/utilities";
+
+export function useBills() {
+  const { token, getToken } = useAuth();
+
+  const [recentBills, setRecentBills] = useState([]);
+  const [spendingData, setSpendingData] = useState([]);
+  const [upcomingBills, setUpcomingBills] = useState([]);
+  const [statsData, setStatsData] = useState({
+    totalSpent: 0,
+    savedAmount: 0,
+    billsUploaded: 0,
+    efficiency: 0,
+  });
+
+  const [latestAmounts, setLatestAmounts] = useState({});
+  const [computedChanges, setComputedChanges] = useState({});
+  const [analytics, setAnalytics] = useState({ monthly: [], yearly: {} });
+
+  const [categories, setCategories] = useState([]);
+
+  // Unified safe fetch function
+  const safeFetch = async (url, headers, fallback = {}) => {
+    try {
+      const res = await axios.get(url, { headers });
+      return res.data || fallback;
+    } catch (err) {
+      console.warn(`Failed to fetch ${url}. Using fallback.`, err.message);
+      return fallback;
+    }
+  };
+
+  // Fetch Bills, Predictions, and Analytics
+  const fetchBills = async () => {
+    const userToken = token || (await getToken());
+    if (!userToken) return;
+
+    const headers = { Authorization: `Bearer ${userToken}` };
+
+    // Parallel safe fetches
+    const [
+      electricData,
+      waterData,
+      electricPred,
+      waterPred,
+      electricAnalytics,
+      waterAnalytics,
+    ] = await Promise.all([
+      safeFetch(`${baseURL}/api/electric-bill/all`, headers, { bills: [] }),
+      safeFetch(`${baseURL}/api/water-bill/all`, headers, { bills: [] }),
+      safeFetch(`${baseURL}/api/electric-bill/predictions`, headers, { predictions: [] }),
+      safeFetch(`${baseURL}/api/water-bill/predictions`, headers, { predictions: [] }),
+      safeFetch(`${baseURL}/api/electric-bill/analytics`, headers, { monthly: [], yearly: {} }),
+      safeFetch(`${baseURL}/api/water-bill/analytics`, headers, { monthly: [], yearly: {} }),
+    ]);
+
+    const latestElectric = getLatestBill(electricData.bills);
+    const latestWater = getLatestBill(waterData.bills);
+
+    // Latest amounts
+    const electricCost = latestElectric?.cost || 0;
+    const waterCost = latestWater?.cost || 0;
+
+    const updatedLatestAmounts = {
+      electricity: electricCost,
+      water: waterCost,
+      gas: 0,
+      grocery: 0,
+      fuel: 0,
+    };
+    setLatestAmounts(updatedLatestAmounts);
+
+    // Computed changes
+    setComputedChanges({
+      electricity: computeChange(latestElectric, electricPred.predictions ?? []),
+      water: computeChange(latestWater, waterPred.predictions ?? []),
+      gas: 0,
+      grocery: 0,
+      fuel: 0,
+    });
+
+    // Recent bills (latest 5)
+    const allBills = transformBills(electricData, waterData);
+    setRecentBills(allBills.slice(0, 5));
+
+    // Upcoming bills
+    const formatPred = (preds) =>
+      (preds || []).map((p) => ({ ...p, date: p.predictedDate }));
+    const upcoming = [];
+    const predictedElectric = getLatestBill(formatPred(electricPred.predictions ?? []));
+    const predictedWater = getLatestBill(formatPred(waterPred.predictions ?? []));
+
+    if (predictedElectric) {
+      const util = utilities.find((u) => u.id === "electricity");
+      upcoming.push({
+        id: "electricity",
+        type: util.name,
+        amount: Number(predictedElectric.predictedCost || 0),
+        dueDate: formatBillDate(predictedElectric.date),
+        icon: util.icon,
+        color: util.color,
+      });
+    }
+
+    if (predictedWater) {
+      const util = utilities.find((u) => u.id === "water");
+      upcoming.push({
+        id: "water",
+        type: util.name,
+        amount: Number(predictedWater.predictedCost || 0),
+        dueDate: formatBillDate(predictedWater.date),
+        icon: util.icon,
+        color: util.color,
+      });
+    }
+
+    setUpcomingBills(upcoming);
+
+    // Spending overview
+    const totalSum = electricCost + waterCost;
+    const spending = utilities.map((u) => {
+      const amt = updatedLatestAmounts[u.id] || 0;
+      return {
+        category: u.name,
+        amount: amt,
+        percent: totalSum > 0 ? Math.round((amt / totalSum) * 100) : 0,
+        icon: u.icon,
+        color: u.color,
+      };
+    });
+    setSpendingData(spending);
+    setCategories(spending);
+    
+
+    // Stats cards
+    const electricPredicted = predictedElectric?.predictedCost ?? electricCost * 1.1;
+    const waterPredicted = predictedWater?.predictedCost ?? waterCost * 1.1;
+    const saved =
+      Math.max(electricPredicted - electricCost, 0) +
+      Math.max(waterPredicted - waterCost, 0);
+    const billsUploaded = (electricData.bills?.length || 0) + (waterData.bills?.length || 0);
+
+    setStatsData({
+      totalSpent: Math.round(electricCost + waterCost),
+      savedAmount: Math.round(saved),
+      billsUploaded,
+      efficiency: billsUploaded > 0 ? Math.round((saved / (electricCost + waterCost)) * 100) : 0,
+    });
+
+    // Analytics
+    setAnalytics({
+      monthly: mergeMonthlyAnalytics(
+        waterAnalytics.monthly ?? [],
+        electricAnalytics.monthly ?? []
+      ),
+      yearly: {
+        water: waterAnalytics.yearly ?? {},
+        electricity: electricAnalytics.yearly ?? {},
+      },
+    });
+  };
+
+  useEffect(() => {
+    fetchBills();
+  }, []);
+
+  return {
+    recentBills,
+    spendingData,
+    categories,
+    upcomingBills,
+    statsData,
+    latestAmounts,
+    computedChanges,
+    analytics,
+    refreshBills: fetchBills,
+  };
+}

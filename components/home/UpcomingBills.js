@@ -23,7 +23,7 @@ export default function UpcomingBills({ bills }) {
               <Text className="text-2xl">{bill.icon}</Text>
             </View>
             <View className="flex-1">
-              <Text className="font-bold text-slate-900">{bill.type}</Text>
+              <Text className="font-bold text-slate-900">{bill.type} Bill</Text>
               <Text className="text-xs text-slate-600">
                 Due: {bill.dueDate}
               </Text>

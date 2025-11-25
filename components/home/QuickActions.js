@@ -6,7 +6,7 @@ export default function QuickActions({ navigation }) {
   const actions = [
     {
       icon: "cloud-upload",
-      label: "Upload Bill",
+      label: "Upload",
       route: "Upload",
       color: "blue",
     },
