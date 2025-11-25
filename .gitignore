@@ -45,3 +45,4 @@ yarn-error.*
 # /android/app/**/*.iml
 # /android/app/src/debug/java/com/incredibills/mobile/ReactNativeFlipper.java
 # ./android
+package-lock.json
