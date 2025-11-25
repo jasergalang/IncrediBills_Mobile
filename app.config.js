@@ -12,9 +12,7 @@ module.exports = (ctx = {}) => {
     "192.168.1.9";
 
   const EAS_PROJECT_ID =
-    process.env.EAS_PROJECT_ID ??
-    config.eas?.projectId ??
-    "c3d8c275-93c0-4031-9eb7-f65cc22ddb91";
+    "";
 
   return {
     ...config,

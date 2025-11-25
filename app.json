@@ -4,12 +4,10 @@
     "slug": "IncrediBills",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "projectId": "c3d8c275-93c0-4031-9eb7-f65cc22ddb91",
     "splash": {
-      "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,22 +16,21 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+  
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.eliboi.IncrediBills"
     },
     "web": {
-      "favicon": "./assets/favicon.png",
       "bundler": "metro"
     },
     "extra": {
-      "BASE_IP": "192.168.1.9",
+      "BASE_IP": "192.168.8.37",
       "eas": {
-        "projectId": "c3d8c275-93c0-4031-9eb7-f65cc22ddb91"
+        "projectId": "ed1b5568-6279-4565-8f9e-37d2ae855ed9"
       }
     },
-    "owner": "jaser1017"
+    "owner": "eliboi"
   }
 }
