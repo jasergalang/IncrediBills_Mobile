@@ -11,10 +11,12 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "plugins": ["@react-native-google-signin/google-signin"],
     "ios": {
       "supportsTablet": true
     },
     "android": {
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
   
         "backgroundColor": "#ffffff"
@@ -26,7 +28,7 @@
       "bundler": "metro"
     },
     "extra": {
-      "BASE_IP": "192.168.8.37",
+      "BASE_IP": "192.168.0.223",
       "eas": {
         "projectId": "ed1b5568-6279-4565-8f9e-37d2ae855ed9"
       }

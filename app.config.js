@@ -1,6 +1,5 @@
+require('dotenv').config();
 // ...existing code...
-require("dotenv").config();
-
 module.exports = (ctx = {}) => {
   const config = ctx.config ?? ctx ?? {};
 
@@ -9,13 +8,19 @@ module.exports = (ctx = {}) => {
     process.env.BASE_IP ??
     config.extra?.BASE_IP ??
     config.extra?.BASEIP ??
-    "192.168.1.9";
+    "192.168.1.12";
 
   const EAS_PROJECT_ID =
-    "";
+    process.env.EAS_PROJECT_ID ??
+    config.eas?.projectId ??
+    config.extra?.eas?.projectId ??
+    "ed1b5568-6279-4565-8f9e-37d2ae855ed9";
 
   return {
     ...config,
+    plugins: [...(config.plugins || []), "expo-font",
+    "expo-secure-store"
+    ],
     extra: {
       ...(config.extra || {}),
       BASE_IP,
@@ -26,4 +31,4 @@ module.exports = (ctx = {}) => {
     },
   };
 };
-// ...existing code...P
+// ...existing code...
