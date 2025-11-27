@@ -86,16 +86,31 @@ function AppWrapper() {
   return (
     
     <NavigationContainer>
-    
-        <Stack.Navigator initialRouteName="MainNavigator">
-          <Stack.Screen
-            name="MainNavigator"
-            component={MainNavigator}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-        <Toast />
-     
+      {/* Register all screens so navigation.navigate('MainNavigator') always exists.
+          initialRouteName still depends on auth state so unauthenticated users start on Signup. */}
+      <Stack.Navigator initialRouteName={isAuthenticated ? "MainNavigator" : "Signup"}>
+        <Stack.Screen
+          name="MainNavigator"
+          component={MainNavigator}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Signup"
+          component={Signup}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Login"
+          component={Login}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Register"
+          component={Register}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+      <Toast />
     </NavigationContainer>
   );
 }

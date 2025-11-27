@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 const AuthContext = createContext({});
 
 export const useAuth = () => {
@@ -40,15 +40,39 @@ export const AuthProvider = ({ children }) => {
     };
     const login = async (userData) => {
         try {
-            if (userData && userData.user && userData.user.token) {
-                await AsyncStorage.setItem('userToken', userData.user.token);
-                await AsyncStorage.setItem('userData', JSON.stringify(userData.user));
+            // Normalize different backend responses. Common shapes:
+            // 1) { user: { token, ... } }
+            // 2) { token, user: { ... } }
+            // 3) { token, ...userFields } (user object returned at root)
+            let tokenValue = null;
+            let userObj = null;
 
-                setIsAuthenticated(true);
-                setUser(userData.user);
-                // console.log('User logged in:', userData.user);
+            if (userData?.user) {
+                userObj = userData.user;
+                tokenValue = userData.user.token ?? userData.token ?? null;
             } else {
-                console.error('Invalid login response:', userData);
+                // treat root as user object or token response
+                tokenValue = userData?.token ?? userData?.accessToken ?? null;
+                // if user fields are at root, use them as userObj
+                userObj = (userData && typeof userData === 'object') ? { ...userData } : null;
+                // if userObj accidentally contains token at root, remove it from stored user object
+                if (userObj && tokenValue && userObj.token && userObj.token !== tokenValue) {
+                    // leave as-is; no-op
+                }
+            }
+
+            // fallback: if token is on userObj
+            if (!tokenValue && userObj?.token) tokenValue = userObj.token;
+
+            if (tokenValue && userObj) {
+                await AsyncStorage.setItem('userToken', tokenValue);
+                await AsyncStorage.setItem('userData', JSON.stringify(userObj));
+
+                setToken(tokenValue);
+                setUser(userObj);
+                setIsAuthenticated(true);
+            } else {
+                console.error('Invalid login response (missing token or user):', userData);
             }
         } catch (error) {
             console.error('Error storing auth data:', error);
@@ -74,6 +98,14 @@ export const AuthProvider = ({ children }) => {
 
     const logout = async () => {
         try {
+
+            try {
+            await GoogleSignin.signOut();
+                } catch (e) {
+                    // Ignore errors here (e.g., if user wasn't signed in with Google)
+                    console.log("Google signout error (non-fatal):", e);
+                }
+
             // Remove token and user data from AsyncStorage
             await AsyncStorage.removeItem('userToken');
             await AsyncStorage.removeItem('userData');
@@ -81,6 +113,7 @@ export const AuthProvider = ({ children }) => {
             // Clear state
             setToken(null);
             setUser(null);
+            setIsAuthenticated(false);
 
             return true;
         } catch (error) {
@@ -99,6 +132,15 @@ export const AuthProvider = ({ children }) => {
     };
 
 
+<<<<<<< Updated upstream
+=======
+
+    const updateProfile = (updatedUser) => {
+        setUser(updatedUser);
+    };
+
+
+>>>>>>> Stashed changes
     const value = {
         user,
         token,

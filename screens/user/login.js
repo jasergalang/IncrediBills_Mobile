@@ -80,7 +80,7 @@ export default function Login() {
         });
 
         setTimeout(() => {
-          if (response.data.user.role === "admin") {
+          if (response.data?.user?.role === "admin") {
             // navigation.navigate('mainNav');
           } else {
             navigation.navigate("MainNavigator");
@@ -117,29 +117,51 @@ export default function Login() {
    
     // handleGoogle();
     // dispatch(loginUser());
-    dispatch(loginUser())
+  dispatch(loginUser())
   .unwrap()
-  .then((result) => {
-      if (result.isRegistered) {
+  .then(async (result) => {
+     console.log("RESLT:", result);
+      if (result?.isRegistered) {
           // API said { exists: true }
           Toast.show({ type: 'success', text1: 'Welcome back!' });
+          // backendStatus may contain the authenticated user object; only call login if it includes token
+          if (result.backendStatus?.user) {
+            await login(result.backendStatus);
+          }
+
+        Toast.show({
+          type: "success",
+          text1: "Login Successful",
+          text2: result?.message || "Welcome back!",
+          position: "top",
+        });
+
+        setTimeout(() => {
+          const role = result?.user?.role ?? result?.backendStatus?.user?.role;
+          if (role === "admin") {
+            // navigation.navigate('mainNav');
+          } else {
+            navigation.navigate("MainNavigator");
+          }
+        }, 1500);
+          // ensure navigation happens even if above didn't
           navigation.navigate("MainNavigator");
       } else {
           // API said { exists: false } or undefined
           Toast.show({ type: 'info', text1: 'Please complete registration' });
+          console.log(result)
           // Pass the google data to the register screen so they don't type it again
           navigation.navigate("Register", { 
-              email: result.email, 
-              name: result.name, 
-              photo: result.photo 
+              mail: result.email?result.email:"", 
+              Fname: result.givenName?result.givenName:"",
+              Lname: result.familyName?result.familyName:"",
+              photoLink: result.photo?result.photo:"" 
           });
       }
   })
   .catch((err) => {
-      Toast.show({ type: 'error', text1: 'Login Failed', text2: err });
+     
   });
-
-    console.log(user);
 
   };
 
@@ -150,6 +172,7 @@ export default function Login() {
       text2: "Facebook login coming soon!",
     });
   };
+
 
   return (
     <SafeAreaView className="flex-1 bg-white">

@@ -14,16 +14,19 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import * as ImagePicker from "expo-image-picker";
 import Toast from "react-native-toast-message";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import baseURL from "../../assets/common/baseUrl";
 import { LinearGradient } from "expo-linear-gradient";
-
+import axios from "axios";
 export default function Register() {
+  const route = useRoute();
+  const {mail, Fname, Lname, photoLink} = route.params || {};
+
   const navigation = useNavigation();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
-  const [profilePic, setProfilePic] = useState(null);
+  const [firstName, setFirstName] = useState(Fname || "");
+  const [lastName, setLastName] = useState(Lname || "");
+  const [email, setEmail] = useState(mail || "");
+  const [profilePic, setProfilePic] = useState(photoLink || null);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -37,6 +40,9 @@ export default function Register() {
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
+
+
+
 
   const showImagePickerOptions = () => {
     Alert.alert("Select Profile Picture", "Choose an option", [
@@ -120,7 +126,8 @@ export default function Register() {
     }
 
     try {
-      const res = await fetch(`${baseURL}/api/user/register`, {
+      console.log(baseURL);
+      const res = await fetch(`${baseURL}/api/user/register`,{
         method: "POST",
         body: formData,
         headers: {

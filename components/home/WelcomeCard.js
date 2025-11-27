@@ -3,6 +3,9 @@ import { View, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function WelcomeCard({ userData }) {
+  // OPTIONAL: If you want to hide the card completely when logged out, uncomment this:
+  // if (!userData) return null;
+
   return (
     <View className="p-4">
       <LinearGradient
@@ -15,24 +18,44 @@ export default function WelcomeCard({ userData }) {
           <View className="flex-1">
             <Text className="text-white/80 text-sm mb-1">Good Morning,</Text>
             <Text className="text-white font-bold text-xl">
+<<<<<<< Updated upstream
               {userData.name}
             </Text>
           </View>
           <View className="w-14 h-14 bg-white/20 rounded-full items-center justify-center">
             <Text className="text-3xl">👤</Text>
+=======
+              {/* ✅ FIX 1: Add ?. and fallback strings */}
+              {userData?.firstName || "Guest"} {userData?.lastName || ""}
+            </Text>
+          </View>
+          <View className="w-14 h-14 bg-white/20 rounded-full overflow-hidden items-center justify-center">
+            {/* ✅ FIX 2: Check if userData exists AND has a profile pic */}
+            {userData?.profilePic ? (
+              <Image
+                source={{ uri: userData.profilePic }}
+                className="w-full h-full"
+                resizeMode="cover"
+              />
+            ) : (
+              <Text className="text-3xl">👤</Text>
+            )}
+>>>>>>> Stashed changes
           </View>
         </View>
         <View className="flex-row items-center gap-4">
           <View className="flex-1 bg-white/20 rounded-xl p-3">
             <Text className="text-white/80 text-xs mb-1">Level</Text>
             <Text className="text-white font-bold text-xl">
-              {userData.level}
+              {/* ✅ FIX 3: safe access with fallback */}
+              {userData?.level || 0}
             </Text>
           </View>
           <View className="flex-1 bg-white/20 rounded-xl p-3">
             <Text className="text-white/80 text-xs mb-1">Points</Text>
             <Text className="text-white font-bold text-xl">
-              {userData.points}
+              {/* ✅ FIX 4: safe access with fallback */}
+              {userData?.points || 0}
             </Text>
           </View>
         </View>

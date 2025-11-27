@@ -29,7 +29,10 @@ export default function QuickActions({ navigation }) {
         {actions.map((action, idx) => (
           <TouchableOpacity
             key={idx}
-            onPress={() => navigation.navigate(action.route)}
+            onPress={() =>
+              // ensure we navigate into the MainNavigator then to the nested route
+              navigation.navigate("MainNavigator", { screen: action.route })
+            }
             className="flex-1"
           >
             <View

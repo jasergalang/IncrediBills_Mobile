@@ -12,14 +12,15 @@ GoogleSignin.configure({
 
 export const loginUser = createAsyncThunk(
     'login/loginUser',
-    async (_, thunkAPI) => { 
+    async (_, thunkAPI) => {
+      
         try {
             // 1. Google Sign In
             await GoogleSignin.hasPlayServices();
             const googleRes = await GoogleSignin.signIn();
-            const googleUser = googleRes.data.user;
+            const googleUser = googleRes?.data?.user ?? googleRes?.user ?? {};
             
-            console.log("✅ Google Success:", googleUser.email);
+            console.log("✅ Google Success:", googleUser?.email);
 
             // 2. Check Backend (with error handling specific to Network)
             let backendStatus = { exists: false }; 
@@ -27,14 +28,16 @@ export const loginUser = createAsyncThunk(
             try {
                  // Ensure you are using the correct IP here. 
                  // Use a hardcoded string like '192.168.x.x' temporarily if process.env fails.
-                 const ip = process.env.BASEIP || '192.168.1.5'; // <--- CHANGE THIS TO YOUR IP
+                 const ip = process.env.EXPO_PUBLIC_BASEIP; 
+                 console.log("Checking backend at IP:", ip);
                  
                  const res = await axios.get(`http://${ip}:3000/api/user/check-account`, { 
-                    params: { email: googleUser.email } 
+                    params: { email: googleUser?.email } 
                 });
                 
                 backendStatus = res.data; // Expecting { exists: true/false, ... }
                 console.log("✅ Backend Response:", backendStatus);
+             
 
             } catch (netError) {
                 console.error("❌ Backend Connection Failed:", netError.message);
@@ -45,10 +48,12 @@ export const loginUser = createAsyncThunk(
             // 3. Return combined data
             return {
                 ...googleUser,
+                email: googleUser?.email,
+                backendStatus,
                 // This allows your UI to decide: 
                 // If isRegistered is true -> Go to Home
                 // If isRegistered is false -> Go to Register Screen
-                isRegistered: backendStatus.exists === true 
+                isRegistered: backendStatus.success === true 
             };
             
         } catch (error) {

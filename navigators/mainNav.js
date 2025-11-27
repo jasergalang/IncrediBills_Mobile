@@ -39,6 +39,10 @@ function CustomDrawerContent(props) {
   ];
 
   const currentRoute = props.state.routeNames[props.state.index];
+<<<<<<< Updated upstream
+=======
+  const name = `${userData?.firstName ?? ""} ${userData?.lastName ?? ""}`.trim();
+>>>>>>> Stashed changes
 
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
@@ -83,20 +87,33 @@ function CustomDrawerContent(props) {
               <Text className="text-white font-bold text-lg">JD</Text>
             </LinearGradient>
             <View>
+<<<<<<< Updated upstream
               <Text className="font-bold text-slate-900 text-sm">
                 Juan Dela Cruz
               </Text>
               <Text className="text-xs text-slate-600">juan@email.com</Text>
+=======
+              <Text className="font-bold text-slate-900 text-sm">{name || 'Guest'}</Text>
+              <Text className="text-xs text-slate-600">{user?.email ?? ''}</Text>
+>>>>>>> Stashed changes
             </View>
           </View>
           <View className="flex-row items-center justify-between">
             <View className="items-center flex-1">
+<<<<<<< Updated upstream
               <Text className="text-lg font-bold text-blue-600">12</Text>
+=======
+              <Text className="text-lg font-bold text-blue-600">{userData?.level ?? 0}</Text>
+>>>>>>> Stashed changes
               <Text className="text-xs text-slate-600">Level</Text>
             </View>
             <View className="w-px h-8 bg-slate-200"></View>
             <View className="items-center flex-1">
+<<<<<<< Updated upstream
               <Text className="text-lg font-bold text-green-600">850</Text>
+=======
+              <Text className="text-lg font-bold text-green-600">{userData?.points ?? 0}</Text>
+>>>>>>> Stashed changes
               <Text className="text-xs text-slate-600">Points</Text>
             </View>
           </View>
