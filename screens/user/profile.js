@@ -6,6 +6,9 @@ import ProfileAvatarCard from "../../components/user/profile/ProfileAvatar";
 import PersonalInformation from "../../components/user/profile/PersonalInformation";
 import SecuritySection from "../../components/user/profile/SecuritySection";
 import AccountActions from "../../components/user/profile/AccountActions";
+import * as ImagePicker from "expo-image-picker";
+import { useAuth } from "../../context/auth";
+import { useUser } from "../../hooks/useUser";
 
 export default function Profile({ navigation }) {
     const { logout, user, updateProfile } = useAuth();
@@ -31,10 +34,9 @@ export default function Profile({ navigation }) {
   const [username, setUsername] = useState(userData.username || "");
   const [profilePic, setProfilePic] = useState(userData.profilePic || null);
 
-    // Password states
-    const [currentPassword, setCurrentPassword] = useState("");
-    const [newPassword, setNewPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   // ⛔ FIX #3 — Only update state when userData is truly available
   useEffect(() => {
@@ -109,9 +111,9 @@ export default function Profile({ navigation }) {
   };
 
 
-    return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#f8fafc" }}>
-            <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f8fafc" }}>
+      <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
 
       <ProfileHeader
         navigation={navigation}
@@ -128,31 +130,33 @@ export default function Profile({ navigation }) {
           isEditing={isEditing}
         />
 
-                <PersonalInformation
-                    isEditing={isEditing}
-                    email={email}
-                    setEmail={setEmail}
-                    username={username}
-                    setUsername={setUsername}
-                    name={name}
-                    setName={setName}
-                    onSave={handleSaveProfile}
-                />
+        <PersonalInformation
+          isEditing={isEditing}
+          email={email}
+          setEmail={setEmail}
+          username={username}
+          setUsername={setUsername}
+          firstName={firstName}
+          setFirstName={setFirstName}
+          lastName={lastName}
+          setLastName={setLastName}
+          onSave={handleSaveProfile}
+        />
 
-                <SecuritySection
-                    showChangePassword={showChangePassword}
-                    setShowChangePassword={setShowChangePassword}
-                    currentPassword={currentPassword}
-                    setCurrentPassword={setCurrentPassword}
-                    newPassword={newPassword}
-                    setNewPassword={setNewPassword}
-                    confirmPassword={confirmPassword}
-                    setConfirmPassword={setConfirmPassword}
-                    onChangePassword={handleChangePassword}
-                />
+        <SecuritySection
+          showChangePassword={showChangePassword}
+          setShowChangePassword={setShowChangePassword}
+          currentPassword={currentPassword}
+          setCurrentPassword={setCurrentPassword}
+          newPassword={newPassword}
+          setNewPassword={setNewPassword}
+          confirmPassword={confirmPassword}
+          setConfirmPassword={setConfirmPassword}
+          onChangePassword={handleChangePassword}
+        />
 
-                <AccountActions onLogout={handleLogout} />
-            </ScrollView>
-        </SafeAreaView>
-    );
+        <AccountActions onLogout={handleLogout} />
+      </ScrollView>
+    </SafeAreaView>
+  );
 }

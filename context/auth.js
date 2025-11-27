@@ -79,23 +79,6 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    // const login = async (userToken, userData) => {
-    //     try {
-    //         // Store token and user data in AsyncStorage
-    //         await AsyncStorage.setItem('userToken', userToken);
-    //         await AsyncStorage.setItem('userData', JSON.stringify(userData));
-
-    //         // Update state
-    //         setToken(userToken);
-    //         setUser(userData);
-
-    //         return true;
-    //     } catch (error) {
-    //         console.error('Error storing auth data:', error);
-    //         return false;
-    //     }
-    // };
-
     const logout = async () => {
         try {
 
@@ -132,15 +115,23 @@ export const AuthProvider = ({ children }) => {
     };
 
 
+<<<<<<< HEAD
 <<<<<<< Updated upstream
 =======
+=======
+>>>>>>> ab46273d0e7e6ca4d0f15d5b9ca4bdadc01a9bda
 
     const updateProfile = (updatedUser) => {
         setUser(updatedUser);
     };
 
 
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+
+
+>>>>>>> ab46273d0e7e6ca4d0f15d5b9ca4bdadc01a9bda
     const value = {
         user,
         token,
@@ -149,6 +140,7 @@ export const AuthProvider = ({ children }) => {
         logout,
         getToken,
         isAuthenticated,
+        updateProfile
     };
 
     return (

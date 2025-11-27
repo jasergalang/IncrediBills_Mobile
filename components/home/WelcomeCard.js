@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { View, Text, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
 export default function WelcomeCard({ userData }) {
@@ -16,8 +16,9 @@ export default function WelcomeCard({ userData }) {
       >
         <View className="flex-row items-center justify-between mb-4">
           <View className="flex-1">
-            <Text className="text-white/80 text-sm mb-1">Good Morning,</Text>
+            <Text className="text-white/80 text-sm mb-1">Good Day,</Text>
             <Text className="text-white font-bold text-xl">
+<<<<<<< HEAD
 <<<<<<< Updated upstream
               {userData.name}
             </Text>
@@ -32,6 +33,13 @@ export default function WelcomeCard({ userData }) {
           <View className="w-14 h-14 bg-white/20 rounded-full overflow-hidden items-center justify-center">
             {/* ✅ FIX 2: Check if userData exists AND has a profile pic */}
             {userData?.profilePic ? (
+=======
+              {userData.firstName} {userData.lastName}
+            </Text>
+          </View>
+          <View className="w-14 h-14 bg-white/20 rounded-full overflow-hidden items-center justify-center">
+            {userData.profilePic ? (
+>>>>>>> ab46273d0e7e6ca4d0f15d5b9ca4bdadc01a9bda
               <Image
                 source={{ uri: userData.profilePic }}
                 className="w-full h-full"
@@ -40,7 +48,10 @@ export default function WelcomeCard({ userData }) {
             ) : (
               <Text className="text-3xl">👤</Text>
             )}
+<<<<<<< HEAD
 >>>>>>> Stashed changes
+=======
+>>>>>>> ab46273d0e7e6ca4d0f15d5b9ca4bdadc01a9bda
           </View>
         </View>
         <View className="flex-row items-center gap-4">
