@@ -34,44 +34,80 @@ export const AuthProvider = ({ children }) => {
             }
         } catch (error) {
             console.error('Error checking auth status:', error);
-        } finally {
-            // setIsLoading(false);
         }
     };
-    const login = async (userData) => {
-        try {
-            if (userData && userData.user && userData.user.token) {
-                await AsyncStorage.setItem('userToken', userData.user.token);
-                await AsyncStorage.setItem('userData', JSON.stringify(userData.user));
+    // const login = async (userData) => {
+    //     try {
+    //         if (userData && userData.user && userData.user.token) {
+    //             await AsyncStorage.setItem('userToken', userData.user.token);
+    //             await AsyncStorage.setItem('userData', JSON.stringify(userData.user));
 
-                setIsAuthenticated(true);
-                setUser(userData.user);
-                // console.log('User logged in:', userData.user);
-            } else {
-                console.error('Invalid login response:', userData);
+    //             setIsAuthenticated(true);
+    //             setUser(userData.user);
+    //             // console.log('User logged in:', userData.user);
+    //         } else {
+    //             console.error('Invalid login response:', userData);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error storing auth data:', error);
+    //     }
+    // };
+
+    // const logout = async () => {
+    //     try {
+    //         // Remove token and user data from AsyncStorage
+    //         await AsyncStorage.removeItem('userToken');
+    //         await AsyncStorage.removeItem('userData');
+
+    //         // Clear state
+    //         setToken(null);
+    //         setUser(null);
+
+    //         return true;
+    //     } catch (error) {
+    //         console.error('Error during logout:', error);
+    //         return false;
+    //     }
+    // };
+
+    const login = async (loginResponse) => {
+        try {
+            // Handle both formats:
+            // 1. { token, user: {...} }  <- from API
+            // 2. { user: { token, ... } } <- legacy
+            const token = loginResponse.token || loginResponse.user?.token;
+            const userData = loginResponse.user || loginResponse;
+
+            if (!token || !userData) {
+                console.error('Invalid login response:', loginResponse);
+                return false;
             }
+
+            await AsyncStorage.setItem('userToken', token);
+            await AsyncStorage.setItem('userData', JSON.stringify(userData));
+
+            setToken(token);
+            setUser(userData);
+            setIsAuthenticated(true);
+            return true;
         } catch (error) {
             console.error('Error storing auth data:', error);
+            return false;
         }
     };
-
     const logout = async () => {
         try {
-            // Remove token and user data from AsyncStorage
             await AsyncStorage.removeItem('userToken');
             await AsyncStorage.removeItem('userData');
-
-            // Clear state
             setToken(null);
             setUser(null);
-
+            setIsAuthenticated(false);
             return true;
         } catch (error) {
             console.error('Error during logout:', error);
             return false;
         }
     };
-
     const getToken = async () => {
         try {
             return await AsyncStorage.getItem('userToken');
