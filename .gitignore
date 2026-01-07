@@ -32,6 +32,18 @@ yarn-error.*
 
 # local env files
 .env*.local
+.env 
 
 # typescript
 *.tsbuildinfo
+
+# Android
+# /android/app/debug.keystore
+# /android/.gradle/
+# /android/app/build/
+# /android/build/
+# /android/app/**/*.iml
+# /android/app/src/debug/java/com/incredibills/mobile/ReactNativeFlipper.java
+# ./android
+./package-lock.json
+package-lock.json

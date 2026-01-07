@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+
+
 import {
   View,
   Text,
@@ -9,6 +11,7 @@ import {
   ActivityIndicator,
   Image,
   ScrollView,
+  Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import Toast from "react-native-toast-message";
@@ -18,6 +21,30 @@ import baseURL from "../../assets/common/baseUrl";
 import { useAuth } from "../../context/auth";
 import { LinearGradient } from "expo-linear-gradient";
 
+import { useDispatch } from "react-redux";
+import { loginUser } from "../../redux/actions/loginActions";
+import { useSelector } from "react-redux";
+
+
+  import
+  {
+    GoogleSignin,
+    isErrorWithCode,
+    isSuccessResponse,
+    statusCodes,
+  } from "@react-native-google-signin/google-signin";
+
+
+GoogleSignin.configure(
+{
+  webClientId:"791683800661-e3btvtkfvhijua0o7no2mlqe1pjt6j54.apps.googleusercontent.com",
+
+}
+);
+
+
+
+
 export default function Login() {
   const navigation = useNavigation();
   const { login } = useAuth();
@@ -25,10 +52,13 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const dispatch = useDispatch();
+ const { user, loading, error } = useSelector((state) => state.login);  
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
 
   const handleLogin = async () => {
     try {
@@ -84,11 +114,33 @@ export default function Login() {
   };
 
   const handleGoogleLogin = () => {
-    Toast.show({
-      type: "info",
-      text1: "Info",
-      text2: "Google login coming soon!",
-    });
+   
+    // handleGoogle();
+    // dispatch(loginUser());
+    dispatch(loginUser())
+  .unwrap()
+  .then((result) => {
+      if (result.isRegistered) {
+          // API said { exists: true }
+          Toast.show({ type: 'success', text1: 'Welcome back!' });
+          navigation.navigate("MainNavigator");
+      } else {
+          // API said { exists: false } or undefined
+          Toast.show({ type: 'info', text1: 'Please complete registration' });
+          // Pass the google data to the register screen so they don't type it again
+          navigation.navigate("Register", { 
+              email: result.email, 
+              name: result.name, 
+              photo: result.photo 
+          });
+      }
+  })
+  .catch((err) => {
+      Toast.show({ type: 'error', text1: 'Login Failed', text2: err });
+  });
+
+    console.log(user);
+
   };
 
   const handleFacebookLogin = () => {

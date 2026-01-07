@@ -1,0 +1,28 @@
+# local SDK / IDE / build artifacts
+android/local.properties
+*.keystore
+*.jks
+
+# local env files
+.env
+.env.*.local
+
+# OS / editor artifacts
+.DS_Store
+Thumbs.db
+.vscode
+.idea
+
+# build output & node modules
+build
+dist
+.expo
+.expo-shared
+node_modules
+
+# git metadata
+.git
+
+# optionally ignore native folders if you want a managed build (BE CAREFUL)
+android
+# ios
