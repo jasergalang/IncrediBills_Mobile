@@ -8,12 +8,13 @@ import SecuritySection from "../../components/user/profile/SecuritySection";
 import AccountActions from "../../components/user/profile/AccountActions";
 import * as ImagePicker from "expo-image-picker";
 import { useAuth } from "../../context/auth";
-import { useUser } from "../../hooks/useUser";
-
+import { useSelector, useDispatch } from "react-redux";
+import { fetchUser } from "../../redux/actions/userAction";
 export default function Profile({ navigation }) {
   const { logout } = useAuth();
-  const { userData, fetchUserProfile, saveProfile } = useUser();
-
+  const dispatch = useDispatch();
+  const { userData } = useSelector((state) => state.user);
+  const { token } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [showChangePassword, setShowChangePassword] = useState(false);
 
@@ -26,6 +27,11 @@ export default function Profile({ navigation }) {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+
+
+  useEffect(() => {
+    if (token) dispatch(fetchUser(token));
+  }, [token]);
 
   useEffect(() => {
     setFirstName(userData.firstName);

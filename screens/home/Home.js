@@ -11,13 +11,16 @@ import UpcomingBills from "../../components/home/UpcomingBills";
 import AchievementsBanner from "../../components/home/AchievementsBanner";
 import { useBills } from "../../hooks/useBills";
 import { useFocusEffect } from "@react-navigation/native";
-import { useUser } from "../../hooks/useUser";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchUser } from '../../redux/actions/userAction';
+import { useAuth } from "../../context/auth";
 
 export default function Home({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
-  const { userData, fetchUserProfile } = useUser();
   const { recentBills, spendingData, upcomingBills, statsData, refreshBills } = useBills();
-
+  const { token } = useAuth();
+  const dispatch = useDispatch();
+  const { userData } = useSelector((state) => state.user);
   const onRefresh = async () => {
     setRefreshing(true);
     try {
@@ -29,10 +32,13 @@ export default function Home({ navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      fetchUserProfile();
+      if (token) {
+        dispatch(fetchUser(token));
+      }
       refreshBills();
-    }, [])
+    }, [token])
   );
+
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">

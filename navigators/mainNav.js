@@ -9,7 +9,8 @@ import AnalyticsNavigator from "./analyticsNav";
 import BillsNavigator from "./BillsNav";
 import UserNavigator from "./userNav";
 import { useAuth } from "../context/auth";
-import { useUser } from "../hooks/useUser";
+import { useSelector, useDispatch } from "react-redux";
+import {fetchUser} from '../redux/actions/userAction';
 
 const Drawer = createDrawerNavigator();
 
@@ -22,16 +23,18 @@ function CustomDrawerContent(props) {
     { icon: "person", label: "Profile", route: "Profile", badge: null },
   ];
 
-  const { user } = useAuth();
-  const { userData, fetchUserProfile } = useUser();
+ const { token } = useAuth();
+  const dispatch = useDispatch();
+  const { userData } = useSelector((state) => state.user);
 
   useEffect(() => {
-    fetchUserProfile();
-  }, []);
+    if (token) {
+      dispatch(fetchUser(token));
+    }
+  }, [token]);
 
   const currentRoute = props.state.routeNames[props.state.index];
   const name = `${userData.firstName} ${userData.lastName}`.trim();
-
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
       {/* Logo */}
@@ -59,7 +62,7 @@ function CustomDrawerContent(props) {
             </LinearGradient>
             <View>
               <Text className="font-bold text-slate-900 text-sm">{name}</Text>
-              <Text className="text-xs text-slate-600">{user.email}</Text>
+              <Text className="text-xs text-slate-600">{userData.email}</Text>
             </View>
           </View>
           <View className="flex-row items-center justify-between">
