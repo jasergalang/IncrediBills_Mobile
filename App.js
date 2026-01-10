@@ -12,55 +12,92 @@ import MainNavigator from "./navigators/mainNav";
 import "./global.css";
 import store from './redux/store';
 import { Provider } from 'react-redux';
+import IncrediBot from "./components/chatbot/IncrediBot";
 
 const Stack = createNativeStackNavigator();
 
 function AppWrapper() {
   const { isAuthenticated } = useAuth();
-
   return (
-    //   <NavigationContainer>
-    //     <Stack.Navigator initialRouteName="MainNavigator">
-    //       <Stack.Screen
-    //         name="MainNavigator"
-    //         component={MainNavigator}
-    //         options={{ headerShown: false }}
-    //       />
-    //     </Stack.Navigator>
-    //     <Toast />
-    //   </NavigationContainer>
-    // );
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName={isAuthenticated ? "MainNavigator" : "Signup"}>
-        {isAuthenticated ? (
-          <Stack.Screen
-            name="MainNavigator"
-            component={MainNavigator}
-            options={{ headerShown: false }}
-          />
-        ) : (
-          <>
+    <>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName={isAuthenticated ? "MainNavigator" : "Signup"}>
+          {isAuthenticated ? (
             <Stack.Screen
-              name="Signup"
-              component={Signup}
+              name="MainNavigator"
+              component={MainNavigator}
               options={{ headerShown: false }}
             />
-            <Stack.Screen
-              name="Login"
-              component={Login}
-              options={{ headerShown: false }}
-            />
-            <Stack.Screen
-              name="Register"
-              component={Register}
-              options={{ headerShown: false }}
-            />
-          </>
-        )}
-      </Stack.Navigator>
-      <Toast />
-    </NavigationContainer>
+          ) : (
+            <>
+              <Stack.Screen
+                name="Signup"
+                component={Signup}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Login"
+                component={Login}
+                options={{ headerShown: false }}
+              />
+              <Stack.Screen
+                name="Register"
+                component={Register}
+                options={{ headerShown: false }}
+              />
+            </>
+          )}
+        </Stack.Navigator>
+        <Toast />
+      </NavigationContainer>
+
+      {/* 👇 Chatbot - Only show when authenticated */}
+      {isAuthenticated && <IncrediBot />}
+    </>
   );
+  // return (
+  //   //   <NavigationContainer>
+  //   //     <Stack.Navigator initialRouteName="MainNavigator">
+  //   //       <Stack.Screen
+  //   //         name="MainNavigator"
+  //   //         component={MainNavigator}
+  //   //         options={{ headerShown: false }}
+  //   //       />
+  //   //     </Stack.Navigator>
+  //   //     <Toast />
+  //   //   </NavigationContainer>
+  //   // );
+  //   <NavigationContainer>
+  //     <Stack.Navigator initialRouteName={isAuthenticated ? "MainNavigator" : "Signup"}>
+  //       {isAuthenticated ? (
+  //         <Stack.Screen
+  //           name="MainNavigator"
+  //           component={MainNavigator}
+  //           options={{ headerShown: false }}
+  //         />
+  //       ) : (
+  //         <>
+  //           <Stack.Screen
+  //             name="Signup"
+  //             component={Signup}
+  //             options={{ headerShown: false }}
+  //           />
+  //           <Stack.Screen
+  //             name="Login"
+  //             component={Login}
+  //             options={{ headerShown: false }}
+  //           />
+  //           <Stack.Screen
+  //             name="Register"
+  //             component={Register}
+  //             options={{ headerShown: false }}
+  //           />
+  //         </>
+  //       )}
+  //     </Stack.Navigator>
+  //     <Toast />
+  //   </NavigationContainer>
+  // );
 }
 
 export default function App() {
