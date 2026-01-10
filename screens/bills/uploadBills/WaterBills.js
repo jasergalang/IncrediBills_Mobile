@@ -12,8 +12,8 @@ import UploadTips from "../../../components/bills/uploadBills/waterBills/WaterTi
 import baseURL from "../../../assets/common/baseUrl";
 import { useAuth } from "../../../context/auth";
 import { useDispatch } from "react-redux";
-import { fetchAnalytics } from "../../../redux/actions/analyticsAction";
-import { fetchBills } from "../../../redux/actions/billAction";
+import { fetchAnalytics } from "../../../redux/actions/analytics/fetchAnalyticsAction";
+import { fetchBills } from "../../../redux/actions/bills/fetchBillsAction";
 export default function UploadBill({ navigation }) {
   const category = { name: "Water", icon: "💧", color: "blue" };
   const { token, getToken } = useAuth(); 

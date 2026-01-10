@@ -3,7 +3,7 @@ import {
   FETCH_BILLS_REQUEST,
   FETCH_BILLS_SUCCESS,
   FETCH_BILLS_FAILURE,
-} from "../actions/billAction";
+} from "../../actions/bills/fetchBillsAction";
 
 const initialState = {
   latestAmounts: {},

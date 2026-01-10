@@ -9,7 +9,7 @@ import BillsRecentSection from "../../components/bills/billCategories/BillsRecen
 import { utilities } from "../../constants/utilities";
 import { useFocusEffect } from "@react-navigation/native";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchBills } from "../../redux/actions/billAction";
+import { fetchBills } from "../../redux/actions/bills/fetchBillsAction";
 import { useAuth } from "../../context/auth";
 export default function BillCategories({ navigation }) {
   const [activeTab, setActiveTab] = useState("all");

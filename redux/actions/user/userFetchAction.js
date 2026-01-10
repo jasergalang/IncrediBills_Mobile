@@ -1,6 +1,6 @@
 // redux/user/userActions.js
 import axios from "axios";
-import baseURL from "../../assets/common/baseUrl";
+import baseURL from "../../../assets/common/baseUrl";
 
 // Action types
 export const FETCH_USER_REQUEST = "FETCH_USER_REQUEST";

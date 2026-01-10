@@ -21,7 +21,7 @@ import { useAuth } from "../../context/auth";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { useDispatch } from "react-redux";
-import { loginUser } from "../../redux/actions/loginActions";
+import { loginUser } from "../../redux/actions/user/loginActions";
 import { useSelector } from "react-redux";
 
 

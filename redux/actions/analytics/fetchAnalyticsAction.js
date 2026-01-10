@@ -1,7 +1,7 @@
 // redux/analytics/analyticsActions.js
 import axios from "axios";
-import baseURL from "../../assets/common/baseUrl";
-import { utilities } from "../../constants/utilities";
+import baseURL from "../../../assets/common/baseUrl";
+import { utilities } from "../../../constants/utilities";
 
 // Action types
 export const FETCH_ANALYTICS_REQUEST = "FETCH_ANALYTICS_REQUEST";

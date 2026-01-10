@@ -14,8 +14,8 @@ import { useAuth } from "../../../context/auth";
 // import { useBills } from "../../../hooks/useBills";
 // import { useAnalytics } from "../../../hooks/useAnalytics";
 import { useDispatch } from "react-redux";
-import { fetchAnalytics } from "../../../redux/actions/analyticsAction";
-import { fetchBills } from "../../../redux/actions/billAction";
+import { fetchAnalytics } from "../../../redux/actions/analytics/fetchAnalyticsAction";
+import { fetchBills } from "../../../redux/actions/bills/fetchBillsAction";
 export default function ElectricBills({ navigation }) {
   const category = { name: "Electricity", icon: "⚡", color: "amber" };
   const { token, getToken } = useAuth();

@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { loginUser } from '../actions/loginActions';
+import { loginUser } from '../../actions/user/loginActions';
 import Toast from 'react-native-toast-message';
 
 

@@ -1,14 +1,14 @@
 // redux/actions/billActions.js
 import axios from "axios";
-import baseURL from "../../assets/common/baseUrl";
-import { utilities } from "../../constants/utilities";
+import baseURL from "../../../assets/common/baseUrl";
+import { utilities } from "../../../constants/utilities";
 import {
   getLatestBill,
   transformBills,
   mergeMonthlyAnalytics,
   formatBillDate,
-} from "../../utils/billUtils";
-import { computeChange } from "../../utils/predictionUtils";
+} from "../../../utils/billUtils";
+import { computeChange } from "../../../utils/predictionUtils";
 
 // Action types
 export const FETCH_BILLS_REQUEST = "FETCH_BILLS_REQUEST";

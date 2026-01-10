@@ -13,7 +13,7 @@ import AchievementsProgress from "../../components/analytics/AchievementsProgres
 import RecentRewards from "../../components/analytics/RecentRewards";
 // import { useAnalytics } from "../../hooks/useAnalytics";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAnalytics } from "../../redux/actions/analyticsAction";
+import { fetchAnalytics } from "../../redux/actions/analytics/fetchAnalyticsAction";
 import { useAuth } from "../../context/auth";
 
 export default function Analytics({ navigation }) {

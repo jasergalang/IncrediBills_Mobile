@@ -11,8 +11,8 @@ import UpcomingBills from "../../components/home/UpcomingBills";
 import AchievementsBanner from "../../components/home/AchievementsBanner";
 import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser } from '../../redux/actions/userAction';
-import { fetchBills } from '../../redux/actions/billAction';
+import { fetchUser } from '../../redux/actions/user/userFetchAction';
+import { fetchBills } from '../../redux/actions/bills/fetchBillsAction';
 import { useAuth } from "../../context/auth";
 
 export default function Home({ navigation }) {

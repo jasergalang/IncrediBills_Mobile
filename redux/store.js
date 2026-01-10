@@ -1,8 +1,8 @@
-import loginReducer from './reducers/loginRedcers';
+import loginReducer from './reducers/user/loginReducers';
 import { configureStore } from '@reduxjs/toolkit';
-import { userReducer } from './reducers/userReducer';
-import {analyticsReducer} from "./reducers/analyticsReducer";
-import { billReducer } from './reducers/billReducer';
+import { userReducer } from './reducers/user/userFetchReducer';
+import {analyticsReducer} from "./reducers/analytics/analyticsFetchReducer";
+import { billReducer } from './reducers/bills/billsFetchReducer';
 
 const store = configureStore({
     reducer: {

@@ -10,7 +10,7 @@ import BillsNavigator from "./BillsNav";
 import UserNavigator from "./userNav";
 import { useAuth } from "../context/auth";
 import { useSelector, useDispatch } from "react-redux";
-import {fetchUser} from '../redux/actions/userAction';
+import {fetchUser} from '../redux/actions/user/userFetchAction';
 
 const Drawer = createDrawerNavigator();
 

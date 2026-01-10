@@ -3,7 +3,7 @@ import {
   FETCH_ANALYTICS_REQUEST,
   FETCH_ANALYTICS_SUCCESS,
   FETCH_ANALYTICS_FAILURE,
-} from "../actions/analyticsAction";
+} from "../../actions/analytics/fetchAnalyticsAction";
 
 const initialState = {
   utilityKPI: {},

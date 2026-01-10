@@ -6,7 +6,7 @@ import {
     UPDATE_USER_REQUEST,
     UPDATE_USER_SUCCESS,
     UPDATE_USER_FAILURE,
-} from "../actions/userAction";
+} from "../../actions/user/userFetchAction";
 
 const initialState = {
     userData: {

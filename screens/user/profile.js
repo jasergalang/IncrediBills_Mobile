@@ -9,7 +9,7 @@ import AccountActions from "../../components/user/profile/AccountActions";
 import * as ImagePicker from "expo-image-picker";
 import { useAuth } from "../../context/auth";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchUser } from "../../redux/actions/userAction";
+import { fetchUser } from "../../redux/actions/user/userFetchAction";
 export default function Profile({ navigation }) {
   const { logout } = useAuth();
   const dispatch = useDispatch();
