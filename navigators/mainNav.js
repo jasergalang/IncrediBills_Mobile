@@ -11,7 +11,8 @@ import UserNavigator from "./userNav";
 import PredictionNavigator from "./predictionNav";
 import { useAuth } from "../context/auth";
 import { useSelector, useDispatch } from "react-redux";
-import {fetchUser} from '../redux/actions/user/userFetchAction';
+import { fetchUser } from '../redux/actions/user/userFetchAction';
+import LeaderboardsNavigator from "./leaderboardsNav";
 
 const Drawer = createDrawerNavigator();
 
@@ -22,10 +23,11 @@ function CustomDrawerContent(props) {
     { icon: "cloud-upload", label: "Prediction", route: "Prediction", badge: null },
     { icon: "game-controller", label: "Gamification", route: "Games", badge: "New" },
     { icon: "stats-chart", label: "Analytics", route: "Analytics", badge: null },
+    { icon: "stats-chart", label: "Leaderboards", route: "Leaderboards", badge: null },
     { icon: "person", label: "Profile", route: "Profile", badge: null },
   ];
 
- const { token } = useAuth();
+  const { token } = useAuth();
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.user);
 
@@ -117,6 +119,7 @@ export default function MainNavigator() {
       <Drawer.Screen name="Prediction" component={PredictionNavigator} />
       <Drawer.Screen name="Games" component={GameNavigator} />
       <Drawer.Screen name="Analytics" component={AnalyticsNavigator} />
+      <Drawer.Screen name="Leaderboards" component={LeaderboardsNavigator} />
       <Drawer.Screen name="Profile" component={UserNavigator} />
     </Drawer.Navigator>
   );
