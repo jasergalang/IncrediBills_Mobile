@@ -12,13 +12,16 @@ import UploadTips from "../../../components/bills/uploadBills/waterBills/WaterTi
 import baseURL from "../../../assets/common/baseUrl";
 import { useAuth } from "../../../context/auth";
 import { useBills } from "../../../hooks/useBills";
-import { useAnalytics } from "../../../hooks/useAnalytics";
+// import { useAnalytics } from "../../../hooks/useAnalytics";
+import { useDispatch } from "react-redux";
+import { fetchAnalytics } from "../../../redux/actions/analyticsAction";
 
 export default function UploadBill({ navigation }) {
   const category = { name: "Water", icon: "💧", color: "blue" };
   const { token, getToken } = useAuth();
-  const { refresh } = useAnalytics();
+  // const { refresh } = useAnalytics();
   const { refreshBills } = useBills(); 
+  const dispatch = useDispatch();
 
   const [waterBills, setWaterBills] = useState({ count: 0, bills: [] });
 
@@ -143,7 +146,7 @@ export default function UploadBill({ navigation }) {
         // refresh
         fetchWaterBills();
         refreshBills();
-        refresh();
+        dispatch(fetchAnalytics(userToken, "month"));
         // reset form
         setSelectedImageUri(null);
         setBillingPeriod("");

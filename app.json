@@ -28,7 +28,7 @@
       "bundler": "metro"
     },
     "extra": {
-      "BASE_IP": "192.168.0.123",
+      "BASE_IP": "192.168.0.106",
       "eas": {
         "projectId": "ed1b5568-6279-4565-8f9e-37d2ae855ed9"
       }

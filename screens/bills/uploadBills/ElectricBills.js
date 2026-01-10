@@ -12,13 +12,16 @@ import ElectricTips from "../../../components/bills/uploadBills/electricBills/El
 import baseURL from "../../../assets/common/baseUrl";
 import { useAuth } from "../../../context/auth";
 import { useBills } from "../../../hooks/useBills";
-import { useAnalytics } from "../../../hooks/useAnalytics";
+// import { useAnalytics } from "../../../hooks/useAnalytics";
+import { useDispatch } from "react-redux";
+import { fetchAnalytics } from "../../../redux/actions/analyticsAction";
 
 export default function ElectricBills({ navigation }) {
   const category = { name: "Electricity", icon: "⚡", color: "amber" };
   const { token, getToken } = useAuth();
-  const { refresh } = useAnalytics();
+  // const { refresh } = useAnalytics();
   const { refreshBills } = useBills();
+  const dispatch = useDispatch();
 
   const [electricBills, setElectricBills] = useState({ count: 0, bills: [] });
 
@@ -140,7 +143,7 @@ export default function ElectricBills({ navigation }) {
       const data = await response.json();
       if (response.ok) {
         alert("Bill uploaded successfully!");
-        
+
         // Trigger prediction if needed
         try {
           await fetch(`${baseURL}/api/electric-bill/predict`, {
@@ -154,7 +157,7 @@ export default function ElectricBills({ navigation }) {
         // refresh
         fetchElectricBills();
         refreshBills();
-        refresh();
+        dispatch(fetchAnalytics(userToken, "month"));
         // reset form
         setSelectedImageUri(null);
         setBillingPeriod("");
@@ -177,9 +180,9 @@ export default function ElectricBills({ navigation }) {
   };
 
   const removeUpload = (id) => {
-    setElectricBills((prev) => ({ 
-      count: prev.count - 1, 
-      bills: prev.bills.filter((bill) => bill._id !== id) 
+    setElectricBills((prev) => ({
+      count: prev.count - 1,
+      bills: prev.bills.filter((bill) => bill._id !== id)
     }));
   };
 
