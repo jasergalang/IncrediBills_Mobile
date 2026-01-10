@@ -6,7 +6,7 @@ export default function QuickActions({ navigation }) {
   const actions = [
     {
       icon: "cloud-upload",
-      label: "Upload",
+      label: "Scan Bill",
       route: "Upload",
       color: "blue",
     },
@@ -17,7 +17,7 @@ export default function QuickActions({ navigation }) {
       color: "purple",
     },
     { icon: "game-controller", label: "Games", route: "Games", color: "green" },
-    { icon: "wallet", label: "Payments", route: "Profile", color: "amber" },
+    { icon: "wallet", label: "Rewards", route: "Profile", color: "amber" },
   ];
 
   return (

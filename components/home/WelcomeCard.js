@@ -13,9 +13,9 @@ export default function WelcomeCard({ userData }) {
       >
         <View className="flex-row items-center justify-between mb-4">
           <View className="flex-1">
-            <Text className="text-white/80 text-sm mb-1">Good Day,</Text>
-            <Text className="text-white font-bold text-xl">
-              {userData.firstName} {userData.lastName}
+            <Text className="text-white font-bold text-xl">Good Day, {userData.firstName}</Text>
+            <Text className="text-white/80 text-sm mb-1">
+              Here's what's happening with your bills today.
             </Text>
           </View>
           <View className="w-14 h-14 bg-white/20 rounded-full overflow-hidden items-center justify-center">
@@ -34,13 +34,13 @@ export default function WelcomeCard({ userData }) {
           <View className="flex-1 bg-white/20 rounded-xl p-3">
             <Text className="text-white/80 text-xs mb-1">Level</Text>
             <Text className="text-white font-bold text-xl">
-              {userData.level}
+              {/* {userData.level} */}15
             </Text>
           </View>
           <View className="flex-1 bg-white/20 rounded-xl p-3">
             <Text className="text-white/80 text-xs mb-1">Points</Text>
             <Text className="text-white font-bold text-xl">
-              {userData.points}
+              {/* {userData.points} */}2500
             </Text>
           </View>
         </View>

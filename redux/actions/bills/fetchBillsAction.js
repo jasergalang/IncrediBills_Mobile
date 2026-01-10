@@ -124,17 +124,97 @@ export const fetchBills = (token) => async (dispatch) => {
     const electricPredicted = predictedElectric?.predictedCost ?? latestAmounts.electricity * 1.1;
     const waterPredicted = predictedWater?.predictedCost ?? latestAmounts.water * 1.1;
     const saved = Math.max(electricPredicted - latestAmounts.electricity, 0) +
-                  Math.max(waterPredicted - latestAmounts.water, 0);
+      Math.max(waterPredicted - latestAmounts.water, 0);
     const billsUploaded = (electricData.bills?.length || 0) + (waterData.bills?.length || 0);
 
-    const statsData = {
-      totalSpent: Math.round(latestAmounts.electricity + latestAmounts.water),
-      savedAmount: Math.round(saved),
-      billsUploaded,
-      efficiency: billsUploaded > 0
-        ? Math.round((saved / (latestAmounts.electricity + latestAmounts.water)) * 100)
-        : 0,
+    // const statsData = {
+    //   totalSpent: Math.round(latestAmounts.electricity + latestAmounts.water),
+    //   savedAmount: Math.round(saved),
+    //   billsUploaded,
+    //   efficiency: billsUploaded > 0
+    //     ? Math.round((saved / (latestAmounts.electricity + latestAmounts.water)) * 100)
+    //     : 0,
+    // };
+    // ---- AI PREDICTIONS (NEXT MONTH) ----
+    const predictionsByCategory = {
+      electricity: predictedElectric?.predictedCost ?? latestAmounts.electricity,
+      water: predictedWater?.predictedCost ?? latestAmounts.water,
+      gas: 0,
+      fuel: 0,
+      grocery: 0,
     };
+
+    // ---- CURRENT TOTAL ----
+    const currentTotal =
+      latestAmounts.electricity +
+      latestAmounts.water;
+
+    // ---- PREDICTED TOTAL ----
+    const nextMonthPrediction =
+      predictionsByCategory.electricity +
+      predictionsByCategory.water;
+
+    // ---- PERCENTAGE CHANGE HELPERS ----
+    const percentChange = (current, next) => {
+      if (!current || current === 0) return 0;
+      return Math.round(((next - current) / current) * 100);
+    };
+
+    // ---- PER-CATEGORY PERCENT CHANGES ----
+    const predictionChanges = {
+      electricity: percentChange(
+        latestAmounts.electricity,
+        predictionsByCategory.electricity
+      ),
+      water: percentChange(
+        latestAmounts.water,
+        predictionsByCategory.water
+      ),
+    };
+
+    // ---- SAVINGS (ONLY IF AI IS LOWER) ----
+    const savedAmount =
+      Math.max(latestAmounts.electricity - predictionsByCategory.electricity, 0) +
+      Math.max(latestAmounts.water - predictionsByCategory.water, 0);
+
+    // ---- OVERALL PREDICTION CHANGE ----
+    const overallPredictionChange = percentChange(
+      currentTotal,
+      nextMonthPrediction
+    );
+
+    // ---- FINAL STATS OBJECT ----
+    const statsData = {
+      // Current
+      totalSpent: Math.round(currentTotal),
+
+      // Prediction
+      nextMonthPrediction: Math.round(nextMonthPrediction),
+      predictionChange: overallPredictionChange,
+
+      // Savings
+      savedAmount: Math.round(savedAmount),
+      savedChange: percentChange(currentTotal, currentTotal - savedAmount),
+
+      // Bills
+      billsUploaded,
+      billsChange: billsUploaded > 0 ? 100 : 0, // placeholder until history exists
+
+      // Category breakdown (future-proof)
+      categoryPredictions: {
+        electricity: {
+          current: latestAmounts.electricity,
+          predicted: predictionsByCategory.electricity,
+          percentChange: predictionChanges.electricity,
+        },
+        water: {
+          current: latestAmounts.water,
+          predicted: predictionsByCategory.water,
+          percentChange: predictionChanges.water,
+        },
+      },
+    };
+
 
     // Analytics
     const analytics = {
