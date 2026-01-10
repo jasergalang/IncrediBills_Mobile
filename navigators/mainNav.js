@@ -13,6 +13,7 @@ import { useAuth } from "../context/auth";
 import { useSelector, useDispatch } from "react-redux";
 import { fetchUser } from '../redux/actions/user/userFetchAction';
 import LeaderboardsNavigator from "./leaderboardsNav";
+import SettingsNavigator from "./settingsNav";
 
 const Drawer = createDrawerNavigator();
 
@@ -25,6 +26,7 @@ function CustomDrawerContent(props) {
     { icon: "stats-chart", label: "Analytics", route: "Analytics", badge: null },
     { icon: "stats-chart", label: "Leaderboards", route: "Leaderboards", badge: null },
     { icon: "person", label: "Profile", route: "Profile", badge: null },
+    { icon: "person", label: "Settings", route: "Settings", badge: null },
   ];
 
   const { token } = useAuth();
@@ -121,6 +123,7 @@ export default function MainNavigator() {
       <Drawer.Screen name="Analytics" component={AnalyticsNavigator} />
       <Drawer.Screen name="Leaderboards" component={LeaderboardsNavigator} />
       <Drawer.Screen name="Profile" component={UserNavigator} />
+      <Drawer.Screen name="Settings" component={SettingsNavigator} />
     </Drawer.Navigator>
   );
 }
