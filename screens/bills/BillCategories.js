@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView, StatusBar } from "react-native";
 import BillsHeader from "../../components/bills/billCategories/BillsHeader";
@@ -6,21 +6,32 @@ import BillsTotalCard from "../../components/bills/billCategories/BillsTotalCard
 import BillsUtilitiesGrid from "../../components/bills/billCategories/BillsUtilitiesGrid";
 import BillsTrendsChart from "../../components/bills/billCategories/BillsTrendChart";
 import BillsRecentSection from "../../components/bills/billCategories/BillsRecentSection";
-import { useBills } from "../../hooks/useBills";
 import { utilities } from "../../constants/utilities";
 import { useFocusEffect } from "@react-navigation/native";
-
+import { useSelector, useDispatch } from "react-redux";
+import { fetchBills } from "../../redux/actions/billAction";
+import { useAuth } from "../../context/auth";
 export default function BillCategories({ navigation }) {
   const [activeTab, setActiveTab] = useState("all");
   const [timeRange, setTimeRange] = useState("month");
-
+  const dispatch = useDispatch();
+  const { token } = useAuth();
   const {
-    recentBills,
     latestAmounts,
     computedChanges,
+    recentBills,
+    upcomingBills,
+    categories,
+    statsData,
     analytics,
-    refreshBills
-  } = useBills();
+    loading,
+    error,
+  } = useSelector((state) => state.bills);
+
+  useEffect(() => {
+    dispatch(fetchBills(token)); 
+  }, [dispatch, token]);
+
 
   const filteredBills =
     activeTab === "all"
@@ -51,7 +62,7 @@ export default function BillCategories({ navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      refreshBills();
+      dispatch(fetchBills(token));
     }, [])
   );
 

@@ -11,16 +11,16 @@ import ElectricRecent from "../../../components/bills/uploadBills/electricBills/
 import ElectricTips from "../../../components/bills/uploadBills/electricBills/ElectricTips";
 import baseURL from "../../../assets/common/baseUrl";
 import { useAuth } from "../../../context/auth";
-import { useBills } from "../../../hooks/useBills";
+// import { useBills } from "../../../hooks/useBills";
 // import { useAnalytics } from "../../../hooks/useAnalytics";
 import { useDispatch } from "react-redux";
 import { fetchAnalytics } from "../../../redux/actions/analyticsAction";
-
+import { fetchBills } from "../../../redux/actions/billAction";
 export default function ElectricBills({ navigation }) {
   const category = { name: "Electricity", icon: "⚡", color: "amber" };
   const { token, getToken } = useAuth();
   // const { refresh } = useAnalytics();
-  const { refreshBills } = useBills();
+  // const { refreshBills } = useBills();
   const dispatch = useDispatch();
 
   const [electricBills, setElectricBills] = useState({ count: 0, bills: [] });
@@ -156,7 +156,7 @@ export default function ElectricBills({ navigation }) {
 
         // refresh
         fetchElectricBills();
-        refreshBills();
+        dispatch(fetchBills(token)); 
         dispatch(fetchAnalytics(userToken, "month"));
         // reset form
         setSelectedImageUri(null);
