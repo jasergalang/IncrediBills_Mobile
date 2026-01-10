@@ -8,6 +8,7 @@ import GameNavigator from "./gameNav";
 import AnalyticsNavigator from "./analyticsNav";
 import BillsNavigator from "./BillsNav";
 import UserNavigator from "./userNav";
+import PredictionNavigator from "./predictionNav";
 import { useAuth } from "../context/auth";
 import { useSelector, useDispatch } from "react-redux";
 import {fetchUser} from '../redux/actions/user/userFetchAction';
@@ -17,7 +18,8 @@ const Drawer = createDrawerNavigator();
 function CustomDrawerContent(props) {
   const menuItems = [
     { icon: "home", label: "Dashboard", route: "Home" },
-    { icon: "cloud-upload", label: "Upload Bills", route: "Upload", badge: null },
+    { icon: "cloud-upload", label: "Bills", route: "Upload", badge: null },
+    { icon: "cloud-upload", label: "Prediction", route: "Prediction", badge: null },
     { icon: "game-controller", label: "Gamification", route: "Games", badge: "New" },
     { icon: "stats-chart", label: "Analytics", route: "Analytics", badge: null },
     { icon: "person", label: "Profile", route: "Profile", badge: null },
@@ -112,6 +114,7 @@ export default function MainNavigator() {
     >
       <Drawer.Screen name="Home" component={HomeNavigator} />
       <Drawer.Screen name="Upload" component={BillsNavigator} />
+      <Drawer.Screen name="Prediction" component={PredictionNavigator} />
       <Drawer.Screen name="Games" component={GameNavigator} />
       <Drawer.Screen name="Analytics" component={AnalyticsNavigator} />
       <Drawer.Screen name="Profile" component={UserNavigator} />
