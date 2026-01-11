@@ -60,7 +60,7 @@ export default function Analytics({ navigation }) {
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
-      <AnalyticsHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+      <AnalyticsHeader activeTab={activeTab} setActiveTab={setActiveTab} navigation={navigation} />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {activeTab === "utility" ? (
           <>

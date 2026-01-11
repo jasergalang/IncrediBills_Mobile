@@ -10,7 +10,7 @@ import PredictionChart from "../../components/prediction/PredictionChart";
 import BillHistory from "../../components/prediction/BillHistory";
 import ContributingFactors from "../../components/prediction/ContributingFactors";
 import AIAction from "../../components/prediction/AIAction";
-
+import { useNavigation } from "@react-navigation/native";
 export default function Prediction() {
   const [selectedUtility, setSelectedUtility] = useState(null);
   const summaryData = {
@@ -20,10 +20,12 @@ export default function Prediction() {
     accuracy: 92,
   };
 
+  const navigation = useNavigation();
+
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
-      <PredictionHeader />
+      <PredictionHeader navigation={navigation} />
       <ScrollView
         contentContainerStyle={{ paddingVertical: 16 }}
         className="px-4"

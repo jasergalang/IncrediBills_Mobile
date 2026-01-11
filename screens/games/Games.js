@@ -12,6 +12,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import PlayerStatsCard from "../../components/games/PlayerStatsCard";
 import QuestCard from "../../components/games/QuestCard";
 import AchievementCard from "../../components/games/AchievementCard";
+import GameHeader from "../../components/games/GameHeader";
 
 export default function Games({ navigation }) {
     const [activeTab, setActiveTab] = useState("quests");
@@ -138,24 +139,7 @@ export default function Games({ navigation }) {
         <SafeAreaView className="flex-1 bg-slate-50">
             <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
 
-            {/* Header */}
-            <View className="bg-white border-b border-slate-200">
-                <View className="px-4 py-3 flex-row items-center justify-between">
-                    <TouchableOpacity
-                        onPress={() => navigation.goBack()}
-                        className="w-10 h-10 items-center justify-center"
-                    >
-                        <Ionicons name="arrow-back" size={24} color="#334155" />
-                    </TouchableOpacity>
-                    <View className="flex-1 items-center">
-                        <Text className="text-lg font-bold text-slate-900">
-                            Gamification
-                        </Text>
-                        <Text className="text-xs text-slate-600">Battle Pollution Monsters</Text>
-                    </View>
-                    <View className="w-10" />
-                </View>
-            </View>
+           <GameHeader navigation={navigation}/>
 
             <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
                 {/* Player Stats Card */}

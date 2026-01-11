@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, FlatList } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar } from "react-native";
-
+import  {useNavigation} from '@react-navigation/native';
 import RewardsHeader from "../../components/rewards/RewardsHeader";
 import PointsSummary from "../../components/rewards/PointsSummary";
 import Tabs from "../../components/rewards/Tabs";
@@ -18,6 +18,7 @@ export default function Rewards() {
     const [selectedCategory, setSelectedCategory] = useState("all");
     const [selectedReward, setSelectedReward] = useState(null);
     const [redeemVisible, setRedeemVisible] = useState(false);
+    const navigation = useNavigation();
 
     const userPoints = {
         available: 3500,
@@ -297,7 +298,7 @@ export default function Rewards() {
         <SafeAreaView className="flex-1 bg-slate-50">
             <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
 
-            <RewardsHeader />
+            <RewardsHeader navigation={navigation} />
 
             <FlatList
                 data={[{ key: "content" }]}

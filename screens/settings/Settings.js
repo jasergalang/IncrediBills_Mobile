@@ -8,12 +8,14 @@ import SettingsHeader from '../../components/settings/SettingsHeader';
 import ProfileSection from '../../components/settings/ProfileSection';
 import NotificationSection from '../../components/settings/NotificationSection';
 import SecuritySection from '../../components/settings/SecuritySection';
+import { useNavigation } from '@react-navigation/native';
 
 export default function Settings() {
     const dispatch = useDispatch();
     const { token } = useAuth();
     const { userData, loading } = useSelector((state) => state.user);
     const [activeTab, setActiveTab] = useState("profile");
+    const navigation = useNavigation();
 
     // Profile state - initialize with empty values
     const [profile, setProfile] = useState({
@@ -92,7 +94,7 @@ export default function Settings() {
         <SafeAreaView className="flex-1 bg-slate-50">
             <View className="flex-1">
                 {/* Header with Tabs */}
-                <SettingsHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+                <SettingsHeader activeTab={activeTab} setActiveTab={setActiveTab} navigation={navigation}/>
 
                 {/* Content based on active tab */}
                 {activeTab === "profile" && (

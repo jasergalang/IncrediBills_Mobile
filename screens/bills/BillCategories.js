@@ -69,7 +69,7 @@ export default function BillCategories({ navigation }) {
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
-      <BillsHeader />
+      <BillsHeader navigation={navigation}/>
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <BillsTotalCard totalAmount={totalAmount} totalChange={totalChange} />
         <BillsUtilitiesGrid

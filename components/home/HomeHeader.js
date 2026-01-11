@@ -12,14 +12,14 @@ export default function DashboardHeader({ navigation }) {
         </View>
         <View className="flex-row gap-2">
           <TouchableOpacity className="w-10 h-10 rounded-xl bg-blue-100 items-center justify-center">
-            <Ionicons name="notifications-outline" size={20} color="#2563eb" />
+            <Text style={{ fontSize: 20 }}>🔔</Text>
             <View className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => navigation.openDrawer()}
             className="w-10 h-10 rounded-xl bg-slate-100 items-center justify-center"
           >
-            <Ionicons name="menu" size={20} color="#000" />
+            <Text style={{ fontSize: 20 }}>☰</Text>
           </TouchableOpacity>
         </View>
       </View>

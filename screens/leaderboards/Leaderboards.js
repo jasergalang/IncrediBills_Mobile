@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar, ScrollView, View } from "react-native";
 import { useSelector } from "react-redux";
-
+import { useNavigation } from "@react-navigation/native";
 import LeaderboardHeader from "../../components/leaderboards/LeaderboardHeader";
 import UserCard from "../../components/leaderboards/UserCard";
 import CategoryLeaders from "../../components/leaderboards/CategoryLeaders";
@@ -12,6 +12,7 @@ import LeaderboardList from "../../components/leaderboards/LeaderboardList";
 import CTASection from "../../components/leaderboards/CTASection";
 export default function Leaderboards() {
     const user = useSelector((state) => state.user?.userData);
+    const navigation = useNavigation();
     const sample = {
         avatar: "🧑",
         level: 5,
@@ -52,7 +53,7 @@ export default function Leaderboards() {
     return (
         <SafeAreaView className="flex-1 bg-slate-50">
             <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
-            <LeaderboardHeader />
+            <LeaderboardHeader navigation={navigation}/>
             <ScrollView
                 contentContainerStyle={{ paddingVertical: 16 }}
                 className="px-4"
