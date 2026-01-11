@@ -14,6 +14,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { fetchUser } from '../redux/actions/user/userFetchAction';
 import LeaderboardsNavigator from "./leaderboardsNav";
 import SettingsNavigator from "./settingsNav";
+import RewardsNavigator from "./rewardsNav";
 
 const Drawer = createDrawerNavigator();
 
@@ -25,6 +26,7 @@ function CustomDrawerContent(props) {
     { icon: "game-controller", label: "Gamification", route: "Games", badge: "New" },
     { icon: "stats-chart", label: "Analytics", route: "Analytics", badge: null },
     { icon: "stats-chart", label: "Leaderboards", route: "Leaderboards", badge: null },
+    { icon: "game-controller", label: "Rewards", route: "Rewards", badge: null },
     { icon: "person", label: "Settings", route: "Settings", badge: null },
   ];
 
@@ -41,7 +43,7 @@ function CustomDrawerContent(props) {
   const currentRoute = props.state.routeNames[props.state.index];
   const name = `${userData.firstName} ${userData.lastName}`.trim();
 
- 
+
   const handleLogout = () => {
     Alert.alert("Logout", "Are you sure you want to logout?", [
       { text: "Cancel", style: "cancel" },
@@ -152,6 +154,7 @@ export default function MainNavigator() {
       <Drawer.Screen name="Games" component={GameNavigator} />
       <Drawer.Screen name="Analytics" component={AnalyticsNavigator} />
       <Drawer.Screen name="Leaderboards" component={LeaderboardsNavigator} />
+      <Drawer.Screen name="Rewards" component={RewardsNavigator} />
       <Drawer.Screen name="Settings" component={SettingsNavigator} />
     </Drawer.Navigator>
   );
