@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { createDrawerNavigator, DrawerContentScrollView } from "@react-navigation/drawer";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import HomeNavigator from "./homeNav";
@@ -29,7 +29,7 @@ function CustomDrawerContent(props) {
     { icon: "person", label: "Settings", route: "Settings", badge: null },
   ];
 
-  const { token } = useAuth();
+  const { token, logout } = useAuth();
   const dispatch = useDispatch();
   const { userData } = useSelector((state) => state.user);
 
@@ -41,6 +41,21 @@ function CustomDrawerContent(props) {
 
   const currentRoute = props.state.routeNames[props.state.index];
   const name = `${userData.firstName} ${userData.lastName}`.trim();
+
+ 
+  const handleLogout = () => {
+    Alert.alert("Logout", "Are you sure you want to logout?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Logout",
+        style: "destructive",
+        onPress: () => {
+          logout();
+        },
+      },
+    ]);
+  };
+
   return (
     <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
       {/* Logo */}
@@ -86,7 +101,7 @@ function CustomDrawerContent(props) {
       </View>
 
       {/* Menu */}
-      <View className="p-4">
+      <View className="p-4 flex-1">
         {menuItems.map((item, idx) => {
           const isActive = currentRoute === item.route;
           return (
@@ -105,6 +120,22 @@ function CustomDrawerContent(props) {
             </TouchableOpacity>
           );
         })}
+      </View>
+
+      {/* Logout Button */}
+      <View className="px-4 pb-6">
+        <TouchableOpacity
+          onPress={handleLogout}
+          className="bg-red-50 rounded-xl p-4 flex-row items-center justify-center border-2 border-red-200"
+          activeOpacity={0.7}
+        >
+          <View className="w-10 h-10 bg-red-100 rounded-lg items-center justify-center mr-3">
+            <Ionicons name="log-out-outline" size={22} color="#ef4444" />
+          </View>
+          <Text className="text-red-600 font-bold text-base">
+            Logout
+          </Text>
+        </TouchableOpacity>
       </View>
     </DrawerContentScrollView>
   );
