@@ -25,7 +25,6 @@ function CustomDrawerContent(props) {
     { icon: "game-controller", label: "Gamification", route: "Games", badge: "New" },
     { icon: "stats-chart", label: "Analytics", route: "Analytics", badge: null },
     { icon: "stats-chart", label: "Leaderboards", route: "Leaderboards", badge: null },
-    { icon: "person", label: "Profile", route: "Profile", badge: null },
     { icon: "person", label: "Settings", route: "Settings", badge: null },
   ];
 
@@ -153,7 +152,6 @@ export default function MainNavigator() {
       <Drawer.Screen name="Games" component={GameNavigator} />
       <Drawer.Screen name="Analytics" component={AnalyticsNavigator} />
       <Drawer.Screen name="Leaderboards" component={LeaderboardsNavigator} />
-      <Drawer.Screen name="Profile" component={UserNavigator} />
       <Drawer.Screen name="Settings" component={SettingsNavigator} />
     </Drawer.Navigator>
   );

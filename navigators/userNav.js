@@ -6,16 +6,10 @@ import Login from "../screens/user/login";
 import Register from "../screens/user/register";
 import Landing from "../screens/user/landing";
 import Logout from "../screens/user/Logout";
-import Profile from "../screens/user/profile";
 
 export default function UserNavigator() {
   return (
     <Stack.Navigator>
-      <Stack.Screen
-        name="Profile"
-        component={Profile}
-        options={{ headerShown: false }}
-      />
       <Stack.Screen
         name="Landing"
         component={Landing}
