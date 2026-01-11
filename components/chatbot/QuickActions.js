@@ -1,14 +1,10 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
-export default function QuickActions({
-  quickActions = [],
-  onAction,
-  isMaximized,
-}) {
+export default function QuickActions({ quickActions = [], onAction, isMaximized }) {
   return (
-    <View className={`bg-gradient-to-r from-slate-50 to-blue-50 border-t border-slate-200 ${isMaximized ? 'p-6' : 'p-3'}`}>
-      <Text className={`text-slate-600 font-semibold mb-2 px-1 ${isMaximized ? 'text-base mb-4' : 'text-xs'}`}>
+    <View className={`bg-white border-t border-slate-200 ${isMaximized ? 'p-6' : 'p-3'}`}>
+      <Text className={`text-slate-700 font-semibold mb-2 px-1 ${isMaximized ? 'text-base mb-4' : 'text-xs'}`}>
         Quick Actions:
       </Text>
       <View className={`flex-row flex-wrap ${isMaximized ? 'gap-4' : 'gap-2'}`}>
@@ -16,11 +12,13 @@ export default function QuickActions({
           <TouchableOpacity
             key={i}
             onPress={() => onAction(action)}
-            className={`bg-gradient-to-r ${action.color} rounded-xl items-center justify-center flex-row gap-2 ${
-              isMaximized 
-                ? 'px-6 py-4 flex-1 basis-[23%]' 
-                : 'px-3 py-2 flex-1 basis-[48%]'
-            }`}
+            className="bg-blue-600 rounded-xl items-center justify-center flex-row gap-2"
+            style={{
+              paddingHorizontal: isMaximized ? 24 : 12,
+              paddingVertical: isMaximized ? 16 : 10,
+              flex: 1,
+              flexBasis: isMaximized ? '23%' : '48%',
+            }}
             activeOpacity={0.8}
           >
             <Text className={isMaximized ? 'text-2xl' : 'text-base'}>

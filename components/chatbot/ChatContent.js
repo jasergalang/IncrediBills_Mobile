@@ -1,7 +1,8 @@
-
 import React from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { useChatbot } from './hooks/useChatbotLogic'; // 👈 Import the hook
+import { useChatbot } from './hooks/useChatbotLogic';
+import TypingIndicator from './TypingIndicator';
+import QuickActions from './QuickActions';
 
 export default function ChatContent({ isMaximized }) {
   const {
@@ -10,23 +11,23 @@ export default function ChatContent({ isMaximized }) {
     error,
     input,
     setInput,
-    scrollViewRef, // 👈 Use scrollViewRef instead of messagesEndRef
+    scrollViewRef,
     handleSend,
     handleClear,
-  } = useChatbot(); // 👈 Use the hook
+  } = useChatbot();
 
-  
-    const quickActions = [
-        { icon: '📊', label: 'View Bills', color: 'from-blue-500 to-blue-600' },
-        { icon: '💰', label: 'Pay Now', color: 'from-green-500 to-green-600' },
-        { icon: '📈', label: 'Usage', color: 'from-purple-500 to-purple-600' },
-        { icon: '❓', label: 'Help', color: 'from-orange-500 to-orange-600' },
-    ];
+  const quickActions = [
+    { icon: '📊', label: 'View Bills' },
+    { icon: '💰', label: 'Pay Now' },
+    { icon: '📈', label: 'Usage' },
+    { icon: '❓', label: 'Help' },
+  ];
 
-    const handleQuickAction = (action) => {
-        setInput(action.label);
-        handleSend();
-    };
+  const handleQuickAction = (action) => {
+    setInput(action.label);
+    // Small delay to ensure input is set before sending
+    setTimeout(() => handleSend(), 100);
+  };
 
   return (
     <KeyboardAvoidingView 
@@ -42,7 +43,7 @@ export default function ChatContent({ isMaximized }) {
         {messages.length === 0 ? (
           <View className="items-center py-8">
             <Text className="text-5xl mb-4">💬</Text>
-            <Text className="text-sm text-slate-900 text-">Start a conversation with IncrediBot!</Text>
+            <Text className="text-sm text-slate-900">Start a conversation with IncrediBot!</Text>
             <Text className="text-xs text-slate-400 mt-2">Ask about your utility bills</Text>
           </View>
         ) : (
@@ -70,26 +71,23 @@ export default function ChatContent({ isMaximized }) {
             </View>
           ))
         )}
-        {loading && (
-          <View className="flex-row justify-start">
-            <View className="bg-slate-100 rounded-2xl px-4 py-3">
-              <View className="flex-row gap-1">
-                <View className="w-2 h-2 bg-slate-400 rounded-full" />
-                <View className="w-2 h-2 bg-slate-400 rounded-full" />
-                <View className="w-2 h-2 bg-slate-400 rounded-full" />
-              </View>
-            </View>
-          </View>
-        )}
+        {loading && <TypingIndicator />}
       </ScrollView>
 
+      {/* Quick Actions */}
+      <QuickActions 
+        quickActions={quickActions}
+        onAction={handleQuickAction}
+        isMaximized={isMaximized}
+      />
+
       {/* Input Area */}
-      <View className="border-t border-slate-200 p-4">
+      <View className="border-t border-slate-200 p-4 bg-white">
         <View className="flex-row gap-2">
           <TouchableOpacity
             onPress={handleClear}
             disabled={messages.length === 0 || loading}
-            className="px-3 py-2 rounded-xl"
+            className={`px-3 py-2 rounded-xl ${(messages.length === 0 || loading) && 'opacity-50'}`}
           >
             <Text className="text-lg">🗑️</Text>
           </TouchableOpacity>
@@ -97,10 +95,11 @@ export default function ChatContent({ isMaximized }) {
             value={input}
             onChangeText={setInput}
             placeholder="Ask about your bills..."
+            placeholderTextColor="#94a3b8"
             editable={!loading}
-            onSubmitEditing={handleSend} // 👈 Send on "Enter" key
-            returnKeyType="send" // 👈 Shows "Send" on keyboard
-            className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl"
+            onSubmitEditing={handleSend} 
+            returnKeyType="send"
+            className="flex-1 px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900"
           />
           <TouchableOpacity
             onPress={handleSend}

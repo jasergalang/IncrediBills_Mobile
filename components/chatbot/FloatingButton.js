@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
 
 export default function FloatingButton({ onOpen }) {
-  const pulseAnim = new Animated.Value(1);
+  const pulseAnim = React.useRef(new Animated.Value(1)).current;
 
   React.useEffect(() => {
     Animated.loop(
@@ -26,7 +26,15 @@ export default function FloatingButton({ onOpen }) {
       <TouchableOpacity onPress={onOpen} activeOpacity={0.8}>
         <Animated.View style={{ transform: [{ scale: pulseAnim }] }}>
           <View className="relative">
-            <View className="w-16 h-16 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full shadow-2xl items-center justify-center">
+            <View className="w-16 h-16 bg-blue-600 rounded-full items-center justify-center"
+              style={{
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.3,
+                shadowRadius: 8,
+                elevation: 8,
+              }}
+            >
               <Text className="text-3xl">🤖</Text>
             </View>
             <View className="absolute -top-1 -right-1 w-6 h-6 bg-red-500 rounded-full items-center justify-center">

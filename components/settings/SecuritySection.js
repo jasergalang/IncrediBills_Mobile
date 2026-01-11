@@ -35,9 +35,9 @@ export default function SecuritySection({ privacySettings, setPrivacySettings })
 
   return (
     <ScrollView className="flex-1 bg-slate-50">
-      <View className="p-4 space-y-4">
+      <View className="p-4 space-y-4 ">
         {/* Security Settings */}
-        <View className="bg-white rounded-2xl border border-slate-200 p-6">
+        <View className="bg-white rounded-2xl border border-slate-200 p-6 mb-3">
           <Text className="text-lg font-bold text-slate-900 mb-4">
             Security Settings
           </Text>

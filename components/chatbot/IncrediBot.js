@@ -20,8 +20,8 @@ export default function IncrediBot() {
         animationType="slide"
         transparent={true}
       >
-        <View className="flex-1 justify-end">
-          <View className="bg-white rounded-t-3xl h-[80%] shadow-2xl overflow-hidden">
+        <View className="flex-1 justify-end" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+          <View className="bg-white rounded-t-3xl overflow-hidden" style={{ height: '80%' }}>
             <ChatHeader
               title="IncrediBot"
               onClose={() => setIsOpen(false)}
@@ -31,7 +31,7 @@ export default function IncrediBot() {
               }}
               isMaximized={false}
             />
-            <ChatContent />
+            <ChatContent isMaximized={false} />
           </View>
         </View>
       </Modal>
@@ -52,7 +52,7 @@ export default function IncrediBot() {
             }}
             isMaximized={true}
           />
-          <ChatContent isMaximized />
+          <ChatContent isMaximized={true} />
         </View>
       </Modal>
     </>

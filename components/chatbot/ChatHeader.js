@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
-import { X, Minimize2, Maximize2 } from 'lucide-react-native'; // or use SVG icons
+import { X, Minimize2, Maximize2 } from 'lucide-react-native';
 
 export default function ChatHeader({ title, onClose, onMaximize, isMaximized }) {
   return (
@@ -8,7 +8,10 @@ export default function ChatHeader({ title, onClose, onMaximize, isMaximized }) 
       <View className="flex-row items-center justify-between mb-3">
         <View className="flex-row items-center gap-3">
           <View className="relative">
-            <View className={`w-${isMaximized ? '16' : '12'} h-${isMaximized ? '16' : '12'} bg-white/20 rounded-full items-center justify-center`}>
+            <View 
+              className="bg-white/20 rounded-full items-center justify-center"
+              style={{ width: isMaximized ? 64 : 48, height: isMaximized ? 64 : 48 }}
+            >
               <Text className={isMaximized ? 'text-4xl' : 'text-2xl'}>🤖</Text>
             </View>
             <View className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 rounded-full border-2 border-white" />

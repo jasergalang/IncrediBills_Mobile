@@ -32,7 +32,7 @@ export default function TypingIndicator() {
 
   return (
     <View className="flex-row justify-start">
-      <View className="bg-white border-2 border-slate-200 rounded-2xl rounded-tl-sm px-4 py-3 shadow-lg">
+      <View className="bg-slate-100 rounded-2xl px-4 py-3">
         <View className="flex-row gap-1">
           <Animated.View
             style={{ transform: [{ translateY: dot1 }] }}
