@@ -9,6 +9,7 @@ import CategoryLeaders from "../../components/leaderboards/CategoryLeaders";
 import FilterTabs from "../../components/leaderboards/FilterTabs";
 import Podium from "../../components/leaderboards/Podium";
 import LeaderboardList from "../../components/leaderboards/LeaderboardList";
+import CTASection from "../../components/leaderboards/CTASection";
 export default function Leaderboards() {
     const user = useSelector((state) => state.user?.userData);
     const sample = {
@@ -68,6 +69,7 @@ export default function Leaderboards() {
                     leaderboardData={leaderboardData}
                     currentUser={currentUser}
                 />
+                <CTASection />
             </ScrollView>
         </SafeAreaView>
     )
