@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 
 export default function CTASection({ navigation }) {
   return (
-    <View className="mb-2">
+    <View className="mb-6 rounded-2xl overflow-hidden">
       <TouchableOpacity onPress={() => navigation.navigate("Games")}>
         <LinearGradient
           colors={["#9333ea", "#c4a5f8"]}

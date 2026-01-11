@@ -1,193 +1,362 @@
-// components/prediction/BillHistory.js
+// // components/prediction/BillHistory.js
+// import React from "react";
+// import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+// import { Ionicons } from "@expo/vector-icons";
+
+// // Fake data for bill history
+// const fakeBills = [
+//   {
+//     id: 1,
+//     name: "Electricity",
+//     provider: "MERALCO",
+//     amount: 2500,
+//     date: "Dec 5, 2025",
+//     status: "Success",
+//     color: "yellow",
+//     icon: "💡",
+//   },
+//   {
+//     id: 2,
+//     name: "Water",
+//     provider: "Maynilad",
+//     amount: 1200,
+//     date: "Dec 7, 2025",
+//     status: "Success",
+//     color: "blue",
+//     icon: "💧",
+//   },
+//   {
+//     id: 3,
+//     name: "Internet",
+//     provider: "PLDT",
+//     amount: 1800,
+//     date: "Dec 10, 2025",
+//     status: "Success",
+//     color: "purple",
+//     icon: "🌐",
+//   },
+//   {
+//     id: 4,
+//     name: "Gas",
+//     provider: "Petron",
+//     amount: 950,
+//     date: "Dec 12, 2025",
+//     status: "Pending",
+//     color: "orange",
+//     icon: "🔥",
+//   },
+//   {
+//     id: 5,
+//     name: "Maintenance",
+//     provider: "Condo Mgmt",
+//     amount: 2000,
+//     date: "Dec 18, 2025",
+//     status: "Failed",
+//     color: "red",
+//     icon: "🛠️",
+//   },
+// ];
+
+// export default function BillHistory() {
+//   if (!fakeBills || fakeBills.length === 0) {
+//     return (
+//       <View className="bg-white rounded-2xl border border-slate-200 p-6 mb-6 items-center">
+//         <Text className="text-5xl mb-3">📋</Text>
+//         <Text className="text-lg font-bold text-slate-900 mb-1">
+//           No Bills History
+//         </Text>
+//         <Text className="text-sm text-slate-600">
+//           No historical bills found yet.
+//         </Text>
+//       </View>
+//     );
+//   }
+
+//   // Summary stats
+//   const averageBill = Math.round(
+//     fakeBills.reduce((sum, b) => sum + b.amount, 0) / fakeBills.length
+//   );
+//   const lowestBill = Math.min(...fakeBills.map((b) => b.amount));
+//   const highestBill = Math.max(...fakeBills.map((b) => b.amount));
+
+//   return (
+//     <View className="bg-white rounded-2xl border border-slate-200 p-4 mb-6">
+//       {/* Header */}
+//       <View className="flex-row items-center justify-between mb-4">
+//         <View>
+//           <Text className="text-lg font-bold text-slate-900 mb-1">
+//             Bill History
+//           </Text>
+//           <Text className="text-sm text-slate-600">
+//             Your recent bills summary
+//           </Text>
+//         </View>
+//         <TouchableOpacity className="px-4 py-2 bg-slate-100 rounded-xl">
+//           <Text className="text-sm font-semibold text-slate-700">Export CSV</Text>
+//         </TouchableOpacity>
+//       </View>
+
+//       {/* Summary Stats */}
+//       <View className="flex-row justify-between mb-6">
+//         <View className="flex-1 bg-blue-50 rounded-xl p-4 mr-2">
+//           <Text className="text-sm text-slate-600 mb-1">Average Bill</Text>
+//           <Text className="text-2xl font-bold text-blue-600">
+//             ₱{averageBill.toLocaleString()}
+//           </Text>
+//         </View>
+//         <View className="flex-1 bg-emerald-50 rounded-xl p-4 mx-1">
+//           <Text className="text-sm text-slate-600 mb-1">Lowest Bill</Text>
+//           <Text className="text-2xl font-bold text-emerald-600">
+//             ₱{lowestBill.toLocaleString()}
+//           </Text>
+//         </View>
+//         <View className="flex-1 bg-red-50 rounded-xl p-4 ml-2">
+//           <Text className="text-sm text-slate-600 mb-1">Highest Bill</Text>
+//           <Text className="text-2xl font-bold text-red-600">
+//             ₱{highestBill.toLocaleString()}
+//           </Text>
+//         </View>
+//       </View>
+
+//       {/* Bill Items */}
+//       <ScrollView className="space-y-3">
+//         {fakeBills.map((bill) => (
+//           <View
+//             key={bill.id}
+//             className={`bg-${bill.color}-50 rounded-xl p-4 border border-${bill.color}-100`}
+//           >
+//             <View className="flex-row items-center justify-between mb-3">
+//               <View className="flex-row items-center gap-3 flex-1">
+//                 <View
+//                   className={`w-12 h-12 bg-${bill.color}-100 rounded-xl items-center justify-center`}
+//                 >
+//                   <Text className="text-2xl">{bill.icon}</Text>
+//                 </View>
+//                 <View className="flex-1">
+//                   <Text className="font-bold text-slate-900 text-sm mb-1">
+//                     {bill.name} Bill
+//                   </Text>
+//                   <Text className="text-xs text-slate-600">{bill.provider}</Text>
+//                 </View>
+//               </View>
+//               <TouchableOpacity>
+//                 <Ionicons name="ellipsis-horizontal" size={20} color="#64748b" />
+//               </TouchableOpacity>
+//             </View>
+
+//             <View className="flex-row items-center justify-between">
+//               <View>
+//                 <Text className="text-xs text-slate-600 mb-1">Amount</Text>
+//                 <Text className={`text-lg font-bold text-${bill.color}-600`}>
+//                   ₱{bill.amount.toLocaleString()}
+//                 </Text>
+//               </View>
+//               <View>
+//                 <Text className="text-xs text-slate-600 mb-1">Due Date</Text>
+//                 <Text className="text-sm font-semibold text-slate-900">
+//                   {bill.date}
+//                 </Text>
+//               </View>
+//               <View>
+//                 <View
+//                   className={`px-3 py-1 rounded-full ${
+//                     bill.status === "Success"
+//                       ? "bg-green-100"
+//                       : bill.status === "Failed"
+//                       ? "bg-red-100"
+//                       : "bg-amber-100"
+//                   }`}
+//                 >
+//                   <Text
+//                     className={`text-xs font-semibold ${
+//                       bill.status === "Success"
+//                         ? "text-green-700"
+//                         : bill.status === "Failed"
+//                         ? "text-red-700"
+//                         : "text-amber-700"
+//                     }`}
+//                   >
+//                     {bill.status === "Success"
+//                       ? "✓ Paid"
+//                       : bill.status === "Pending"
+//                       ? "⏳ Pending"
+//                       : "✗ Overdue"}
+//                   </Text>
+//                 </View>
+//               </View>
+//             </View>
+//           </View>
+//         ))}
+//       </ScrollView>
+//     </View>
+//   );
+// }
+
+
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
-// Fake data for bill history
-const fakeBills = [
+// Sample data - in your app, this would come from props filtered by category
+const sampleBillsHistory = [
   {
-    id: 1,
-    name: "Electricity",
-    provider: "MERALCO",
+    date: "2024-12-01",
     amount: 2500,
-    date: "Dec 5, 2025",
-    status: "Success",
-    color: "yellow",
-    icon: "💡",
+    provider: "MERALCO",
+    status: "Paid"
   },
   {
-    id: 2,
-    name: "Water",
-    provider: "Maynilad",
-    amount: 1200,
-    date: "Dec 7, 2025",
-    status: "Success",
-    color: "blue",
-    icon: "💧",
+    date: "2024-11-01",
+    amount: 2350,
+    provider: "MERALCO",
+    status: "Paid"
   },
   {
-    id: 3,
-    name: "Internet",
-    provider: "PLDT",
-    amount: 1800,
-    date: "Dec 10, 2025",
-    status: "Success",
-    color: "purple",
-    icon: "🌐",
+    date: "2024-10-01",
+    amount: 2800,
+    provider: "MERALCO",
+    status: "Paid"
   },
   {
-    id: 4,
-    name: "Gas",
-    provider: "Petron",
-    amount: 950,
-    date: "Dec 12, 2025",
-    status: "Pending",
-    color: "orange",
-    icon: "🔥",
+    date: "2024-09-01",
+    amount: 2200,
+    provider: "MERALCO",
+    status: "Paid"
   },
   {
-    id: 5,
-    name: "Maintenance",
-    provider: "Condo Mgmt",
-    amount: 2000,
-    date: "Dec 18, 2025",
-    status: "Failed",
-    color: "red",
-    icon: "🛠️",
-  },
+    date: "2024-08-01",
+    amount: 2450,
+    provider: "MERALCO",
+    status: "Pending"
+  }
 ];
 
-export default function BillHistory() {
-  if (!fakeBills || fakeBills.length === 0) {
+export default function BillHistory({ 
+  billsHistory = sampleBillsHistory, 
+  selectedCategory = "Electricity" 
+}) {
+  // Empty state
+  if (!billsHistory || billsHistory.length === 0) {
     return (
-      <View className="bg-white rounded-2xl border border-slate-200 p-6 mb-6 items-center">
+      <View className="bg-white rounded-2xl border border-slate-200 p-8 mb-6 items-center">
         <Text className="text-5xl mb-3">📋</Text>
-        <Text className="text-lg font-bold text-slate-900 mb-1">
+        <Text className="text-lg font-bold text-slate-900 mb-2">
           No Bills History
         </Text>
-        <Text className="text-sm text-slate-600">
-          No historical bills found yet.
+        <Text className="text-sm text-slate-600 text-center">
+          No historical bills found for this category yet.
         </Text>
       </View>
     );
   }
 
-  // Summary stats
+  // Format bills data
+  const formattedBills = billsHistory.map((bill, index) => ({
+    id: index,
+    month: new Date(bill.date).toLocaleDateString("en-US", {
+      month: "long",
+      year: "numeric",
+    }),
+    amount: bill.amount,
+    provider: bill.provider,
+    status: bill.status?.toLowerCase() || "paid",
+  }));
+
+  // Calculate summary stats
   const averageBill = Math.round(
-    fakeBills.reduce((sum, b) => sum + b.amount, 0) / fakeBills.length
+    formattedBills.reduce((sum, b) => sum + b.amount, 0) / formattedBills.length
   );
-  const lowestBill = Math.min(...fakeBills.map((b) => b.amount));
-  const highestBill = Math.max(...fakeBills.map((b) => b.amount));
+  const lowestBill = Math.min(...formattedBills.map((b) => b.amount));
+  const highestBill = Math.max(...formattedBills.map((b) => b.amount));
 
   return (
-    <View className="bg-white rounded-2xl border border-slate-200 p-4 mb-6">
+    <View className="bg-white rounded-2xl border border-slate-200 p-6 mb-6">
       {/* Header */}
-      <View className="flex-row items-center justify-between mb-4">
-        <View>
-          <Text className="text-lg font-bold text-slate-900 mb-1">
-            Bill History
+      <View className="mb-6">
+        <View className="flex-row items-center justify-between mb-1">
+          <Text className="text-xl font-bold text-slate-900">
+            Bills History
           </Text>
-          <Text className="text-sm text-slate-600">
-            Your recent bills summary
-          </Text>
+          <TouchableOpacity className="px-4 py-2 bg-slate-100 rounded-xl">
+            <Text className="text-sm font-semibold text-slate-700">
+              Export CSV
+            </Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity className="px-4 py-2 bg-slate-100 rounded-xl">
-          <Text className="text-sm font-semibold text-slate-700">Export CSV</Text>
-        </TouchableOpacity>
+        <Text className="text-sm text-slate-600">
+          Past bills for {selectedCategory}
+        </Text>
+      </View>
+
+      {/* Bill Items - Mobile Card Layout */}
+      <View className="mb-6">
+        {formattedBills.map((bill) => (
+          <View
+            key={bill.id}
+            className="border-b border-slate-100 py-3 last:border-b-0"
+          >
+            <View className="flex-row items-center justify-between mb-2">
+              <Text className="text-sm font-medium text-slate-900 flex-1">
+                {bill.month}
+              </Text>
+              <View
+                className={`px-3 py-1 rounded-full ${
+                  bill.status === "paid"
+                    ? "bg-green-100"
+                    : bill.status === "pending"
+                    ? "bg-amber-100"
+                    : "bg-red-100"
+                }`}
+              >
+                <Text
+                  className={`text-xs font-semibold ${
+                    bill.status === "paid"
+                      ? "text-green-700"
+                      : bill.status === "pending"
+                      ? "text-amber-700"
+                      : "text-red-700"
+                  }`}
+                >
+                  {bill.status === "paid"
+                    ? "✓ Paid"
+                    : bill.status === "pending"
+                    ? "⏳ Pending"
+                    : "✗ Overdue"}
+                </Text>
+              </View>
+            </View>
+            <View className="flex-row items-center justify-between">
+              <Text className="text-lg font-bold text-blue-600">
+                ₱{bill.amount.toLocaleString()}
+              </Text>
+              <Text className="text-sm text-slate-600">{bill.provider}</Text>
+            </View>
+          </View>
+        ))}
       </View>
 
       {/* Summary Stats */}
-      <View className="flex-row justify-between mb-6">
-        <View className="flex-1 bg-blue-50 rounded-xl p-4 mr-2">
+      <View className="pt-6 border-t border-slate-200">
+        <View className="bg-blue-50 rounded-xl p-4 mb-3">
           <Text className="text-sm text-slate-600 mb-1">Average Bill</Text>
           <Text className="text-2xl font-bold text-blue-600">
             ₱{averageBill.toLocaleString()}
           </Text>
         </View>
-        <View className="flex-1 bg-emerald-50 rounded-xl p-4 mx-1">
-          <Text className="text-sm text-slate-600 mb-1">Lowest Bill</Text>
-          <Text className="text-2xl font-bold text-emerald-600">
-            ₱{lowestBill.toLocaleString()}
-          </Text>
-        </View>
-        <View className="flex-1 bg-red-50 rounded-xl p-4 ml-2">
-          <Text className="text-sm text-slate-600 mb-1">Highest Bill</Text>
-          <Text className="text-2xl font-bold text-red-600">
-            ₱{highestBill.toLocaleString()}
-          </Text>
+        <View className="flex-row gap-3">
+          <View className="flex-1 bg-emerald-50 rounded-xl p-4">
+            <Text className="text-sm text-slate-600 mb-1">Lowest Bill</Text>
+            <Text className="text-2xl font-bold text-emerald-600">
+              ₱{lowestBill.toLocaleString()}
+            </Text>
+          </View>
+          <View className="flex-1 bg-red-50 rounded-xl p-4">
+            <Text className="text-sm text-slate-600 mb-1">Highest Bill</Text>
+            <Text className="text-2xl font-bold text-red-600">
+              ₱{highestBill.toLocaleString()}
+            </Text>
+          </View>
         </View>
       </View>
-
-      {/* Bill Items */}
-      <ScrollView className="space-y-3">
-        {fakeBills.map((bill) => (
-          <View
-            key={bill.id}
-            className={`bg-${bill.color}-50 rounded-xl p-4 border border-${bill.color}-100`}
-          >
-            <View className="flex-row items-center justify-between mb-3">
-              <View className="flex-row items-center gap-3 flex-1">
-                <View
-                  className={`w-12 h-12 bg-${bill.color}-100 rounded-xl items-center justify-center`}
-                >
-                  <Text className="text-2xl">{bill.icon}</Text>
-                </View>
-                <View className="flex-1">
-                  <Text className="font-bold text-slate-900 text-sm mb-1">
-                    {bill.name} Bill
-                  </Text>
-                  <Text className="text-xs text-slate-600">{bill.provider}</Text>
-                </View>
-              </View>
-              <TouchableOpacity>
-                <Ionicons name="ellipsis-horizontal" size={20} color="#64748b" />
-              </TouchableOpacity>
-            </View>
-
-            <View className="flex-row items-center justify-between">
-              <View>
-                <Text className="text-xs text-slate-600 mb-1">Amount</Text>
-                <Text className={`text-lg font-bold text-${bill.color}-600`}>
-                  ₱{bill.amount.toLocaleString()}
-                </Text>
-              </View>
-              <View>
-                <Text className="text-xs text-slate-600 mb-1">Due Date</Text>
-                <Text className="text-sm font-semibold text-slate-900">
-                  {bill.date}
-                </Text>
-              </View>
-              <View>
-                <View
-                  className={`px-3 py-1 rounded-full ${
-                    bill.status === "Success"
-                      ? "bg-green-100"
-                      : bill.status === "Failed"
-                      ? "bg-red-100"
-                      : "bg-amber-100"
-                  }`}
-                >
-                  <Text
-                    className={`text-xs font-semibold ${
-                      bill.status === "Success"
-                        ? "text-green-700"
-                        : bill.status === "Failed"
-                        ? "text-red-700"
-                        : "text-amber-700"
-                    }`}
-                  >
-                    {bill.status === "Success"
-                      ? "✓ Paid"
-                      : bill.status === "Pending"
-                      ? "⏳ Pending"
-                      : "✗ Overdue"}
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
     </View>
   );
 }

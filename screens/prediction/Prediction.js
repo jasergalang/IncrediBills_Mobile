@@ -9,7 +9,7 @@ import SummaryCards from "../../components/prediction/SummaryCards";
 import PredictionChart from "../../components/prediction/PredictionChart";
 import BillHistory from "../../components/prediction/BillHistory";
 import ContributingFactors from "../../components/prediction/ContributingFactors";
-// ...existing code...
+import AIAction from "../../components/prediction/AIAction";
 
 export default function Prediction() {
   const [selectedUtility, setSelectedUtility] = useState(null);
@@ -38,6 +38,7 @@ export default function Prediction() {
         <PredictionChart />
         <BillHistory />
         <ContributingFactors />
+        <AIAction />
       </ScrollView>
     </SafeAreaView>
   );
