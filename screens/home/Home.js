@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useMemo } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar, ScrollView, RefreshControl } from "react-native";
 import HomeHeader from "../../components/home/HomeHeader";
@@ -11,45 +11,133 @@ import UpcomingBills from "../../components/home/UpcomingBills";
 import AchievementsBanner from "../../components/home/AchievementsBanner";
 import { useFocusEffect } from "@react-navigation/native";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser } from '../../redux/actions/user/userFetchAction';
-import { fetchBills } from "../../redux/slices/bills/billSlice"; 
+import { fetchUser } from "../../redux/actions/user/userFetchAction";
+import { fetchBills } from "../../redux/slices/bills/billSlice";
+import { fetchPredictions } from "../../redux/slices/prediction/predictionSlice";
+import { fetchAnalytics } from "../../redux/slices/analytics/analyticsSlice";
+import { utilities } from "../../constants/utilities";
+import { getLatestBill, formatBillDate } from "../../utils/billUtils";
 import { useAuth } from "../../context/auth";
 
 export default function Home({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const { token } = useAuth();
   const dispatch = useDispatch();
-  
-  // Get data from Redux store
-  const { userData } = useSelector((state) => state.user);
-  const { 
-    recentBills, 
-    categories, 
-    upcomingBills, 
-    statsData,
-    loading 
-  } = useSelector((state) => state.bills);
 
-  const onRefresh = async () => {
-    setRefreshing(true);
-    try {
-      await Promise.all([
-        dispatch(fetchUser(token)),
-        dispatch(fetchBills(token))
-      ]);
-    } finally {
-      setTimeout(() => setRefreshing(false), 800);
-    }
+  // Redux state
+  const { userData } = useSelector((state) => state.user);
+  const bills = useSelector(
+    (state) => state.bills || { latestAmounts: {}, recentBills: [] }
+  );
+  const predictions = useSelector(
+    (state) => state.predictions || { electricity: [], water: [] }
+  );
+
+  const analytics = useSelector((state) => state.analytics);
+
+  const { latestAmounts, recentBills, loading } = bills;
+
+  // 🔁 Fetch all data
+  const fetchAll = async () => {
+    if (!token) return;
+    await Promise.all([
+      dispatch(fetchUser(token)),
+      dispatch(fetchBills()),
+      dispatch(fetchPredictions()),
+      dispatch(fetchAnalytics()),
+    ]);
   };
 
   useFocusEffect(
     useCallback(() => {
-      if (token) {
-        dispatch(fetchUser(token));
-        dispatch(fetchBills(token));
-      }
-    }, [token, dispatch])
+      fetchAll();
+    }, [token])
   );
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchAll();
+    setRefreshing(false);
+  };
+
+  // =======================
+  // 📊 DERIVED UI DATA
+  // =======================
+
+  // Categories (SpendingOverview)
+  const categories = useMemo(() => {
+    const total =
+      (latestAmounts?.electricity || 0) +
+      (latestAmounts?.water || 0);
+
+    return utilities.map((u) => {
+      const amount = latestAmounts?.[u.id] || 0;
+      return {
+        category: u.name,
+        amount,
+        percent: total ? Math.round((amount / total) * 100) : 0,
+        icon: u.icon,
+        color: u.color,
+      };
+    });
+  }, [latestAmounts]);
+
+  // Upcoming Bills (from predictions)
+  const upcomingBills = useMemo(() => {
+    const bills = [];
+
+    const electric = getLatestBill(predictions.electricity || []);
+    const water = getLatestBill(predictions.water || []);
+
+    if (electric) {
+      const util = utilities.find((u) => u.id === "electricity");
+      bills.push({
+        id: "electricity",
+        type: util.name,
+        amount: electric.predictedCost || 0,
+        dueDate: formatBillDate(electric.predictedDate),
+        icon: util.icon,
+        color: util.color,
+      });
+    }
+
+    if (water) {
+      const util = utilities.find((u) => u.id === "water");
+      bills.push({
+        id: "water",
+        type: util.name,
+        amount: water.predictedCost || 0,
+        dueDate: formatBillDate(water.predictedDate),
+        icon: util.icon,
+        color: util.color,
+      });
+    }
+
+    return bills;
+  }, [predictions]);
+
+  // StatsCards data
+  const statsData = useMemo(() => {
+    const currentTotal =
+      (latestAmounts?.electricity || 0) +
+      (latestAmounts?.water || 0);
+
+    const predictedTotal =
+      (upcomingBills[0]?.amount || 0) +
+      (upcomingBills[1]?.amount || 0);
+
+    const percentChange =
+      currentTotal > 0
+        ? Math.round(((predictedTotal - currentTotal) / currentTotal) * 100)
+        : 0;
+
+    return {
+      totalSpent: Math.round(currentTotal),
+      nextMonthPrediction: Math.round(predictedTotal),
+      predictionChange: percentChange,
+      billsUploaded: bills.billsUploaded || 0,
+    };
+  }, [latestAmounts, upcomingBills]);
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
@@ -59,9 +147,9 @@ export default function Home({ navigation }) {
         className="flex-1"
         showsVerticalScrollIndicator={false}
         refreshControl={
-          <RefreshControl 
-            refreshing={refreshing || loading} 
-            onRefresh={onRefresh} 
+          <RefreshControl
+            refreshing={refreshing || loading}
+            onRefresh={onRefresh}
           />
         }
       >

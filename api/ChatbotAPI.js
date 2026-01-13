@@ -1,6 +1,6 @@
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import baseURL from "../../assets/common/baseUrl"; // Your existing config
+import baseURL from "../assets/common/baseUrl"; // Your existing config
 
 const api = axios.create({
   baseURL: `${baseURL}/api/chatbot`,

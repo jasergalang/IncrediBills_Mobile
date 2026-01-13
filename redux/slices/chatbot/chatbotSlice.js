@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import * as chatbotAPI from "../../../api/chatbot/ChatbotAPI";
+import * as chatbotAPI from "../../../api/ChatbotAPI";
 
 export const sendChatMessage = createAsyncThunk(
   "chatbot/sendMessage",
