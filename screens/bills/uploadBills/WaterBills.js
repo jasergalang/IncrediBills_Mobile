@@ -13,7 +13,7 @@ import baseURL from "../../../assets/common/baseUrl";
 import { useAuth } from "../../../context/auth";
 import { useDispatch } from "react-redux";
 import { fetchAnalytics } from "../../../redux/actions/analytics/fetchAnalyticsAction";
-import { fetchBills } from "../../../redux/actions/bills/fetchBillsAction";
+import { fetchBills } from "../../../redux/slices/bills/billSlice"; 
 export default function UploadBill({ navigation }) {
   const category = { name: "Water", icon: "💧", color: "blue" };
   const { token, getToken } = useAuth(); 

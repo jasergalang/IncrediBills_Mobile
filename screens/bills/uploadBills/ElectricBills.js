@@ -11,21 +11,16 @@ import ElectricRecent from "../../../components/bills/uploadBills/electricBills/
 import ElectricTips from "../../../components/bills/uploadBills/electricBills/ElectricTips";
 import baseURL from "../../../assets/common/baseUrl";
 import { useAuth } from "../../../context/auth";
-// import { useBills } from "../../../hooks/useBills";
-// import { useAnalytics } from "../../../hooks/useAnalytics";
 import { useDispatch } from "react-redux";
 import { fetchAnalytics } from "../../../redux/actions/analytics/fetchAnalyticsAction";
-import { fetchBills } from "../../../redux/actions/bills/fetchBillsAction";
+import { fetchBills } from "../../../redux/slices/bills/billSlice"; 
 export default function ElectricBills({ navigation }) {
   const category = { name: "Electricity", icon: "⚡", color: "amber" };
   const { token, getToken } = useAuth();
-  // const { refresh } = useAnalytics();
-  // const { refreshBills } = useBills();
   const dispatch = useDispatch();
 
   const [electricBills, setElectricBills] = useState({ count: 0, bills: [] });
 
-  // form and UI state
   const [selectedImageUri, setSelectedImageUri] = useState(null);
   const [billingPeriod, setBillingPeriod] = useState("");
   const [provider, setProvider] = useState("");
