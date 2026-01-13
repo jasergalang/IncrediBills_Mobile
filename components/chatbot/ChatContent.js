@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useChatbot } from './hooks/useChatbotLogic';
 import TypingIndicator from './TypingIndicator';
@@ -16,6 +16,8 @@ export default function ChatContent({ isMaximized }) {
     handleClear,
   } = useChatbot();
 
+  const [showQuickActions, setShowQuickActions] = useState(true);
+
   const quickActions = [
     { icon: '📊', label: 'View Bills' },
     { icon: '💰', label: 'Pay Now' },
@@ -25,20 +27,22 @@ export default function ChatContent({ isMaximized }) {
 
   const handleQuickAction = (action) => {
     setInput(action.label);
-    // Small delay to ensure input is set before sending
     setTimeout(() => handleSend(), 100);
   };
+
+  const handleCloseQuickActions = () => setShowQuickActions(false);
 
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       className="flex-1"
+      
     >
       {/* Messages Area */}
       <ScrollView
         ref={scrollViewRef}
         className="flex-1 p-4"
-        contentContainerStyle={{ gap: 16 }}
+        contentContainerStyle={{ gap: 16, paddingBottom: 30 }}
       >
         {messages.length === 0 ? (
           <View className="items-center py-8">
@@ -75,11 +79,14 @@ export default function ChatContent({ isMaximized }) {
       </ScrollView>
 
       {/* Quick Actions */}
-      <QuickActions 
-        quickActions={quickActions}
-        onAction={handleQuickAction}
-        isMaximized={isMaximized}
-      />
+      {showQuickActions && (
+        <QuickActions 
+          quickActions={quickActions}
+          onAction={handleQuickAction}
+          isMaximized={isMaximized}
+          onClose={handleCloseQuickActions}
+        />
+      )}
 
       {/* Input Area */}
       <View className="border-t border-slate-200 p-4 bg-white">
@@ -110,6 +117,7 @@ export default function ChatContent({ isMaximized }) {
           </TouchableOpacity>
         </View>
         {error && <Text className="text-xs text-red-600 mt-2">⚠️ {error}</Text>}
+        
       </View>
     </KeyboardAvoidingView>
   );

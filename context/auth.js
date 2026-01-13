@@ -16,7 +16,21 @@ export const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [token, setToken] = useState(null);
     // const [isLoading, setIsLoading] = useState(true);
+    useEffect(() => {
+        const syncToken = async () => {
+            try {
+                if (token) {
+                    await AsyncStorage.setItem("token", token);
+                } else {
+                    await AsyncStorage.removeItem("token");
+                }
+            } catch (error) {
+                console.error("Error syncing token:", error);
+            }
+        };
 
+        syncToken();
+    }, [token]);
     // Check if user is already logged in on app start
     useEffect(() => {
         checkAuthStatus();

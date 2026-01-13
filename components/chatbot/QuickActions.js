@@ -1,12 +1,24 @@
 import React from 'react';
 import { View, Text, TouchableOpacity } from 'react-native';
 
-export default function QuickActions({ quickActions = [], onAction, isMaximized }) {
+export default function QuickActions({ quickActions = [], onAction, isMaximized, onClose }) {
   return (
     <View className={`bg-white border-t border-slate-200 ${isMaximized ? 'p-6' : 'p-3'}`}>
-      <Text className={`text-slate-700 font-semibold mb-2 px-1 ${isMaximized ? 'text-base mb-4' : 'text-xs'}`}>
-        Quick Actions:
-      </Text>
+      {/* Header with Quick Actions text + Close button */}
+      <View className="flex-row justify-between items-center mb-2 px-1">
+        <Text className={`text-slate-700 font-semibold ${isMaximized ? 'text-base mb-4' : 'text-xs'}`}>
+          Quick Actions:
+        </Text>
+        {onClose && (
+          <TouchableOpacity onPress={onClose} className="p-1">
+            <Text className={`text-slate-500 font-bold ${isMaximized ? 'text-lg' : 'text-sm'}`}>
+              ×
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
+
+      {/* Quick actions buttons */}
       <View className={`flex-row flex-wrap ${isMaximized ? 'gap-4' : 'gap-2'}`}>
         {quickActions.map((action, i) => (
           <TouchableOpacity

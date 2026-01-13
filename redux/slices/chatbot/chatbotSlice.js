@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import * as chatbotAPI from "../api/ChatbotAPI";
+import * as chatbotAPI from "../../../api/chatbot/ChatbotAPI";
 
-// Async thunks
 export const sendChatMessage = createAsyncThunk(
   "chatbot/sendMessage",
   async (message, { rejectWithValue }) => {
@@ -44,7 +43,6 @@ export const checkHealth = createAsyncThunk(
   }
 );
 
-// Initial state
 const initialState = {
   messages: [],
   loading: false,
@@ -53,7 +51,6 @@ const initialState = {
   isHealthy: null,
 };
 
-// Chatbot slice
 const chatbotSlice = createSlice({
   name: "chatbot",
   initialState,
@@ -90,17 +87,17 @@ const chatbotSlice = createSlice({
           sender: "bot",
           timestamp: new Date().toISOString(),
         });
-        state.messageCount = action.payload.messageCount || state.messageCount;
-        state.error = null;
+        state.messageCount =
+          action.payload.messageCount ?? state.messageCount;
       })
       .addCase(sendChatMessage.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        // Add error message to chat
         state.messages.push({
           id: Date.now(),
           text:
-            action.payload || "Sorry, something went wrong. Please try again.",
+            action.payload ||
+            "Sorry, something went wrong. Please try again.",
           sender: "bot",
           timestamp: new Date().toISOString(),
           isError: true,
@@ -137,6 +134,8 @@ const chatbotSlice = createSlice({
   },
 });
 
+
 export const { addUserMessage, clearMessages, clearError } =
   chatbotSlice.actions;
+
 export default chatbotSlice.reducer;

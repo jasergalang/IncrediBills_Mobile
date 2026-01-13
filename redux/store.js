@@ -3,7 +3,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { userReducer } from './reducers/user/userFetchReducer';
 import {analyticsReducer} from "./reducers/analytics/analyticsFetchReducer";
 import { billReducer } from './reducers/bills/billsFetchReducer';
-import chatbotReducer from '../components/chatbot/redux/ChatbotSlice'; 
+import chatbotReducer from './slices/chatbot/chatbotSlice'; 
 
 const store = configureStore({
     reducer: {
