@@ -44,6 +44,6 @@ export const utilities = [
     color: "orange",
     backgroundColor: "#fed7aa",
     borderColor: "#f97316",
-    provider: "Petron",
+    provider: "Other",
   },
 ];
