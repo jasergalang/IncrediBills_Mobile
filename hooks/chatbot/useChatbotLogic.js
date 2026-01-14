@@ -6,7 +6,7 @@ import {
   addUserMessage,
   clearMessages,
   clearSession,
-} from "../../../redux/slices/chatbot/chatbotSlice";
+} from "../../redux/slices/chatbot/chatbotSlice";
 
 export function useChatbot() {
   const dispatch = useDispatch();

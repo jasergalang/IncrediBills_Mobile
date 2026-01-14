@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
-import { useChatbot } from './hooks/useChatbotLogic';
+import { useChatbot } from '../../hooks/chatbot/useChatbotLogic';
 import TypingIndicator from './TypingIndicator';
 import QuickActions from './QuickActions';
 
