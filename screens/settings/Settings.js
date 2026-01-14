@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useSelector, useDispatch } from "react-redux";
 import { useAuth } from "../../context/auth";
-import { fetchUser } from "../../redux/actions/user/userFetchAction";
+import { fetchUser, updateUser } from "../../redux/slices/user/userSlice";
 import SettingsHeader from '../../components/settings/SettingsHeader';
 import ProfileSection from '../../components/settings/ProfileSection';
 import NotificationSection from '../../components/settings/NotificationSection';
@@ -13,9 +13,11 @@ import { useNavigation } from '@react-navigation/native';
 export default function Settings() {
     const dispatch = useDispatch();
     const { token } = useAuth();
-    const { userData, loading } = useSelector((state) => state.user);
-    const [activeTab, setActiveTab] = useState("profile");
     const navigation = useNavigation();
+    
+    // ✅ Get user data from Redux
+    const { userData, loading, updating } = useSelector((state) => state.user);
+    const [activeTab, setActiveTab] = useState("profile");
 
     // Profile state - initialize with empty values
     const [profile, setProfile] = useState({
@@ -24,42 +26,13 @@ export default function Settings() {
         email: "",
         phoneNumber: "",
         address: "",
-        profilePic: [],
+        profilePic: null,
         family: {
             _id: "",
             name: "",
             invitationCode: "",
         },
     });
-
-    // Fetch user data when component mounts
-    useEffect(() => {
-        if (token) {
-            dispatch(fetchUser(token));
-        }
-    }, [token, dispatch]);
-
-    // Update profile state when userData changes
-    useEffect(() => {
-        if (userData) {
-            setProfile({
-                firstName: userData.firstName || "",
-                lastName: userData.lastName || "",
-                email: userData.email || "",
-                phoneNumber: userData.phoneNumber || "",
-                address: userData.address || "",
-                profilePic: userData.profilePic || [],
-                family: {
-                    _id: userData.family?._id || "",
-                    name: userData.family?.name || "",
-                    invitationCode: userData.family?.invitationCode || "",
-                },
-            });
-        }
-    }, [userData]);
-
-    // Get profile picture URL from userData
-    const profilePicUrl = userData?.profilePic?.[0]?.url || userData?.profilePic || null;
 
     // Notification Preferences State
     const [notifications, setNotifications] = useState({
@@ -76,9 +49,56 @@ export default function Settings() {
         shareUsageData: false,
     });
 
+    // ✅ Fetch user data when component mounts
+    useEffect(() => {
+        dispatch(fetchUser());
+    }, [dispatch]);
+
+    // ✅ Update local profile state when userData changes
+    useEffect(() => {
+        if (userData) {
+            setProfile({
+                firstName: userData.firstName || "",
+                lastName: userData.lastName || "",
+                email: userData.email || "",
+                phoneNumber: userData.phoneNumber || "",
+                address: userData.address || "",
+                profilePic: userData.profilePic || null,
+                family: {
+                    _id: userData.family?._id || "",
+                    name: userData.family?.name || "",
+                    invitationCode: userData.family?.invitationCode || "",
+                },
+            });
+        }
+    }, [userData]);
+
+    // Get profile picture URL from userData
+    const profilePicUrl = userData?.profilePic || null;
+
+    // ✅ Handle profile update
+    const handleUpdateProfile = async (updatedFields) => {
+        try {
+            const resultAction = await dispatch(updateUser(updatedFields));
+            
+            if (updateUser.rejected.match(resultAction)) {
+                throw new Error(resultAction.payload || "Update failed");
+            }
+
+            Alert.alert("Success", "Profile updated successfully!");
+        } catch (err) {
+            console.error("Update error:", err);
+            Alert.alert(
+                "Update Failed",
+                err?.message || "Failed to update profile"
+            );
+        }
+    };
+
     const handleChangePassword = () => {
         console.log("Change password pressed");
-        // You can navigate to a change password screen or show a modal
+        // Navigate to change password screen or show modal
+        // navigation.navigate('ChangePassword');
     };
 
     // Show loading indicator while fetching user data
@@ -94,7 +114,11 @@ export default function Settings() {
         <SafeAreaView className="flex-1 bg-slate-50">
             <View className="flex-1">
                 {/* Header with Tabs */}
-                <SettingsHeader activeTab={activeTab} setActiveTab={setActiveTab} navigation={navigation}/>
+                <SettingsHeader 
+                    activeTab={activeTab} 
+                    setActiveTab={setActiveTab} 
+                    navigation={navigation}
+                />
 
                 {/* Content based on active tab */}
                 {activeTab === "profile" && (
@@ -103,6 +127,8 @@ export default function Settings() {
                         setProfile={setProfile}
                         profilePicUrl={profilePicUrl}
                         onChangePassword={handleChangePassword}
+                        onUpdateProfile={handleUpdateProfile}
+                        isUpdating={updating}
                     />
                 )}
 
