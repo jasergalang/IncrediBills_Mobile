@@ -8,6 +8,7 @@ import BillsTrendsChart from "../../components/bills/billCategories/BillsTrendCh
 import BillsRecentSection from "../../components/bills/billCategories/BillsRecentSection";
 import { utilities } from "../../constants/utilities";
 import { useFocusEffect } from "@react-navigation/native";
+
 import { useSelector, useDispatch } from "react-redux";
 import { fetchBills } from "../../redux/slices/bills/billSlice"; // ✅ updated import
 import { useAuth } from "../../context/auth";
@@ -43,12 +44,12 @@ export default function BillCategories({ navigation }) {
 
   // Refetch on focus
   useEffect(() => {
-  if (token) {
-    dispatch(fetchBills());
-    dispatch(fetchPredictions());
-    dispatch(fetchAnalytics());
-  }
-}, [dispatch, token]);
+    if (token) {
+      dispatch(fetchBills());
+      dispatch(fetchPredictions());
+      dispatch(fetchAnalytics());
+    }
+  }, [dispatch, token]);
 
   // Filter bills by active tab
   const filteredBills =
@@ -57,26 +58,57 @@ export default function BillCategories({ navigation }) {
       : recentBills.filter((bill) => bill.type === activeTab);
 
   // Total amounts and changes
-  const totalAmount =
-  (latestAmounts?.electricity || 0) +
-  (latestAmounts?.water || 0);
+  // const totalAmount =
+  // (latestAmounts?.electricity || 0) +
+  // (latestAmounts?.water || 0);
 
-  const totalChange = Object.values(computedChanges || {}).reduce((total, num) => total + parseFloat(num || 0), 0);
+  // const totalChange = Object.values(computedChanges || {}).reduce((total, num) => total + parseFloat(num || 0), 0);
 
-  // Map utilities dynamically with latest data
+  // // Map utilities dynamically with latest data
+  // const dynamicUtilities = utilities.map((u) => ({
+  //   ...u,
+  //   amount: latestAmounts?.[u.id] || 0,
+  //   change: computedChanges?.[u.id] || 0,
+  // }));
+
+  // const handleCategoryPress = (category) => {
+  //   const routes = {
+  //     water: "WaterBills",
+  //     electricity: "ElectricBills",
+  //     fuel: "TransportBills",
+  //     gas: "KitchenGasBills",
+  //     grocery: "GroceryBills",
+  //   };
+  //   navigation.navigate(routes[category.id] || "BillCategories", { category });
+  // };
+  // Update the total calculations in BillCategories.js
+
+  // Total amounts and changes
+  const totalAmount = Object.values(latestAmounts || {}).reduce(
+    (sum, amount) => sum + (amount || 0),
+    0
+  );
+
+  const totalChange = Object.values(computedChanges || {}).reduce(
+    (total, num) => total + parseFloat(num || 0),
+    0
+  );
+
+  // Map utilities dynamically with latest data - now includes all 5 categories
   const dynamicUtilities = utilities.map((u) => ({
     ...u,
     amount: latestAmounts?.[u.id] || 0,
     change: computedChanges?.[u.id] || 0,
   }));
 
+  // Update the handleCategoryPress routes
   const handleCategoryPress = (category) => {
     const routes = {
       water: "WaterBills",
       electricity: "ElectricBills",
       fuel: "TransportBills",
-      gas: "KitchenGasBills",
       grocery: "GroceryBills",
+      miscellaneous: "MiscellaneousBills", // Add this route
     };
     navigation.navigate(routes[category.id] || "BillCategories", { category });
   };

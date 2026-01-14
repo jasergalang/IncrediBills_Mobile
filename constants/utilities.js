@@ -17,15 +17,7 @@ export const utilities = [
     borderColor: "#f59e0b",
     provider: "Meralco",
   },
-  {
-    id: "gas",
-    name: "Kitchen Gas",
-    icon: "🔥",
-    color: "orange",
-    backgroundColor: "#fed7aa",
-    borderColor: "#f97316",
-    provider: "Petron",
-  },
+
   {
     id: "fuel",
     name: "Transport Fuel",
@@ -43,5 +35,15 @@ export const utilities = [
     backgroundColor: "#bbf7d0",
     borderColor: "#22c55e",
     provider: "SM Supermarket",
+  },
+
+    {
+    id: "miscellaneous",
+    name: "Miscellaneous",
+    icon: "📦",
+    color: "orange",
+    backgroundColor: "#fed7aa",
+    borderColor: "#f97316",
+    provider: "Petron",
   },
 ];

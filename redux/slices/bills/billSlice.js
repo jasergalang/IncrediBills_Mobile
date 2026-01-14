@@ -1,3 +1,65 @@
+// import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+// import { fetchAllBills } from "../../../api/billsAPI";
+// import { getLatestBill, transformBills } from "../../../utils/billUtils";
+
+// export const fetchBills = createAsyncThunk(
+//   "bills/fetchBills",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const {
+//         fetchAllElectricBill,
+//         fetchAllWaterBill,
+//       } = await fetchAllBills();
+
+//       const latestElectric = getLatestBill(fetchAllElectricBill);
+//       const latestWater = getLatestBill(fetchAllWaterBill);
+
+//       return {
+//         latestAmounts: {
+//           electricity: latestElectric?.cost || 0,
+//           water: latestWater?.cost || 0,
+//         },
+//         recentBills: transformBills(
+//           { bills: fetchAllElectricBill },
+//           { bills: fetchAllWaterBill }
+//         ).slice(0, 5),
+//         billsUploaded:
+//           fetchAllElectricBill.length + fetchAllWaterBill.length,
+//       };
+//     } catch (err) {
+//       return rejectWithValue("Failed to fetch bills");
+//     }
+//   }
+// );
+
+// const billsSlice = createSlice({
+//   name: "bills",
+//   initialState: {
+//     latestAmounts: {},
+//     recentBills: [],
+//     billsUploaded: 0,
+//     loading: false,
+//     error: null,
+//   },
+//   extraReducers: (builder) => {
+//     builder
+//       .addCase(fetchBills.pending, (state) => {
+//         state.loading = true;
+//         state.error = null;
+//       })
+//       .addCase(fetchBills.fulfilled, (state, action) => {
+//         state.loading = false;
+//         Object.assign(state, action.payload);
+//       })
+//       .addCase(fetchBills.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//       });
+//   },
+// });
+
+// export default billsSlice.reducer;
+
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchAllBills } from "../../../api/billsAPI";
 import { getLatestBill, transformBills } from "../../../utils/billUtils";
@@ -9,25 +71,59 @@ export const fetchBills = createAsyncThunk(
       const {
         fetchAllElectricBill,
         fetchAllWaterBill,
+        fetchAllGroceryBill,
+        fetchAllTransportBill,
+        fetchAllMiscellaneousBill,
       } = await fetchAllBills();
 
+      // Get latest bills for each category
       const latestElectric = getLatestBill(fetchAllElectricBill);
       const latestWater = getLatestBill(fetchAllWaterBill);
+      const latestGrocery = getLatestBill(fetchAllGroceryBill);
+      const latestTransport = getLatestBill(fetchAllTransportBill);
+      const latestMiscellaneous = getLatestBill(fetchAllMiscellaneousBill);
+
+      // Combine all bills for recent bills section
+      const allBills = [
+        ...fetchAllElectricBill,
+        ...fetchAllWaterBill,
+        ...fetchAllGroceryBill,
+        ...fetchAllTransportBill,
+        ...fetchAllMiscellaneousBill,
+      ];
 
       return {
         latestAmounts: {
           electricity: latestElectric?.cost || 0,
           water: latestWater?.cost || 0,
+          grocery: latestGrocery?.cost || 0,
+          fuel: latestTransport?.cost || 0,
+          miscellaneous: latestMiscellaneous?.cost || 0,
         },
         recentBills: transformBills(
           { bills: fetchAllElectricBill },
-          { bills: fetchAllWaterBill }
+          { bills: fetchAllWaterBill },
+          { bills: fetchAllGroceryBill },
+          { bills: fetchAllTransportBill },
+          { bills: fetchAllMiscellaneousBill }
         ).slice(0, 5),
         billsUploaded:
-          fetchAllElectricBill.length + fetchAllWaterBill.length,
+          fetchAllElectricBill.length +
+          fetchAllWaterBill.length +
+          fetchAllGroceryBill.length +
+          fetchAllTransportBill.length +
+          fetchAllMiscellaneousBill.length,
+        // Store all bills by category for detailed views
+        allBills: {
+          electricity: fetchAllElectricBill,
+          water: fetchAllWaterBill,
+          grocery: fetchAllGroceryBill,
+          fuel: fetchAllTransportBill,
+          miscellaneous: fetchAllMiscellaneousBill,
+        },
       };
     } catch (err) {
-      return rejectWithValue("Failed to fetch bills");
+      return rejectWithValue(err.response?.data?.message || "Failed to fetch bills");
     }
   }
 );
@@ -35,11 +131,30 @@ export const fetchBills = createAsyncThunk(
 const billsSlice = createSlice({
   name: "bills",
   initialState: {
-    latestAmounts: {},
+    latestAmounts: {
+      electricity: 0,
+      water: 0,
+      grocery: 0,
+      fuel: 0,
+      miscellaneous: 0,
+    },
     recentBills: [],
     billsUploaded: 0,
+    allBills: {
+      electricity: [],
+      water: [],
+      grocery: [],
+      fuel: [],
+      miscellaneous: [],
+    },
     loading: false,
     error: null,
+  },
+  reducers: {
+    // Add a reducer to clear error if needed
+    clearError: (state) => {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -58,4 +173,5 @@ const billsSlice = createSlice({
   },
 });
 
+export const { clearError } = billsSlice.actions;
 export default billsSlice.reducer;

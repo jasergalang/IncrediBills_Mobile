@@ -15,7 +15,37 @@ export function formatBillDate(date) {
   });
 }
 
-export function transformBills(electricData, waterData) {
+// export function transformBills(electricData, waterData) {
+//   const formatDate = (date) =>
+//     new Date(date).toLocaleDateString("en-US", {
+//       month: "long",
+//       year: "numeric",
+//     });
+
+//   const mapBill = (bill, typeId) => {
+//     const util = utilities.find((u) => u.id === typeId);
+//     return {
+//       id: bill._id,
+//       type: typeId,
+//       name: util?.name || typeId,
+//       provider: util?.provider || "",
+//       icon: util?.icon || "",
+//       color: util?.color || "gray",
+//       amount: bill.cost || 0,
+//       date: formatDate(bill.date),
+//       createdAt: bill.createdAt,
+//       status: bill.status,
+//     };
+//   };
+
+//   const electric = electricData.bills.map((b) => mapBill(b, "electricity"));
+//   const water = waterData.bills.map((b) => mapBill(b, "water"));
+
+//   return [...electric, ...water].sort(
+//     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+//   );
+// }
+export function transformBills(...billDataObjects) {
   const formatDate = (date) =>
     new Date(date).toLocaleDateString("en-US", {
       month: "long",
@@ -35,17 +65,31 @@ export function transformBills(electricData, waterData) {
       date: formatDate(bill.date),
       createdAt: bill.createdAt,
       status: bill.status,
+      // Include additional fields that might be useful
+      consumption: bill.consumption || null,
+      unit: bill.unit || null,
     };
   };
 
-  const electric = electricData.bills.map((b) => mapBill(b, "electricity"));
-  const water = waterData.bills.map((b) => mapBill(b, "water"));
+  // Map of expected bill types in order
+  const billTypes = ["electricity", "water", "grocery", "fuel", "miscellaneous"];
+  
+  const allBills = [];
 
-  return [...electric, ...water].sort(
+  // Process each bill data object
+  billDataObjects.forEach((billData, index) => {
+    if (billData && billData.bills && Array.isArray(billData.bills)) {
+      const typeId = billTypes[index] || `unknown-${index}`;
+      const mappedBills = billData.bills.map((b) => mapBill(b, typeId));
+      allBills.push(...mappedBills);
+    }
+  });
+
+  // Sort by createdAt date (most recent first)
+  return allBills.sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 }
-
 export const mergeMonthlyAnalytics = (a, b) => {
   const all = new Set([...Object.keys(a), ...Object.keys(b)]);
   const sorted = [...all].sort();

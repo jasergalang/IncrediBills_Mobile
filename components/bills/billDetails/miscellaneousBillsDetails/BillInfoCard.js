@@ -25,7 +25,7 @@ export default function BillInfoCard({ bill }) {
                     </View>
                 </View>
                 <Text className="text-sm font-semibold text-slate-600 mb-1">
-                    Kitchen Gas Bill
+                    Miscellaneous Bill
                 </Text>
                 <Text className="text-4xl font-bold text-slate-900 mb-2">
                     ₱{bill.scannedCost.toFixed(2)}

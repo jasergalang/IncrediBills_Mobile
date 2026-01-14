@@ -7,14 +7,14 @@ import {
     RefreshControl,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import KitchenGasHeader from "../../../components/bills/uploadBills/kitchenGasBills/KitchenGasHeader";
-import KitchenGasSummaryCards from "../../../components/bills/uploadBills/kitchenGasBills/KitchenGasSummaryCards";
+import KitchenGasHeader from "../../../components/bills/uploadBills/kitchenGasBills/KitchenGasHeader.js";
+import KitchenGasSummaryCards from "../../../components/bills/uploadBills/kitchenGasBills/KitchenGasSummaryCards.js";
 import KitchenGasBox from "../../../components/bills/uploadBills/kitchenGasBills/KitchenGasBox.js";
 import KitchenGasActions from "../../../components/bills/uploadBills/kitchenGasBills/KitchenGasActions.js";
 import KitchenGasRecent from "../../../components/bills/uploadBills/kitchenGasBills/KitchenGasRecent.js";
 import KitchenGasTips from "../../../components/bills/uploadBills/kitchenGasBills/KitchenGasTips.js";
 
-export default function KitchenGasBills({ navigation }) {
+export default function MiscellaneousBills({ navigation }) {
     const [refreshing, setRefreshing] = useState(false);
     const [uploads, setUploads] = useState([
         {

@@ -62,10 +62,27 @@ export default function Home({ navigation }) {
   // =======================
 
   // Categories (SpendingOverview)
+  // const categories = useMemo(() => {
+  //   const total =
+  //     (latestAmounts?.electricity || 0) +
+  //     (latestAmounts?.water || 0);
+
+  //   return utilities.map((u) => {
+  //     const amount = latestAmounts?.[u.id] || 0;
+  //     return {
+  //       category: u.name,
+  //       amount,
+  //       percent: total ? Math.round((amount / total) * 100) : 0,
+  //       icon: u.icon,
+  //       color: u.color,
+  //     };
+  //   });
+  // }, [latestAmounts]);
   const categories = useMemo(() => {
-    const total =
-      (latestAmounts?.electricity || 0) +
-      (latestAmounts?.water || 0);
+    const total = Object.values(latestAmounts || {}).reduce(
+      (sum, amount) => sum + (amount || 0),
+      0
+    );
 
     return utilities.map((u) => {
       const amount = latestAmounts?.[u.id] || 0;
@@ -114,14 +131,37 @@ export default function Home({ navigation }) {
   }, [predictions]);
 
   // StatsCards data
-  const statsData = useMemo(() => {
-    const currentTotal =
-      (latestAmounts?.electricity || 0) +
-      (latestAmounts?.water || 0);
+  // const statsData = useMemo(() => {
+  //   const currentTotal =
+  //     (latestAmounts?.electricity || 0) +
+  //     (latestAmounts?.water || 0);
 
-    const predictedTotal =
-      (upcomingBills[0]?.amount || 0) +
-      (upcomingBills[1]?.amount || 0);
+  //   const predictedTotal =
+  //     (upcomingBills[0]?.amount || 0) +
+  //     (upcomingBills[1]?.amount || 0);
+
+  //   const percentChange =
+  //     currentTotal > 0
+  //       ? Math.round(((predictedTotal - currentTotal) / currentTotal) * 100)
+  //       : 0;
+
+  //   return {
+  //     totalSpent: Math.round(currentTotal),
+  //     nextMonthPrediction: Math.round(predictedTotal),
+  //     predictionChange: percentChange,
+  //     billsUploaded: bills.billsUploaded || 0,
+  //   };
+  // }, [latestAmounts, upcomingBills]);
+  const statsData = useMemo(() => {
+    const currentTotal = Object.values(latestAmounts || {}).reduce(
+      (sum, amount) => sum + (amount || 0),
+      0
+    );
+
+    const predictedTotal = upcomingBills.reduce(
+      (sum, bill) => sum + (bill?.amount || 0),
+      0
+    );
 
     const percentChange =
       currentTotal > 0
@@ -134,8 +174,7 @@ export default function Home({ navigation }) {
       predictionChange: percentChange,
       billsUploaded: bills.billsUploaded || 0,
     };
-  }, [latestAmounts, upcomingBills]);
-
+  }, [latestAmounts, upcomingBills, bills.billsUploaded]);
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
