@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView, StatusBar } from "react-native";
 import BillsHeader from "../../components/bills/billCategories/BillsHeader";
@@ -10,46 +10,43 @@ import { utilities } from "../../constants/utilities";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { useSelector, useDispatch } from "react-redux";
-import { fetchBills } from "../../redux/slices/bills/billSlice"; // ✅ updated import
+import { fetchBills } from "../../redux/slices/bills/billSlice";
 import { useAuth } from "../../context/auth";
 import { fetchPredictions } from "../../redux/slices/prediction/predictionSlice";
 import { fetchAnalytics } from "../../redux/slices/analytics/analyticsSlice";
+
 export default function BillCategories({ navigation }) {
   const [activeTab, setActiveTab] = useState("all");
   const [timeRange, setTimeRange] = useState("month");
 
   const dispatch = useDispatch();
   const { token } = useAuth();
+  
+  // Redux state
   const bills = useSelector((state) => state.bills);
   const predictions = useSelector((state) => state.predictions);
   const analytics = useSelector((state) => state.analytics);
+  
   const { latestAmounts, recentBills } = bills;
   const { computedChanges } = predictions;
-  // const {
-  //   latestAmounts,
-  //   computedChanges,
-  //   recentBills,
-  //   upcomingBills,
-  //   categories,
-  //   statsData,
-  //   analytics,
-  //   loading,
-  //   error,
-  // } = useSelector((state) => state.bills); // ✅ use new slice state
 
-  // Fetch bills once on mount
-  React.useEffect(() => {
-    if (token) dispatch(fetchBills());
-  }, [dispatch, token]);
-
-  // Refetch on focus
+  // Fetch data on mount
   useEffect(() => {
     if (token) {
       dispatch(fetchBills());
-      dispatch(fetchPredictions());
-      dispatch(fetchAnalytics());
     }
   }, [dispatch, token]);
+
+  // Refetch on focus
+  useFocusEffect(
+    React.useCallback(() => {
+      if (token) {
+        dispatch(fetchBills());
+        dispatch(fetchPredictions());
+        dispatch(fetchAnalytics());
+      }
+    }, [dispatch, token])
+  );
 
   // Filter bills by active tab
   const filteredBills =
@@ -57,58 +54,33 @@ export default function BillCategories({ navigation }) {
       ? recentBills
       : recentBills.filter((bill) => bill.type === activeTab);
 
-  // Total amounts and changes
-  // const totalAmount =
-  // (latestAmounts?.electricity || 0) +
-  // (latestAmounts?.water || 0);
-
-  // const totalChange = Object.values(computedChanges || {}).reduce((total, num) => total + parseFloat(num || 0), 0);
-
-  // // Map utilities dynamically with latest data
-  // const dynamicUtilities = utilities.map((u) => ({
-  //   ...u,
-  //   amount: latestAmounts?.[u.id] || 0,
-  //   change: computedChanges?.[u.id] || 0,
-  // }));
-
-  // const handleCategoryPress = (category) => {
-  //   const routes = {
-  //     water: "WaterBills",
-  //     electricity: "ElectricBills",
-  //     fuel: "TransportBills",
-  //     gas: "KitchenGasBills",
-  //     grocery: "GroceryBills",
-  //   };
-  //   navigation.navigate(routes[category.id] || "BillCategories", { category });
-  // };
-  // Update the total calculations in BillCategories.js
-
-  // Total amounts and changes
+  // Total amounts - All 5 categories
   const totalAmount = Object.values(latestAmounts || {}).reduce(
     (sum, amount) => sum + (amount || 0),
     0
   );
 
+  // Total changes - All 5 categories
   const totalChange = Object.values(computedChanges || {}).reduce(
     (total, num) => total + parseFloat(num || 0),
     0
   );
 
-  // Map utilities dynamically with latest data - now includes all 5 categories
+  // Map utilities dynamically with latest data - All 5 categories
   const dynamicUtilities = utilities.map((u) => ({
     ...u,
     amount: latestAmounts?.[u.id] || 0,
     change: computedChanges?.[u.id] || 0,
   }));
 
-  // Update the handleCategoryPress routes
+  // Handle category press
   const handleCategoryPress = (category) => {
     const routes = {
       water: "WaterBills",
       electricity: "ElectricBills",
       fuel: "TransportBills",
       grocery: "GroceryBills",
-      miscellaneous: "MiscellaneousBills", // Add this route
+      miscellaneous: "MiscellaneousBills",
     };
     navigation.navigate(routes[category.id] || "BillCategories", { category });
   };
@@ -118,8 +90,14 @@ export default function BillCategories({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
       <BillsHeader navigation={navigation} />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <BillsTotalCard totalAmount={totalAmount} totalChange={totalChange} />
-        <BillsUtilitiesGrid utilities={dynamicUtilities} onPress={handleCategoryPress} />
+        <BillsTotalCard 
+          totalAmount={totalAmount} 
+          totalChange={totalChange} 
+        />
+        <BillsUtilitiesGrid 
+          utilities={dynamicUtilities} 
+          onPress={handleCategoryPress} 
+        />
         <BillsTrendsChart
           totalChange={totalChange}
           timeRange={timeRange}

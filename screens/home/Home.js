@@ -57,27 +57,8 @@ export default function Home({ navigation }) {
     setRefreshing(false);
   };
 
-  // =======================
-  // 📊 DERIVED UI DATA
-  // =======================
 
   // Categories (SpendingOverview)
-  // const categories = useMemo(() => {
-  //   const total =
-  //     (latestAmounts?.electricity || 0) +
-  //     (latestAmounts?.water || 0);
-
-  //   return utilities.map((u) => {
-  //     const amount = latestAmounts?.[u.id] || 0;
-  //     return {
-  //       category: u.name,
-  //       amount,
-  //       percent: total ? Math.round((amount / total) * 100) : 0,
-  //       icon: u.icon,
-  //       color: u.color,
-  //     };
-  //   });
-  // }, [latestAmounts]);
   const categories = useMemo(() => {
     const total = Object.values(latestAmounts || {}).reduce(
       (sum, amount) => sum + (amount || 0),
@@ -100,58 +81,37 @@ export default function Home({ navigation }) {
   const upcomingBills = useMemo(() => {
     const bills = [];
 
-    const electric = getLatestBill(predictions.electricity || []);
-    const water = getLatestBill(predictions.water || []);
+    const predictionCategories = [
+      { key: 'electricity', id: 'electricity' },
+      { key: 'water', id: 'water' },
+      { key: 'fuel', id: 'fuel' },
+      { key: 'grocery', id: 'grocery' },
+      { key: 'miscellaneous', id: 'miscellaneous' },
+    ];
 
-    if (electric) {
-      const util = utilities.find((u) => u.id === "electricity");
-      bills.push({
-        id: "electricity",
-        type: util.name,
-        amount: electric.predictedCost || 0,
-        dueDate: formatBillDate(electric.predictedDate),
-        icon: util.icon,
-        color: util.color,
-      });
-    }
+    predictionCategories.forEach(({ key, id }) => {
+      const latestPrediction = getLatestBill(predictions[key] || []);
 
-    if (water) {
-      const util = utilities.find((u) => u.id === "water");
-      bills.push({
-        id: "water",
-        type: util.name,
-        amount: water.predictedCost || 0,
-        dueDate: formatBillDate(water.predictedDate),
-        icon: util.icon,
-        color: util.color,
-      });
-    }
+      if (latestPrediction) {
+        const util = utilities.find((u) => u.id === id);
+
+        if (util) {
+          bills.push({
+            id,
+            type: util.name,
+            amount: latestPrediction.predictedCost || 0,
+            dueDate: formatBillDate(latestPrediction.predictedDate),
+            icon: util.icon,
+            color: util.color,
+          });
+        }
+      }
+    });
 
     return bills;
   }, [predictions]);
 
   // StatsCards data
-  // const statsData = useMemo(() => {
-  //   const currentTotal =
-  //     (latestAmounts?.electricity || 0) +
-  //     (latestAmounts?.water || 0);
-
-  //   const predictedTotal =
-  //     (upcomingBills[0]?.amount || 0) +
-  //     (upcomingBills[1]?.amount || 0);
-
-  //   const percentChange =
-  //     currentTotal > 0
-  //       ? Math.round(((predictedTotal - currentTotal) / currentTotal) * 100)
-  //       : 0;
-
-  //   return {
-  //     totalSpent: Math.round(currentTotal),
-  //     nextMonthPrediction: Math.round(predictedTotal),
-  //     predictionChange: percentChange,
-  //     billsUploaded: bills.billsUploaded || 0,
-  //   };
-  // }, [latestAmounts, upcomingBills]);
   const statsData = useMemo(() => {
     const currentTotal = Object.values(latestAmounts || {}).reduce(
       (sum, amount) => sum + (amount || 0),
