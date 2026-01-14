@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { ScrollView, StatusBar, View, Platform } from "react-native";
+import { ScrollView, StatusBar, View, Platform, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import UploadHeader from "../../../components/bills/uploadBills/waterBills/WaterHeader";
 import UploadSummaryCards from "../../../components/bills/uploadBills/waterBills/WaterSummaryCards";
@@ -9,19 +9,26 @@ import WaterInput from "../../../components/bills/uploadBills/waterBills/WaterIn
 import UploadActions from "../../../components/bills/uploadBills/waterBills/WaterActions";
 import UploadRecent from "../../../components/bills/uploadBills/waterBills/WaterRecent";
 import UploadTips from "../../../components/bills/uploadBills/waterBills/WaterTips";
-import baseURL from "../../../assets/common/baseUrl";
 import { useAuth } from "../../../context/auth";
-import { useDispatch } from "react-redux";
-import { fetchAnalytics } from "../../../redux/actions/analytics/fetchAnalyticsAction";
-import { fetchBills } from "../../../redux/slices/bills/billSlice"; 
+
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchWaterBills,
+  uploadWaterBill,
+  removeWaterBillLocal,
+} from "../../../redux/slices/bills/waterSlice";
+import { fetchAnalytics } from "../../../redux/slices/analytics/analyticsSlice";
+import { fetchBills } from "../../../redux/slices/bills/billSlice";
+
 export default function UploadBill({ navigation }) {
   const category = { name: "Water", icon: "💧", color: "blue" };
-  const { token, getToken } = useAuth(); 
+  const { token, getToken } = useAuth();
   const dispatch = useDispatch();
 
-  const [waterBills, setWaterBills] = useState({ count: 0, bills: [] });
+  // ✅ Get water bills from Redux store
+  const { bills, count, uploading } = useSelector((state) => state.water);
 
-  // form and UI state
+  // Form and UI state
   const [selectedImageUri, setSelectedImageUri] = useState(null);
   const [billingPeriod, setBillingPeriod] = useState("");
   const [provider, setProvider] = useState("");
@@ -31,24 +38,11 @@ export default function UploadBill({ navigation }) {
   const [cost, setCost] = useState("");
   const [consumption, setConsumption] = useState("");
   const [useManualEntry, setUseManualEntry] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // ✅ Fetch water bills on mount using Redux
   useEffect(() => {
-    fetchWaterBills();
-  }, []);
-
-  const fetchWaterBills = async () => {
-    const userToken = token || (await getToken());
-    try {
-      const res = await fetch(`${baseURL}/api/water-bill/all`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
-      const data = await res.json();
-      setWaterBills(data);
-    } catch (err) {
-      console.error("Error fetching bills:", err);
-    }
-  };
+    dispatch(fetchWaterBills());
+  }, [dispatch]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -79,39 +73,43 @@ export default function UploadBill({ navigation }) {
   };
 
   const uploadBill = async () => {
-    // validation differs based on manual mode
+    if (uploading) return;
+
+    // Validation
     if (!useManualEntry && !selectedImageUri) {
-      alert("Please select an image first.");
+      Alert.alert("Error", "Please select an image first.");
       return;
     }
+
     if (useManualEntry) {
       if (!billingPeriod || !provider || !paymentStatus || !date || !cost || !consumption) {
-        alert("Please fill in all required manual fields.");
+        Alert.alert("Error", "Please fill in all required manual fields.");
         return;
       }
-    } else {
-      if (!paymentStatus) {
-        alert("Please select payment status.");
-        return;
-      }
+    } else if (!paymentStatus) {
+      Alert.alert("Error", "Please select payment status.");
+      return;
     }
 
-    setIsSubmitting(true);
     try {
       const formData = new FormData();
 
       if (!useManualEntry && selectedImageUri) {
         const filename = selectedImageUri.split("/").pop();
-        const match = /\.(\w+)$/.exec(filename);
-        const type = match ? `image/${match[1]}` : `image`;
+        const ext = filename.split(".").pop();
+        const type = `image/${ext}`;
+
         formData.append("billImage", {
-          uri: Platform.OS === "android" ? selectedImageUri : selectedImageUri.replace("file://", ""),
+          uri:
+            Platform.OS === "android"
+              ? selectedImageUri
+              : selectedImageUri.replace("file://", ""),
           name: filename,
           type,
         });
+
         formData.append("useOCR", "true");
       } else {
-        // manual entry - no image
         formData.append("useOCR", "false");
         formData.append("date", date);
         formData.append("cost", cost);
@@ -123,49 +121,37 @@ export default function UploadBill({ navigation }) {
       formData.append("paymentStatus", paymentStatus);
       if (feedback) formData.append("feedback", feedback);
 
-      const userToken = token || (await getToken());
-      if (!userToken) {
-        alert("You must be logged in to upload bills.");
-        setIsSubmitting(false);
-        return;
+      // ✅ Dispatch Redux action
+      const resultAction = await dispatch(uploadWaterBill(formData));
+
+      // ✅ Check if the action was rejected
+      if (uploadWaterBill.rejected.match(resultAction)) {
+        throw new Error(resultAction.payload || "Upload failed");
       }
 
-      const response = await fetch(`${baseURL}/api/water-bill/upload`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${userToken}` },
-        body: formData,
-      });
+      // ✅ Refresh analytics and bills after successful upload
+      dispatch(fetchAnalytics());
+      dispatch(fetchBills());
 
-      const data = await response.json();
-      if (response.ok) {
-        alert("Bill uploaded successfully!");
-        // refresh
-        fetchWaterBills();
-        dispatch(fetchBills(token)); 
-        dispatch(fetchAnalytics(userToken, "month"));
-        // reset form
-        setSelectedImageUri(null);
-        setBillingPeriod("");
-        setProvider("");
-        setPaymentStatus("");
-        setFeedback("");
-        setDate("");
-        setCost("");
-        setConsumption("");
-        setUseManualEntry(false);
-      } else {
-        alert(`Upload failed: ${data.message || "Unknown error"}`);
-      }
+      // Reset form
+      setSelectedImageUri(null);
+      setBillingPeriod("");
+      setProvider("");
+      setPaymentStatus("");
+      setFeedback("");
+      setDate("");
+      setCost("");
+      setConsumption("");
+      setUseManualEntry(false);
+
+      Alert.alert("Success", "Water bill uploaded successfully!");
     } catch (err) {
       console.error("Upload error:", err);
-      alert("An error occurred during upload.");
-    } finally {
-      setIsSubmitting(false);
+      Alert.alert(
+        "Upload Failed",
+        err?.message || err?.toString() || "An error occurred while uploading the bill."
+      );
     }
-  };
-
-  const removeUpload = (id) => {
-    setWaterBills((prev) => ({ count: prev.count - 1, bills: prev.bills.filter((bill) => bill._id !== id) }));
   };
 
   return (
@@ -173,9 +159,9 @@ export default function UploadBill({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
       <UploadHeader navigation={navigation} category={category} />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <UploadSummaryCards waterBills={waterBills} />
+        {/* ✅ Pass bills and count from Redux */}
+        <UploadSummaryCards waterBills={{ bills, count }} />
         <View className="mx-4">
-          {/* show UploadBox only when OCR/upload mode is active */}
           {!useManualEntry && (
             <UploadBox
               pickImage={pickImage}
@@ -204,13 +190,19 @@ export default function UploadBill({ navigation }) {
             setUseManualEntry={setUseManualEntry}
             onSubmit={uploadBill}
             hasImage={!!selectedImageUri}
-            isSubmitting={isSubmitting}
+            isSubmitting={uploading}
           />
 
           <UploadActions pickImage={pickImage} takePhoto={takePhoto} />
         </View>
 
-        <UploadRecent waterBills={waterBills.bills} removeUpload={removeUpload} />
+        {/* ✅ Use Redux action for removal */}
+        <UploadRecent
+          waterBills={bills}
+          removeUpload={(id) => {
+            dispatch(removeWaterBillLocal(id));
+          }}
+        />
         <UploadTips category={category} />
       </ScrollView>
     </SafeAreaView>

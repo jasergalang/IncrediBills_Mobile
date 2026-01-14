@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, StatusBar, View, Platform } from "react-native";
+import { ScrollView, StatusBar, View, Platform, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import ElectricHeader from "../../../components/bills/uploadBills/electricBills/ElectricHeader";
 import ElectricSummaryCards from "../../../components/bills/uploadBills/electricBills/ElectricSummaryCards";
@@ -11,15 +11,24 @@ import ElectricRecent from "../../../components/bills/uploadBills/electricBills/
 import ElectricTips from "../../../components/bills/uploadBills/electricBills/ElectricTips";
 import baseURL from "../../../assets/common/baseUrl";
 import { useAuth } from "../../../context/auth";
-import { useDispatch } from "react-redux";
-import { fetchAnalytics } from "../../../redux/actions/analytics/fetchAnalyticsAction";
-import { fetchBills } from "../../../redux/slices/bills/billSlice"; 
+
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchElectricBills,
+  uploadElectricBill,
+  removeElectricBillLocal,
+} from "../../../redux/slices/bills/electricSlice";
+import { fetchAnalytics } from "../../../redux/slices/analytics/analyticsSlice";
+import { fetchBills } from "../../../redux/slices/bills/billSlice";
+
 export default function ElectricBills({ navigation }) {
   const category = { name: "Electricity", icon: "⚡", color: "amber" };
   const { token, getToken } = useAuth();
   const dispatch = useDispatch();
 
-  const [electricBills, setElectricBills] = useState({ count: 0, bills: [] });
+  const { bills, count, uploading } = useSelector(
+    (state) => state.electric
+  );
 
   const [selectedImageUri, setSelectedImageUri] = useState(null);
   const [billingPeriod, setBillingPeriod] = useState("");
@@ -30,24 +39,10 @@ export default function ElectricBills({ navigation }) {
   const [cost, setCost] = useState("");
   const [consumption, setConsumption] = useState("");
   const [useManualEntry, setUseManualEntry] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    fetchElectricBills();
-  }, []);
-
-  const fetchElectricBills = async () => {
-    const userToken = token || (await getToken());
-    try {
-      const res = await fetch(`${baseURL}/api/electric-bill/all`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
-      const data = await res.json();
-      setElectricBills(data);
-    } catch (err) {
-      console.error("Error fetching bills:", err);
-    }
-  };
+    dispatch(fetchElectricBills());
+  }, [dispatch]);
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -78,39 +73,42 @@ export default function ElectricBills({ navigation }) {
   };
 
   const uploadBill = async () => {
-    // validation differs based on manual mode
+    if (uploading) return;
+
     if (!useManualEntry && !selectedImageUri) {
-      alert("Please select an image first.");
+      Alert.alert("Error", "Please select an image first.");
       return;
     }
+
     if (useManualEntry) {
       if (!billingPeriod || !provider || !paymentStatus || !date || !cost || !consumption) {
-        alert("Please fill in all required manual fields.");
+        Alert.alert("Error", "Please fill in all required manual fields.");
         return;
       }
-    } else {
-      if (!paymentStatus) {
-        alert("Please select payment status.");
-        return;
-      }
+    } else if (!paymentStatus) {
+      Alert.alert("Error", "Please select payment status.");
+      return;
     }
 
-    setIsSubmitting(true);
     try {
       const formData = new FormData();
 
       if (!useManualEntry && selectedImageUri) {
         const filename = selectedImageUri.split("/").pop();
-        const match = /\.(\w+)$/.exec(filename);
-        const type = match ? `image/${match[1]}` : `image`;
+        const ext = filename.split(".").pop();
+        const type = `image/${ext}`;
+
         formData.append("billImage", {
-          uri: Platform.OS === "android" ? selectedImageUri : selectedImageUri.replace("file://", ""),
+          uri:
+            Platform.OS === "android"
+              ? selectedImageUri
+              : selectedImageUri.replace("file://", ""),
           name: filename,
           type,
         });
+
         formData.append("useOCR", "true");
       } else {
-        // manual entry - no image
         formData.append("useOCR", "false");
         formData.append("date", date);
         formData.append("cost", cost);
@@ -122,63 +120,37 @@ export default function ElectricBills({ navigation }) {
       formData.append("paymentStatus", paymentStatus);
       if (feedback) formData.append("feedback", feedback);
 
-      const userToken = token || (await getToken());
-      if (!userToken) {
-        alert("You must be logged in to upload bills.");
-        setIsSubmitting(false);
-        return;
+      // ✅ FIX: Use the action result directly
+      const resultAction = await dispatch(uploadElectricBill(formData));
+      
+      // ✅ Check if the action was rejected
+      if (uploadElectricBill.rejected.match(resultAction)) {
+        throw new Error(resultAction.payload || "Upload failed");
       }
 
-      const response = await fetch(`${baseURL}/api/electric-bill/upload`, {
-        method: "POST",
-        headers: { Authorization: `Bearer ${userToken}` },
-        body: formData,
-      });
+      // ✅ Refresh analytics after successful upload
+      dispatch(fetchAnalytics());
+      dispatch(fetchBills());
 
-      const data = await response.json();
-      if (response.ok) {
-        alert("Bill uploaded successfully!");
+      // Reset form
+      setSelectedImageUri(null);
+      setBillingPeriod("");
+      setProvider("");
+      setPaymentStatus("");
+      setFeedback("");
+      setDate("");
+      setCost("");
+      setConsumption("");
+      setUseManualEntry(false);
 
-        // Trigger prediction if needed
-        try {
-          await fetch(`${baseURL}/api/electric-bill/predict`, {
-            method: "POST",
-            headers: { Authorization: `Bearer ${userToken}` },
-          });
-        } catch (err) {
-          console.error("Prediction failed:", err);
-        }
-
-        // refresh
-        fetchElectricBills();
-        dispatch(fetchBills(token)); 
-        dispatch(fetchAnalytics(userToken, "month"));
-        // reset form
-        setSelectedImageUri(null);
-        setBillingPeriod("");
-        setProvider("");
-        setPaymentStatus("");
-        setFeedback("");
-        setDate("");
-        setCost("");
-        setConsumption("");
-        setUseManualEntry(false);
-      } else {
-        alert(`Upload failed: ${data.message || "Unknown error"}`);
-      }
+      Alert.alert("Success", "Electric bill uploaded successfully!");
     } catch (err) {
       console.error("Upload error:", err);
-      alert("An error occurred during upload.");
-    } finally {
-      setIsSubmitting(false);
+      Alert.alert(
+        "Upload Failed", 
+        err?.message || err?.toString() || "An error occurred while uploading the bill."
+      );
     }
-  };
-
-  const removeUpload = (id) => {
-    setElectricBills((prev) => ({
-      count: prev.count - 1,
-      bills: prev.bills.filter((bill) => bill._id !== id)
-    }));
   };
 
   return (
@@ -186,9 +158,8 @@ export default function ElectricBills({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
       <ElectricHeader navigation={navigation} category={category} />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <ElectricSummaryCards electricBills={electricBills} />
+        <ElectricSummaryCards electricBills={{ bills, count }} />
         <View className="mx-4">
-          {/* show ElectricBox only when OCR/upload mode is active */}
           {!useManualEntry && (
             <ElectricBox
               pickImage={pickImage}
@@ -217,13 +188,18 @@ export default function ElectricBills({ navigation }) {
             setUseManualEntry={setUseManualEntry}
             onSubmit={uploadBill}
             hasImage={!!selectedImageUri}
-            isSubmitting={isSubmitting}
+            isSubmitting={uploading}
           />
 
           <ElectricActions pickImage={pickImage} takePhoto={takePhoto} />
         </View>
 
-        <ElectricRecent electricBills={electricBills.bills} removeUpload={removeUpload} />
+        <ElectricRecent 
+          electricBills={bills} 
+          removeUpload={(id) => {
+            dispatch(removeElectricBillLocal(id));
+          }} 
+        />
         <ElectricTips category={category} />
       </ScrollView>
     </SafeAreaView>

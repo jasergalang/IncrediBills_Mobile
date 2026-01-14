@@ -6,6 +6,8 @@ import chatbotReducer from './slices/chatbot/chatbotSlice';
 import billSlice from './slices/bills/billSlice';
 import analyticsSlice  from './slices/analytics/analyticsSlice';
 import predictionsSlice from './slices/prediction/predictionSlice';
+import electricSlice from './slices/bills/electricSlice';
+import waterSlice from './slices/bills/waterSlice';
 const store = configureStore({
     reducer: {
         login: loginReducer,
@@ -14,6 +16,8 @@ const store = configureStore({
         chatbot: chatbotReducer,
         bills: billSlice,
         predictions: predictionsSlice,
+        electric: electricSlice,
+        water: waterSlice,
     },
 });
 export default store;
