@@ -2,7 +2,7 @@ import React from "react";
 import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function KitchenGasTips() {
+export default function MiscellaneousTips() {
     const tips = [
         "Keep your gas tank in a well-ventilated area",
         "Check for leaks regularly with soapy water",

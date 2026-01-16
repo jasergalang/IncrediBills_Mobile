@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-export default function KitchenGasRecent({ uploads, removeUpload }) {
+export default function MiscellaneousRecent({ uploads, removeUpload }) {
     const navigation = useNavigation();
 
     if (uploads.length === 0) return null;

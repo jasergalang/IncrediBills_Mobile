@@ -16,6 +16,7 @@ import TransportTips from "../../../components/bills/uploadBills/transportBills/
 
 export default function TransportBills({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
+  const category = { name: "Transport Fuel", icon: "⛽", color: "red" };
   const [uploads, setUploads] = useState([
     {
       id: 1,
@@ -67,7 +68,7 @@ export default function TransportBills({ navigation }) {
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
-      <TransportHeader navigation={navigation} />
+      <TransportHeader navigation={navigation} category={category}/>
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
@@ -77,11 +78,11 @@ export default function TransportBills({ navigation }) {
       >
         <TransportSummaryCards />
         <View className="mx-4">
-          <TransportBox pickImage={pickImage} />
+          <TransportBox pickImage={pickImage} category={category}/>
           <TransportActions pickImage={pickImage} takePhoto={takePhoto} />
         </View>
         <TransportRecent uploads={uploads} removeUpload={removeUpload} />
-        <TransportTips />
+        <TransportTips category={category}/>
       </ScrollView>
     </SafeAreaView>
   );

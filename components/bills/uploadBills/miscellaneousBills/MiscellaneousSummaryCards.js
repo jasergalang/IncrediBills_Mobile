@@ -1,7 +1,7 @@
 import React from "react";
 import { View, Text } from "react-native";
 
-export default function KitchenGasSummaryCards() {
+export default function MiscellaneousSummaryCards() {
   return (
     <View className="p-4">
       <View className="rounded-2xl p-6" style={{ backgroundColor: "#fed7aa" }}>

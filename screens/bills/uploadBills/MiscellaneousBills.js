@@ -7,15 +7,15 @@ import {
     RefreshControl,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import KitchenGasHeader from "../../../components/bills/uploadBills/kitchenGasBills/KitchenGasHeader.js";
-import KitchenGasSummaryCards from "../../../components/bills/uploadBills/kitchenGasBills/KitchenGasSummaryCards.js";
-import KitchenGasBox from "../../../components/bills/uploadBills/kitchenGasBills/KitchenGasBox.js";
-import KitchenGasActions from "../../../components/bills/uploadBills/kitchenGasBills/KitchenGasActions.js";
-import KitchenGasRecent from "../../../components/bills/uploadBills/kitchenGasBills/KitchenGasRecent.js";
-import KitchenGasTips from "../../../components/bills/uploadBills/kitchenGasBills/KitchenGasTips.js";
-
-export default function MiscellaneousBills({ navigation }) {
+import MiscellaneousActions from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousActions";
+import MiscellaneousBox from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousBox";
+import MiscellaneousSummaryCards from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousSummaryCards";
+import MiscellaneousTips from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousTips";
+import MiscellaneousHeader from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousHeader"
+import MiscellaneousRecent from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousRecent" 
+export default function MiscellaneousBills({ navigation, }) {
     const [refreshing, setRefreshing] = useState(false);
+     const category = { name: "Miscellaneous", icon: "📦", color: "purple" };
     const [uploads, setUploads] = useState([
         {
             id: 1,
@@ -67,7 +67,7 @@ export default function MiscellaneousBills({ navigation }) {
     return (
         <SafeAreaView className="flex-1 bg-slate-50">
             <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
-            <KitchenGasHeader navigation={navigation} />
+            <MiscellaneousHeader navigation={navigation} category={category}/>
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -75,14 +75,14 @@ export default function MiscellaneousBills({ navigation }) {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
-                <KitchenGasSummaryCards />
+                <MiscellaneousSummaryCards category={category}/>
 
                 <View className="mx-4">
-                    <KitchenGasBox pickImage={pickImage} />
-                    <KitchenGasActions pickImage={pickImage} takePhoto={takePhoto} />
+                    <MiscellaneousBox pickImage={pickImage} category={category}/>
+                    <MiscellaneousActions pickImage={pickImage} takePhoto={takePhoto}/>
                 </View>
-                <KitchenGasRecent uploads={uploads} removeUpload={removeUpload} />
-                <KitchenGasTips />
+                <MiscellaneousRecent uploads={uploads} removeUpload={removeUpload}/>
+                <MiscellaneousTips category={category}/>
             </ScrollView>
         </SafeAreaView>
     );

@@ -2,7 +2,7 @@ export const utilities = [
   {
     id: "water",
     name: "Water",
-    icon: "💧",
+    icon: "💧]",
     color: "blue",
     backgroundColor: "#dbeafe",
     borderColor: "#3b82f6",

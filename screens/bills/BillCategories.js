@@ -21,13 +21,13 @@ export default function BillCategories({ navigation }) {
 
   const dispatch = useDispatch();
   const { token } = useAuth();
-  
+
   // Redux state
   const bills = useSelector((state) => state.bills);
   const predictions = useSelector((state) => state.predictions);
   const analytics = useSelector((state) => state.analytics);
-  
-  const { latestAmounts, recentBills } = bills;
+
+  const { recentBills } = bills;
   const { computedChanges } = predictions;
 
   // Fetch data on mount
@@ -54,11 +54,30 @@ export default function BillCategories({ navigation }) {
       ? recentBills
       : recentBills.filter((bill) => bill.type === activeTab);
 
-  // Total amounts - All 5 categories
-  const totalAmount = Object.values(latestAmounts || {}).reduce(
-    (sum, amount) => sum + (amount || 0),
-    0
+  // Calculate total amounts by summing all bills for each utility type
+  const utilityTotals = (recentBills || []).reduce((acc, bill) => {
+    const type = bill.type;
+    acc[type] = (acc[type] || 0) + (parseFloat(bill.amount) || 0);
+    return acc;
+  }, {});
+
+  const formatAmount = (value) => {
+    const num = Number(value) || 0;
+
+    return Number.isInteger(num)
+      ? num.toString()
+      : num.toFixed(2);
+  };
+
+
+  // Total amount - Sum of all utility totals
+  const totalAmount = formatAmount(
+    Object.values(utilityTotals).reduce(
+      (sum, amount) => sum + (amount || 0),
+      0
+    )
   );
+
 
   // Total changes - All 5 categories
   const totalChange = Object.values(computedChanges || {}).reduce(
@@ -66,12 +85,13 @@ export default function BillCategories({ navigation }) {
     0
   );
 
-  // Map utilities dynamically with latest data - All 5 categories
+  // Map utilities dynamically with summed amounts - All 5 categories
   const dynamicUtilities = utilities.map((u) => ({
     ...u,
-    amount: latestAmounts?.[u.id] || 0,
+    amount: formatAmount(utilityTotals[u.id] || 0),
     change: computedChanges?.[u.id] || 0,
   }));
+
 
   // Handle category press
   const handleCategoryPress = (category) => {
@@ -90,13 +110,13 @@ export default function BillCategories({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
       <BillsHeader navigation={navigation} />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <BillsTotalCard 
-          totalAmount={totalAmount} 
-          totalChange={totalChange} 
+        <BillsTotalCard
+          totalAmount={totalAmount}
+          totalChange={totalChange}
         />
-        <BillsUtilitiesGrid 
-          utilities={dynamicUtilities} 
-          onPress={handleCategoryPress} 
+        <BillsUtilitiesGrid
+          utilities={dynamicUtilities}
+          onPress={handleCategoryPress}
         />
         <BillsTrendsChart
           totalChange={totalChange}
