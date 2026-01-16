@@ -23,8 +23,8 @@ export const utilities = [
     name: "Transport Fuel",
     icon: "⛽",
     color: "red",
-    backgroundColor: "#f3f4f6",
-    borderColor: "#6b7280",
+    backgroundColor: "#feadaa",
+    borderColor: "#f91616",
     provider: "Shell",
   },
   {
@@ -42,8 +42,8 @@ export const utilities = [
     name: "Miscellaneous",
     icon: "📦",
     color: "orange",
-    backgroundColor: "#fed7aa",
-    borderColor: "#f97316",
+    backgroundColor: "#ceace5",
+    borderColor: "#ad65e4",
     provider: "Other",
   },
 ];

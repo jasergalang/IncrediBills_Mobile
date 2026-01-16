@@ -15,31 +15,33 @@ import AIAction from "../../components/prediction/AIAction";
 import { utilities } from "../../constants/utilities";
 import { fetchBills } from "../../redux/slices/bills/billSlice";
 import { useAuth } from "../../context/auth";
+import { fetchPredictions } from "../../redux/slices/prediction/predictionSlice";
 
 export default function Prediction() {
   const [selectedUtility, setSelectedUtility] = useState(null);
+
+  useEffect(() => {
+    // Set Water as default
+    const waterUtility = utilities.find(u => u.id === "water");
+    setSelectedUtility(waterUtility);
+  }, []);
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { token } = useAuth();
 
-  // 🔥 SAME SOURCE AS BillCategories
   const { recentBills } = useSelector((state) => state.bills);
-  const summaryData = {
-    totalBills: 3500,
-    savings: 1200,
-    predicted: 4000,
-    accuracy: 92,
-  };
+
   useFocusEffect(
     React.useCallback(() => {
       if (token) {
         dispatch(fetchBills());
+        dispatch(fetchPredictions()); // 🔥 FETCH PREDICTIONS
       }
     }, [dispatch, token])
   );
 
-  // 🔥 SAME FILTER LOGIC
+
   const filteredBills = selectedUtility
     ? recentBills?.filter(
       (bill) => bill.type === selectedUtility.id
@@ -62,10 +64,10 @@ export default function Prediction() {
           setSelectedUtility={setSelectedUtility}
         />
 
-        <SummaryCards summaryData={summaryData} />
+        <SummaryCards
+          selectedUtility={selectedUtility} />
         <PredictionChart />
 
-        {/* 🔥 REAL DATA */}
         <BillHistory
           billsHistory={filteredBills}
           selectedCategory={selectedUtility?.name}
