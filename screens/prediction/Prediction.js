@@ -21,7 +21,6 @@ export default function Prediction() {
   const [selectedUtility, setSelectedUtility] = useState(null);
 
   useEffect(() => {
-    // Set Water as default
     const waterUtility = utilities.find(u => u.id === "water");
     setSelectedUtility(waterUtility);
   }, []);
@@ -32,11 +31,12 @@ export default function Prediction() {
 
   const { recentBills } = useSelector((state) => state.bills);
 
+
   useFocusEffect(
     React.useCallback(() => {
       if (token) {
         dispatch(fetchBills());
-        dispatch(fetchPredictions()); // 🔥 FETCH PREDICTIONS
+        dispatch(fetchPredictions());
       }
     }, [dispatch, token])
   );
@@ -66,7 +66,13 @@ export default function Prediction() {
 
         <SummaryCards
           selectedUtility={selectedUtility} />
-        <PredictionChart />
+        <PredictionChart
+          selectedUtility={selectedUtility}
+          bills={filteredBills}
+          onSavePress={() => { }}
+          onAlertPress={() => { }}
+        />
+
 
         <BillHistory
           billsHistory={filteredBills}
