@@ -77,6 +77,7 @@ export default function Prediction() {
         <BillHistory
           billsHistory={filteredBills}
           selectedCategory={selectedUtility?.name}
+          selectedUtility={selectedUtility}
         />
 
         <ContributingFactors />

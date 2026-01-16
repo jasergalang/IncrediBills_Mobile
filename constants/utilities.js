@@ -41,7 +41,7 @@ export const utilities = [
     id: "miscellaneous",
     name: "Miscellaneous",
     icon: "📦",
-    color: "orange",
+    color: "purple",
     backgroundColor: "#ceace5",
     borderColor: "#ad65e4",
     provider: "Other",

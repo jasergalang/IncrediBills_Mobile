@@ -1,7 +1,12 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 
-export default function BillHistory({ billsHistory = [], selectedCategory }) {
+export default function BillHistory({ billsHistory = [], selectedCategory, selectedUtility}) {
+
+  const amountColor = selectedUtility
+    ? `text-${selectedUtility.color}-600`
+    : "text-slate-600";
+
   // Empty state (same UX pattern as BillsRecentSection)
   if (!selectedCategory) {
     return (
@@ -61,18 +66,16 @@ export default function BillHistory({ billsHistory = [], selectedCategory }) {
               {bill.date}
             </Text>
             <View
-              className={`px-3 py-1 rounded-full ${
-                bill.status === "Success"
-                  ? "bg-green-100"
-                  : "bg-red-100"
-              }`}
+              className={`px-3 py-1 rounded-full ${bill.status === "Success"
+                ? "bg-green-100"
+                : "bg-red-100"
+                }`}
             >
               <Text
-                className={`text-xs font-semibold ${
-                  bill.status === "Success"
-                    ? "text-green-700"
-                    : "text-red-700"
-                }`}
+                className={`text-xs font-semibold ${bill.status === "Success"
+                  ? "text-green-700"
+                  : "text-red-700"
+                  }`}
               >
                 {bill.status === "Success" ? "✓ Paid" : "✗ Failed"}
               </Text>
@@ -80,9 +83,10 @@ export default function BillHistory({ billsHistory = [], selectedCategory }) {
           </View>
 
           <View className="flex-row items-center justify-between">
-            <Text className="text-lg font-bold text-blue-600">
+            <Text className={`text-lg font-bold ${amountColor}`}>
               ₱{bill.amount.toLocaleString()}
             </Text>
+
             <Text className="text-sm text-slate-600">
               {bill.provider}
             </Text>
