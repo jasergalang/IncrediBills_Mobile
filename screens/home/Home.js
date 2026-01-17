@@ -153,7 +153,7 @@ export default function Home({ navigation }) {
         <StatsCards statsData={statsData} />
         <QuickActions navigation={navigation} />
         <AchievementsBanner navigation={navigation} />
-        <RecentBills bills={recentBills} navigation={navigation} />
+        <RecentBills bills={recentBills.slice(0, 5)} navigation={navigation} />
         <SpendingOverview spendingData={categories} />
         <UpcomingBills bills={upcomingBills} navigation={navigation} />
       </ScrollView>

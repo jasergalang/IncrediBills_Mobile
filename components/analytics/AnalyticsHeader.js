@@ -4,8 +4,8 @@ import { Ionicons } from "@expo/vector-icons";
 
 export default function AnalyticsHeader({ activeTab, setActiveTab, navigation }) {
   return (
-    <View className="bg-white border-b border-slate-200 px-4 py-4">
-      <View className="flex-row items-center justify-between mb-4">
+    <View className="bg-white border-b border-slate-200 px-4 py-4 mb-2">
+      <View className="flex-row items-center justify-between">
         <View>
           <Text className="text-2xl font-bold text-slate-900">
             Analytics 📊
@@ -29,7 +29,7 @@ export default function AnalyticsHeader({ activeTab, setActiveTab, navigation })
         </View>
       </View>
 
-      <View className="flex-row gap-2">
+      {/* <View className="flex-row gap-2">
         <TouchableOpacity
           onPress={() => setActiveTab("utility")}
           className={`flex-1 py-3 rounded-xl ${activeTab === "utility" ? "bg-blue-600" : "bg-slate-100"}`}
@@ -50,7 +50,7 @@ export default function AnalyticsHeader({ activeTab, setActiveTab, navigation })
             🎮 Games
           </Text>
         </TouchableOpacity>
-      </View>
+      </View> */}
     </View>
   );
 }

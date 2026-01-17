@@ -19,7 +19,6 @@ const getPercentageStyle = (value = 0) => {
   }
 
   return {
-    // arrow: "→",
     textColor: "text-blue-600",
     bgColor: "bg-blue-50",
   };
