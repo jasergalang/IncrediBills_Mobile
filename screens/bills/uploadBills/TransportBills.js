@@ -32,14 +32,11 @@ export default function TransportBills({ navigation }) {
 
   const dispatch = useDispatch();
 
-  const { bills, uploading } = useSelector((state) => state.transport);
+  const { bills, uploading, count } = useSelector((state) => state.transport);
 
   const [refreshing, setRefreshing] = useState(false);
-
-  /* ---------------- IMAGE ---------------- */
   const [selectedImageUri, setSelectedImageUri] = useState(null);
 
-  /* ---------------- FORM ---------------- */
   const [stationLocation, setStationLocation] = useState("");
   const [provider, setProvider] = useState("");
   const [liters, setLiters] = useState("");
@@ -49,12 +46,9 @@ export default function TransportBills({ navigation }) {
   const [cost, setCost] = useState("");
   const [useManualEntry, setUseManualEntry] = useState(false);
 
-  /* ---------------- FETCH ---------------- */
   useEffect(() => {
     dispatch(fetchTransportBills());
   }, [dispatch]);
-
-  /* ---------------- IMAGE PICKERS ---------------- */
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -83,8 +77,6 @@ export default function TransportBills({ navigation }) {
   const removeSelectedImage = () => {
     setSelectedImageUri(null);
   };
-
-  /* ---------------- SUBMIT ---------------- */
 
   const uploadBill = async () => {
     if (uploading) return;
@@ -164,14 +156,10 @@ export default function TransportBills({ navigation }) {
     }
   };
 
-  /* ---------------- REFRESH ---------------- */
-
   const onRefresh = () => {
     setRefreshing(true);
     setTimeout(() => setRefreshing(false), 2000);
   };
-
-  /* ---------------- UI ---------------- */
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
@@ -186,7 +174,7 @@ export default function TransportBills({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <TransportSummaryCards />
+        <TransportSummaryCards transportBills={{ bills, count }} category={category}/>
 
         <View className="mx-4">
           {!useManualEntry && (

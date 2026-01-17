@@ -1,8 +1,7 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
-export default function UploadBox({ pickImage, category, selectedImageUri, onRemoveImage }) {
+export default function UploadBox({ pickImage, selectedImageUri, onRemoveImage }) {
   if (selectedImageUri) {
     return (
       <View className="rounded-2xl bg-white mb-4 overflow-hidden shadow-sm">
@@ -12,7 +11,7 @@ export default function UploadBox({ pickImage, category, selectedImageUri, onRem
           className="absolute top-3 right-3 z-10 bg-red-500 rounded-full p-2 shadow-lg"
           activeOpacity={0.7}
         >
-          <Ionicons name="close" size={20} color="white" />
+          <Text style={{ fontSize: 16, color: "white", fontWeight: "bold" }}>✖</Text>
         </TouchableOpacity>
 
         {/* Image preview */}
@@ -40,15 +39,18 @@ export default function UploadBox({ pickImage, category, selectedImageUri, onRem
       activeOpacity={0.7}
       className="border-2 border-dashed border-slate-300 rounded-2xl bg-slate-100 p-8 items-center justify-center mb-4"
     >
+      {/* Hardcoded emoji upload icon */}
       <View className="w-16 h-16 bg-blue-100 rounded-full items-center justify-center mb-4">
-        <Ionicons name="cloud-upload-outline" size={32} color="#2563eb" />
+        <Text style={{ fontSize: 32 }}>⬆️</Text>
       </View>
+
       <Text className="text-base font-semibold text-slate-900 mb-2">
         Tap to Upload
       </Text>
       <Text className="text-sm text-slate-600 text-center mb-4">
         Choose a file from your device or take a photo
       </Text>
+
       <View className="flex-row gap-2">
         <View className="bg-white px-3 py-1 rounded-full border border-slate-200">
           <Text className="text-xs text-slate-600 font-medium">PNG</Text>

@@ -82,7 +82,7 @@ export default function MiscellaneousInput({
       </Text>
 
       {/* Manual / OCR Toggle */}
-      <View className="mb-4 p-3 bg-green-50 rounded-xl border border-green-100">
+      <View className="mb-4 p-3 bg-purple-50 rounded-xl border border-purple-100">
         <View className="flex-row items-center justify-between">
           <View className="flex-1 mr-3">
             <Text className="text-sm font-semibold text-slate-800 mb-1">
@@ -305,14 +305,14 @@ export default function MiscellaneousInput({
               category &&
               paymentStatus &&
               !isSubmitting
-              ? "bg-green-500"
+              ? "bg-purple-500"
               : "bg-slate-300"
             : hasImage &&
               purchaseType &&
               category &&
               paymentStatus &&
               !isSubmitting
-            ? "bg-green-500"
+            ? "bg-purple-500"
             : "bg-slate-300"
         }`}
         onPress={onSubmit}

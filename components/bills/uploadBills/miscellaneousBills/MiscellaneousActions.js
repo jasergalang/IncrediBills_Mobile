@@ -1,25 +1,24 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function MiscellaneousActions({ pickImage, takePhoto }) {
     const actions = [
         {
-            icon: "camera-outline",
+            icon: "📷",
             label: "Take Photo",
-            color: "#f97316",
+            color: "#ad65e4",
             onPress: takePhoto,
         },
         {
-            icon: "image-outline",
+            icon: "🖼️",
             label: "From Gallery",
-            color: "#f97316",
+            color: "#ad65e4",
             onPress: pickImage,
         },
         {
-            icon: "document-text-outline",
+            icon: "📄",
             label: "View History",
-            color: "#f97316",
+            color: "#ad65e4",
             onPress: () => { },
         },
     ];
@@ -39,9 +38,9 @@ export default function MiscellaneousActions({ pickImage, takePhoto }) {
                     >
                         <View
                             className="w-12 h-12 rounded-xl items-center justify-center mb-2"
-                            style={{ backgroundColor: "#fed7aa" }}
+                            style={{ backgroundColor: "#ceace5" }}
                         >
-                            <Ionicons name={action.icon} size={24} color={action.color} />
+                            <Text style={{ fontSize: 24 }}>{action.icon}</Text>
                         </View>
                         <Text className="text-xs font-semibold text-slate-700 text-center">
                             {action.label}

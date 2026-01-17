@@ -3,7 +3,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { ScrollView, StatusBar, View, Platform, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import UploadHeader from "../../../components/bills/uploadBills/waterBills/WaterHeader";
-import UploadSummaryCards from "../../../components/bills/uploadBills/waterBills/WaterSummaryCards";
+import WaterSummaryCards from "../../../components/bills/uploadBills/waterBills/WaterSummaryCards";
 import UploadBox from "../../../components/bills/uploadBills/waterBills/WaterBox";
 import WaterInput from "../../../components/bills/uploadBills/waterBills/WaterInput";
 import UploadActions from "../../../components/bills/uploadBills/waterBills/WaterActions";
@@ -25,10 +25,8 @@ export default function UploadBill({ navigation }) {
   const { token, getToken } = useAuth();
   const dispatch = useDispatch();
 
-  // ✅ Get water bills from Redux store
   const { bills, count, uploading } = useSelector((state) => state.water);
 
-  // Form and UI state
   const [selectedImageUri, setSelectedImageUri] = useState(null);
   const [billingPeriod, setBillingPeriod] = useState("");
   const [provider, setProvider] = useState("");
@@ -39,7 +37,6 @@ export default function UploadBill({ navigation }) {
   const [consumption, setConsumption] = useState("");
   const [useManualEntry, setUseManualEntry] = useState(false);
 
-  // ✅ Fetch water bills on mount using Redux
   useEffect(() => {
     dispatch(fetchWaterBills());
   }, [dispatch]);
@@ -159,8 +156,7 @@ export default function UploadBill({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
       <UploadHeader navigation={navigation} category={category} />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        {/* ✅ Pass bills and count from Redux */}
-        <UploadSummaryCards waterBills={{ bills, count }} />
+        <WaterSummaryCards waterBills={{ bills, count }} />
         <View className="mx-4">
           {!useManualEntry && (
             <UploadBox

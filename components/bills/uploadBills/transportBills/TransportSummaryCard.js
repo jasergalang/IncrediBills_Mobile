@@ -1,49 +1,66 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
 
-export default function TransportSummaryCards() {
+export default function TransportSummaryCards({ transportBills }) {
+
+  const totalUploads = transportBills?.bills?.length || 0;
+  const processedCount = transportBills?.bills?.filter(b => b.status === "Success").length || 0;
+  const successRate = totalUploads > 0 ? Math.round((processedCount / totalUploads) * 100) : 0;
+
+  // Get the latest bill by comparing dates
+  const latestBill = transportBills?.bills?.reduce((latest, bill) => {
+    if (!latest) return bill;
+    return new Date(bill.date) > new Date(latest.date) ? bill : latest;
+  }, null) || {};
+
+  const liters = latestBill.liters || 0;
+  const cost = latestBill.cost || 0;
+
+  // Format date as "Month Year"
+  const billDateFormatted = latestBill.date
+    ? new Date(latestBill.date).toLocaleString("en-US", { month: "long", year: "numeric" })
+    : "N/A";
+
   return (
     <View className="p-4">
-      <View className="flex-row gap-3 mb-3">
-        <LinearGradient
-          colors={["#6b7280", "#4b5563"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          className="flex-1 rounded-2xl p-4"
-        >
-          <View className="flex-row items-center justify-between mb-2">
-            <Text className="text-3xl">⛽</Text>
-            <View className="bg-white/20 px-2 py-1 rounded-full">
-              <Text className="text-white text-xs font-bold">+12%</Text>
-            </View>
+
+      <LinearGradient
+        colors={["#feadaa", "#f91616"]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        className="rounded-2xl p-4"
+      >
+
+        <View className="flex-row items-center justify-between mb-4">
+          <View className="w-12 h-12 bg-red-500 rounded-xl items-center justify-center">
+            <Text className="text-2xl">⛽</Text>
           </View>
-          <Text className="text-2xl font-bold text-white mb-1">₱1,850</Text>
-          <Text className="text-white/80 text-xs">This Month</Text>
-        </LinearGradient>
-        <View className="flex-1 bg-white rounded-2xl p-4 border border-slate-200">
-          <Text className="text-2xl mb-2">🚗</Text>
-          <Text className="text-xl font-bold text-slate-900 mb-1">45.5 L</Text>
-          <Text className="text-slate-600 text-xs">Total Liters</Text>
+          <View className="bg-white px-3 py-1 rounded-full">
+            <Text className="text-xs font-semibold text-slate-600">This Month</Text>
+          </View>
+        </View>
+
+        <Text className="text-sm font-semibold text-slate-600 mb-1">{billDateFormatted}</Text>
+        <Text className="text-3xl font-bold text-slate-900 mb-2">₱{cost}</Text>
+        <Text className="text-xs text-green-600 font-semibold">
+          {successRate > 0 ? `↑ ${successRate}% success rate` : "No processed bills yet"}
+        </Text>
+
+      </LinearGradient>
+
+
+      <View className="flex-row gap-3 mt-3">
+        <View className="flex-1 bg-white rounded-xl p-4">
+          <Text className="text-xs font-semibold text-slate-600 mb-1">Liters</Text>
+          <Text className="text-base font-bold text-slate-900">{liters}</Text>
+        </View>
+        <View className="flex-1 bg-white rounded-xl p-4">
+          <Text className="text-xs font-semibold text-slate-600 mb-1">Last Purchase</Text>
+          <Text className="text-base font-bold text-slate-900">{billDateFormatted}</Text>
         </View>
       </View>
-      <View className="flex-row gap-3">
-        <View className="flex-1 bg-white rounded-2xl p-4 border border-slate-200">
-          <View className="flex-row items-center gap-2 mb-2">
-            <Ionicons name="receipt-outline" size={16} color="#6b7280" />
-            <Text className="text-xs text-slate-600">Receipts</Text>
-          </View>
-          <Text className="text-xl font-bold text-slate-900">8</Text>
-        </View>
-        <View className="flex-1 bg-white rounded-2xl p-4 border border-slate-200">
-          <View className="flex-row items-center gap-2 mb-2">
-            <Ionicons name="cash-outline" size={16} color="#6b7280" />
-            <Text className="text-xs text-slate-600">Avg/Fill</Text>
-          </View>
-          <Text className="text-xl font-bold text-slate-900">₱231</Text>
-        </View>
-      </View>
+
     </View>
   );
 }

@@ -1,16 +1,47 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 
-export default function TransportBox({ pickImage, category }) {
+export default function TransportBox({ pickImage, selectedImageUri, onRemoveImage }) {
+
+  if (selectedImageUri) {
+    return (
+      <View className="rounded-2xl bg-white mb-4 overflow-hidden shadow-sm">
+        {/* Remove button */}
+        <TouchableOpacity
+          onPress={onRemoveImage}
+          className="absolute top-3 right-3 z-10 bg-red-500 rounded-full p-2 shadow-lg"
+          activeOpacity={0.7}
+        >
+          <Text style={{ fontSize: 16, color: "white", fontWeight: "bold" }}>✖</Text>
+        </TouchableOpacity>
+
+        {/* Image preview */}
+        <Image
+          source={{ uri: selectedImageUri }}
+          className="w-full h-80"
+          resizeMode="cover"
+        />
+
+        {/* Change image button */}
+        <TouchableOpacity
+          onPress={pickImage}
+          className="bg-red-50 p-3 items-center border-t border-red-100"
+          activeOpacity={0.7}
+        >
+          <Text className="text-red-600 font-semibold">Change Image</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <TouchableOpacity
       onPress={pickImage}
       activeOpacity={0.7}
-      className="border-2 border-dashed border-gray-300 rounded-2xl bg-gray-50 p-8 items-center justify-center mb-4"
+      className="border-2 border-dashed border-red-300 rounded-2xl bg-red-50 p-8 items-center justify-center mb-4"
     >
-      <View className="w-16 h-16 bg-gray-100 rounded-full items-center justify-center mb-4">
-        <Ionicons name="cloud-upload-outline" size={32} color="#6b7280" />
+      <View className="w-16 h-16 bg-red-100 rounded-full items-center justify-center mb-4">
+        <Text style={{ fontSize: 32 }}>⬆️</Text>
       </View>
       <Text className="text-base font-semibold text-slate-900 mb-2">
         Tap to Upload

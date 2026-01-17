@@ -1,23 +1,22 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function ElectricActions({ pickImage, takePhoto }) {
   const actions = [
     {
-      icon: "camera-outline",
+      icon: "📷",
       label: "Take Photo",
       color: "#f59e0b",
       onPress: takePhoto,
     },
     {
-      icon: "image-outline",
+      icon: "🖼️",
       label: "From Gallery",
       color: "#f59e0b",
       onPress: pickImage,
     },
     {
-      icon: "document-text-outline",
+      icon: "📄",
       label: "View History",
       color: "#f59e0b",
       onPress: () => { },
@@ -41,7 +40,8 @@ export default function ElectricActions({ pickImage, takePhoto }) {
               className="w-12 h-12 rounded-xl items-center justify-center mb-2"
               style={{ backgroundColor: "#fef3c7" }}
             >
-              <Ionicons name={action.icon} size={24} color={action.color} />
+
+              <Text style={{ fontSize: 24 }}>{action.icon}</Text>
             </View>
             <Text className="text-xs font-semibold text-slate-700 text-center">
               {action.label}

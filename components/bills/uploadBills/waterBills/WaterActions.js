@@ -1,26 +1,25 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function UploadActions({ pickImage, takePhoto }) {
   const actions = [
     {
-      icon: "camera-outline",
+      icon: "📷", // Camera emoji
       label: "Take Photo",
       color: "#3b82f6",
       onPress: takePhoto,
     },
     {
-      icon: "image-outline",
+      icon: "🖼️", // Image emoji
       label: "From Gallery",
       color: "#3b82f6",
       onPress: pickImage,
     },
     {
-      icon: "document-text-outline",
+      icon: "📄", // Document emoji
       label: "View History",
       color: "#3b82f6",
-      onPress: () => { },
+      onPress: () => {},
     },
   ];
 
@@ -41,7 +40,7 @@ export default function UploadActions({ pickImage, takePhoto }) {
               className="w-12 h-12 rounded-xl items-center justify-center mb-2"
               style={{ backgroundColor: "#dbeafe" }}
             >
-              <Ionicons name={action.icon} size={24} color={action.color} />
+              <Text style={{ fontSize: 24 }}>{action.icon}</Text>
             </View>
             <Text className="text-xs font-semibold text-slate-700 text-center">
               {action.label}

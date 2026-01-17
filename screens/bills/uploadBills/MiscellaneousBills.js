@@ -52,8 +52,6 @@ export default function MiscellaneousBills({ navigation }) {
         dispatch(fetchMiscellaneousBills());
     }, [dispatch]);
 
-    /* ---------------- IMAGE PICKERS ---------------- */
-
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.IMAGE,
@@ -81,7 +79,6 @@ export default function MiscellaneousBills({ navigation }) {
     const removeSelectedImage = () => {
         setSelectedImageUri(null);
     };
-
 
     const uploadBill = async () => {
         if (uploading) return;
@@ -158,18 +155,10 @@ export default function MiscellaneousBills({ navigation }) {
         }
     };
 
-    /* ---------------- REFRESH ---------------- */
-
     const onRefresh = () => {
         setRefreshing(true);
         setTimeout(() => setRefreshing(false), 2000);
     };
-
-    const removeUpload = (id) => {
-        setUploads((prev) => prev.filter((item) => item.id !== id));
-    };
-
-    /* ---------------- UI ---------------- */
 
     return (
         <SafeAreaView className="flex-1 bg-slate-50">
@@ -184,7 +173,7 @@ export default function MiscellaneousBills({ navigation }) {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
-                <MiscellaneousSummaryCards category={category} />
+                <MiscellaneousSummaryCards miscellaneousBills={{ bills, count }} category={category} />
 
                 <View className="mx-4">
                     {!useManualEntry && (

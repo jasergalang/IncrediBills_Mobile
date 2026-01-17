@@ -1,6 +1,5 @@
 import React from "react";
 import { View, Text, TouchableOpacity, Image } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function ElectricBox({ pickImage, category, selectedImageUri, onRemoveImage }) {
   if (selectedImageUri) {
@@ -12,7 +11,7 @@ export default function ElectricBox({ pickImage, category, selectedImageUri, onR
           className="absolute top-3 right-3 z-10 bg-red-500 rounded-full p-2 shadow-lg"
           activeOpacity={0.7}
         >
-          <Ionicons name="close" size={20} color="white" />
+          <Text style={{ fontSize: 16, color: "white", fontWeight: "bold" }}>✖</Text>
         </TouchableOpacity>
 
         {/* Image preview */}
@@ -41,7 +40,7 @@ export default function ElectricBox({ pickImage, category, selectedImageUri, onR
       className="border-2 border-dashed border-amber-300 rounded-2xl bg-amber-50 p-8 items-center justify-center mb-4"
     >
       <View className="w-16 h-16 bg-amber-100 rounded-full items-center justify-center mb-4">
-        <Ionicons name="cloud-upload-outline" size={32} color="#f59e0b" />
+        <Text style={{ fontSize: 32 }}>⬆️</Text>
       </View>
       <Text className="text-base font-semibold text-slate-900 mb-2">
         Tap to Upload
