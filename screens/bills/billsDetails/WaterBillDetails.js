@@ -1,81 +1,35 @@
-import React, { useEffect, useState } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, StatusBar, ActivityIndicator } from "react-native";
+import React, { useEffect } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  ScrollView,
+  StatusBar,
+  ActivityIndicator,
+  Text,
+} from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+
 import DetailsHeader from "../../../components/bills/billDetails/waterBillDetails/DetailsHeader";
-import BillInfoCard from "../../../components/bills/billDetails/waterBillDetails/BillsInfoCard";
+import BillInfoCard from "../../../components/bills/billDetails/waterBillDetails/BillInfoCard";
 import ScannedDataSection from "../../../components/bills/billDetails/waterBillDetails/ScannedDataSection";
 import PredictionSection from "../../../components/bills/billDetails/waterBillDetails/PredictionSection";
 import ComparisonChart from "../../../components/bills/billDetails/waterBillDetails/ComparisonChart";
 import TipsSection from "../../../components/bills/billDetails/waterBillDetails/TipsSection";
-import baseURL from "../../../assets/common/baseUrl";
-import { useAuth } from "../../../context/auth";
+
+import { fetchWaterBillDetails } from "../../../redux/slices/bills/waterSlice";
+
 export default function WaterBillDetails({ route, navigation }) {
   const { id } = route.params;
-  const [bill, setBill] = useState(null);
-  const { token, getToken } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+
+  const { selectedBill: bill, detailsLoading } = useSelector(
+    (state) => state.water
+  );
 
   useEffect(() => {
-    fetchBillDetails();
+    dispatch(fetchWaterBillDetails(id));
   }, [id]);
 
-  const fetchBillDetails = async () => {
-    const userToken = token || (await getToken());
-
-    try {
-      const res = await fetch(`${baseURL}/api/water-bill/uploaded/${id}`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
-      
-      if (!res.ok) throw new Error("Failed to fetch bill");
-      const data = await res.json();
-
-      const predRes = await fetch(`${baseURL}/api/water-bill/predictions`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
-
-      let matchedPrediction = null;
-
-      if (predRes.ok) {
-        const predJson = await predRes.json();
-
-        const billDate = new Date(data.date);
-        const billMonth = billDate.getMonth();
-        const billYear = billDate.getFullYear();
-
-        const targetMonth = billMonth + 1 === 12 ? 0 : billMonth + 1;
-        const targetYear = billMonth + 1 === 12 ? billYear + 1 : billYear;
-
-        matchedPrediction = predJson.predictions.find(pred => {
-          const p = new Date(pred.predictedDate);
-          return p.getMonth() === targetMonth && p.getFullYear() === targetYear;
-        });
-      }
-
-      const formattedBill = {
-        _id: data._id,
-        name: data.billImage?.[0]?.url.split("/").pop() || "Water Bill",
-        scannedCost: data.cost,
-        scannedConsumption: data.consumption,
-        scannedDate: new Date(data.date).toLocaleDateString(),
-        status: data.status,
-
-        predictedCost: matchedPrediction?.predictedCost || data.cost * 1.1,
-        predictedConsumption: matchedPrediction?.predictedConsumption || data.consumption * 1.1,
-        predictedDate: matchedPrediction?.predictedDate || null,
-      };
-
-      setBill(formattedBill);
-
-    } catch (err) {
-      console.error("Error fetching bill:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
-  if (loading) {
+  if (detailsLoading) {
     return (
       <SafeAreaView className="flex-1 justify-center items-center bg-slate-50">
         <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />

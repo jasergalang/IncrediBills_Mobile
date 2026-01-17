@@ -1,77 +1,30 @@
-import React, { useEffect, useState } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, StatusBar, ActivityIndicator } from "react-native";
-import DetailsHeader from "../../../components/bills/billDetails/electricBillDetails/DetailsHeader.js";
-import BillInfoCard from "../../../components/bills/billDetails/electricBillDetails/BillInfoCard.js";
-import ScannedDataSection from "../../../components/bills/billDetails/electricBillDetails/ScannedDataSection.js";
-import PredictionSection from "../../../components/bills/billDetails/electricBillDetails/PredictionSection.js";
-import ComparisonChart from "../../../components/bills/billDetails/electricBillDetails/ComparisonChart.js";
-import TipsSection from "../../../components/bills/billDetails/electricBillDetails/TipsSection.js";
-import baseURL from "../../../assets/common/baseUrl.js";
-import { useAuth } from "../../../context/auth.js";
+import React, { useEffect } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { ScrollView, StatusBar, ActivityIndicator, Text } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
+
+import DetailsHeader from "../../../components/bills/billDetails/electricBillDetails/DetailsHeader";
+import BillInfoCard from "../../../components/bills/billDetails/electricBillDetails/BillInfoCard";
+import ScannedDataSection from "../../../components/bills/billDetails/electricBillDetails/ScannedDataSection";
+import PredictionSection from "../../../components/bills/billDetails/electricBillDetails/PredictionSection";
+import ComparisonChart from "../../../components/bills/billDetails/electricBillDetails/ComparisonChart";
+import TipsSection from "../../../components/bills/billDetails/electricBillDetails/TipsSection";
+
+import { fetchElectricBillDetails } from "../../../redux/slices/bills/electricSlice";
 
 export default function ElectricBillDetails({ route, navigation }) {
   const { id } = route.params;
-  const [bill, setBill] = useState(null);
-  const { token, getToken } = useAuth();
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+
+  const { selectedBill: bill, detailsLoading } = useSelector(
+    (state) => state.electric
+  );
 
   useEffect(() => {
-    fetchBillDetails();
+    dispatch(fetchElectricBillDetails(id));
   }, [id]);
-  const fetchBillDetails = async () => {
-    const userToken = token || (await getToken());
-    try {
-      const res = await fetch(`${baseURL}/api/electric-bill/uploaded/${id}`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
 
-      if (!res.ok) throw new Error("Failed to fetch bill");
-      const data = await res.json();
-
-      const predRes = await fetch(`${baseURL}/api/electric-bill/predictions`, {
-        headers: { Authorization: `Bearer ${userToken}` },
-      });
-
-      let matchedPrediction = null;
-
-      if (predRes.ok) {
-        const predJson = await predRes.json();
-
-        const billDate = new Date(data.date);
-        const billMonth = billDate.getMonth();
-        const billYear = billDate.getFullYear();
-
-        const targetMonth = billMonth + 1 === 12 ? 0 : billMonth + 1;
-        const targetYear = billMonth + 1 === 12 ? billYear + 1 : billYear;
-
-        matchedPrediction = predJson.predictions.find(pred => {
-          const p = new Date(pred.predictedDate);
-          return p.getMonth() === targetMonth && p.getFullYear() === targetYear;
-        });
-      }
-
-      const formattedBill = {
-        _id: data._id,
-        name: data.billImage?.[0]?.url.split("/").pop() || "Electric Bill",
-        scannedCost: data.cost,
-        scannedConsumption: data.consumption,
-        scannedDate: new Date(data.date).toLocaleDateString(),
-        status: data.status,
-        predictedCost: matchedPrediction?.predictedCost || data.cost * 1.1,
-        predictedConsumption: matchedPrediction?.predictedConsumption || data.consumption * 1.1,
-        predictedDate: matchedPrediction?.predictedDate || null,
-      };
-
-      setBill(formattedBill);
-    } catch (err) {
-      console.error("Error fetching bill:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  if (loading) {
+  if (detailsLoading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center">
         <ActivityIndicator size="large" color="#f59e0b" />

@@ -10,7 +10,7 @@ export default function DetailsHeader({ navigation, billName }) {
           onPress={() => navigation.goBack()}
           className="w-10 h-10 rounded-xl bg-slate-100 items-center justify-center"
         >
-          <Ionicons name="arrow-back" size={20} color="#000" />
+          <Text style={{ fontSize: 18 }}>❮</Text>
         </TouchableOpacity>
         <View className="flex-1">
           <Text className="text-xl font-bold text-slate-900">Bill Details</Text>
@@ -18,9 +18,6 @@ export default function DetailsHeader({ navigation, billName }) {
             {billName}
           </Text>
         </View>
-        <TouchableOpacity className="w-10 h-10 rounded-xl bg-blue-100 items-center justify-center">
-          <Ionicons name="share-outline" size={20} color="#2563eb" />
-        </TouchableOpacity>
       </View>
     </View>
   );

@@ -6,6 +6,15 @@ export const fetchElectricBillsApi = async () => {
   return res.data; // { count, bills }
 };
 
+export const fetchElectricBillByIdApi = async (id) => {
+  const res = await api.get(`/electric-bill/uploaded/${id}`);
+  return res.data;
+};
+
+export const fetchElectricPredictionsApi = async () => {
+  const res = await api.get("/electric-bill/predictions");
+  return res.data;
+};
 // Upload electric bill (OCR or manual)
 export const uploadElectricBillApi = async (formData) => {
   const res = await api.post("/electric-bill/upload", formData, {

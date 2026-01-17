@@ -28,21 +28,21 @@ export default function PredictionSection({ bill }) {
   return (
     <View className="px-4 pb-4">
       <View className="flex-row items-center gap-2 mb-3">
-        <Ionicons name="trending-up-outline" size={20} color="#2563eb" />
+        <Text style={{ fontSize: 18 }}>📈</Text>
         <Text className="text-base font-bold text-slate-900">
           AI Prediction for Next Month
         </Text>
       </View>
 
       <LinearGradient
-        colors={["#f0fdf4", "#dcfce7"]}
+        colors={["#dbeafe", "#bfdbfe"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="rounded-2xl p-5 border-2 border-green-200"
+        className="rounded-2xl p-5 border-2 border-blue-400"
       >
         <View className="flex-row items-center gap-2 mb-4">
-          <View className="w-10 h-10 bg-green-500 rounded-xl items-center justify-center">
-            <Ionicons name="stats-chart" size={20} color="#fff" />
+          <View className="w-10 h-10 bg-blue-500 rounded-xl items-center justify-center">
+            <Text style={{ fontSize: 18, color: "white" }}>📊</Text>
           </View>
           <View>
             <Text className="text-sm font-semibold text-slate-900">{formattedPredictedDate}</Text>
@@ -58,20 +58,18 @@ export default function PredictionSection({ bill }) {
                 className={`flex-row items-center gap-1 px-2 py-1 rounded-full ${costDifference > 0 ? "bg-red-100" : "bg-green-100"
                   }`}
               >
-                <Ionicons
-                  name={costDifference > 0 ? "arrow-up" : "arrow-down"}
-                  size={12}
-                  color={costDifference > 0 ? "#dc2626" : "#16a34a"}
-                />
+                <Text style={{ fontSize: 12 }}>
+                  {costDifference > 0 ? "⬆️" : "⬇️"}
+                </Text>
                 <Text
-                  className={`text-xs font-bold ${costDifference > 0 ? "text-red-600" : "text-green-600"
+                  className={`text-xs font-bold ${costDifference > 0 ? "text-red-600" : "text-blue-600"
                     }`}
                 >
                   {Math.abs(costPercentage)}%
                 </Text>
               </View>
             </View>
-            <Text className="text-2xl font-bold text-green-600">
+            <Text className="text-2xl font-bold text-blue-600">
               ₱{bill.predictedCost.toFixed(2)}
             </Text>
             <Text className="text-xs text-slate-500 mt-1">
@@ -86,13 +84,11 @@ export default function PredictionSection({ bill }) {
                 className={`flex-row items-center gap-1 px-2 py-1 rounded-full ${consumptionDifference > 0 ? "bg-red-100" : "bg-green-100"
                   }`}
               >
-                <Ionicons
-                  name={consumptionDifference > 0 ? "arrow-up" : "arrow-down"}
-                  size={12}
-                  color={consumptionDifference > 0 ? "#dc2626" : "#16a34a"}
-                />
+                <Text style={{ fontSize: 12 }}>
+                  {consumptionDifference > 0 ? "⬆️" : "⬇️"}
+                </Text>
                 <Text
-                  className={`text-xs font-bold ${consumptionDifference > 0 ? "text-red-600" : "text-green-600"
+                  className={`text-xs font-bold ${consumptionDifference > 0 ? "text-red-600" : "text-blue-600"
                     }`}
                 >
                   {Math.abs(consumptionPercentage)}%
