@@ -90,13 +90,42 @@ export function transformBills(...billDataObjects) {
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 }
-export const mergeMonthlyAnalytics = (a, b) => {
-  const all = new Set([...Object.keys(a), ...Object.keys(b)]);
-  const sorted = [...all].sort();
+// export const mergeMonthlyAnalytics = (a, b) => {
+//   const all = new Set([...Object.keys(a), ...Object.keys(b)]);
+//   const sorted = [...all].sort();
 
-  return sorted.map((m) => ({
-    month: m,
-    water: a[m]?.totalCost || 0,
-    electricity: b[m]?.totalCost || 0,
+//   return sorted.map((m) => ({
+//     month: m,
+//     water: a[m]?.totalCost || 0,
+//     electricity: b[m]?.totalCost || 0,
+//   }));
+// };
+export const mergeMonthlyAnalytics = (
+  waterData,
+  electricityData,
+  groceryData,
+  fuelData,
+  miscellaneousData
+) => {
+  // Collect all unique months from all datasets
+  const allMonths = new Set([
+    ...Object.keys(waterData || {}),
+    ...Object.keys(electricityData || {}),
+    ...Object.keys(groceryData || {}),
+    ...Object.keys(fuelData || {}),
+    ...Object.keys(miscellaneousData || {}),
+  ]);
+
+  // Sort months chronologically
+  const sortedMonths = [...allMonths].sort();
+
+  // Create merged data for each month
+  return sortedMonths.map((month) => ({
+    month,
+    water: waterData?.[month]?.totalCost || 0,
+    electricity: electricityData?.[month]?.totalCost || 0,
+    grocery: groceryData?.[month]?.totalCost || 0,
+    fuel: fuelData?.[month]?.totalCost || 0,
+    miscellaneous: miscellaneousData?.[month]?.totalCost || 0,
   }));
 };

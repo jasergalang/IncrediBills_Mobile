@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 
-
 const formatMonth = (key) => {
   const [year, month] = key.split("-");
   return new Date(year, month - 1).toLocaleString("en-US", { month: "short" });
@@ -30,12 +29,10 @@ export default function BillsTrendsChart({
           <TouchableOpacity
             key={range}
             onPress={() => setTimeRange(range)}
-            className={`flex-1 py-2 rounded-lg ${timeRange === range ? "bg-blue-600" : "bg-slate-100"
-              }`}
+            className={`flex-1 py-2 rounded-lg ${timeRange === range ? "bg-blue-600" : "bg-slate-100"}`}
           >
             <Text
-              className={`text-center text-sm font-semibold ${timeRange === range ? "text-white" : "text-slate-600"
-                }`}
+              className={`text-center text-sm font-semibold ${timeRange === range ? "text-white" : "text-slate-600"}`}
             >
               {range.charAt(0).toUpperCase() + range.slice(1)}
             </Text>
@@ -46,9 +43,9 @@ export default function BillsTrendsChart({
         {[
           { color: "#3b82f6", name: "Water" },
           { color: "#f59e0b", name: "Electricity" },
-          { color: "#f97316", name: "Gas" },
-          { color: "#ef4444", name: "Fuel" },
           { color: "#22c55e", name: "Grocery" },
+          { color: "#f91616", name: "Fuel" },
+          { color: "#ad65e4", name: "Misc"},
         ].map((item) => (
           <View key={item.name} className="flex-row items-center gap-2">
             <View
@@ -69,33 +66,31 @@ export default function BillsTrendsChart({
                 <View className="items-center w-6">
                   <View
                     className="w-full bg-blue-500 rounded-t"
-                    style={{ height: `${(data.water / 4000) * 100}%` }}
+                    style={{ height: `${((data.water || 0) / 4000) * 100}%` }}
                   />
                 </View>
                 <View className="items-center w-6">
                   <View
                     className="w-full bg-amber-500 rounded-t"
-                    style={{
-                      height: `${(data.electricity / 4000) * 100}%`,
-                    }}
-                  />
-                </View>
-                <View className="items-center w-6">
-                  <View
-                    className="w-full bg-orange-500 rounded-t"
-                    style={{ height: `${(data.gas / 4000) * 100}%` }}
-                  />
-                </View>
-                <View className="items-center w-6">
-                  <View
-                    className="w-full bg-red-500 rounded-t"
-                    style={{ height: `${(data.fuel / 4000) * 100}%` }}
+                    style={{ height: `${((data.electricity || 0) / 4000) * 100}%` }}
                   />
                 </View>
                 <View className="items-center w-6">
                   <View
                     className="w-full bg-green-500 rounded-t"
-                    style={{ height: `${(data.grocery / 4000) * 100}%` }}
+                    style={{ height: `${((data.grocery || 0) / 4000) * 100}%` }}
+                  />
+                </View>
+                <View className="items-center w-6">
+                  <View
+                    className="w-full bg-red-500 rounded-t"
+                    style={{ height: `${((data.fuel || 0) / 4000) * 100}%` }}
+                  />
+                </View>
+                <View className="items-center w-6">
+                  <View
+                    className="w-full bg-purple-500 rounded-t"
+                    style={{ height: `${((data.miscellaneous || 0) / 4000) * 100}%` }}
                   />
                 </View>
               </View>
@@ -109,8 +104,7 @@ export default function BillsTrendsChart({
       <View className="flex-row justify-between items-center mt-2 pt-2 border-t border-slate-200">
         <Text className="text-xs text-slate-600">Total Spending Trend</Text>
         <Text
-          className={`text-xs font-semibold ${totalChange < 0 ? "text-green-600" : "text-red-600"
-            }`}
+          className={`text-xs font-semibold ${totalChange < 0 ? "text-green-600" : "text-red-600"}`}
         >
           {totalChange < 0 ? "↓" : "↑"} {Math.abs(totalChange).toFixed(2)}%{" "}
           {totalChange < 0 ? "saved" : "increase"}

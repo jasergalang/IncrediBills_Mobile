@@ -10,7 +10,10 @@ export const fetchAnalytics = createAsyncThunk(
       return {
         monthly: mergeMonthlyAnalytics(
           data.fetchAllWaterAnalytics.monthly,
-          data.fetchAllElectricAnalytics.monthly
+          data.fetchAllElectricAnalytics.monthly,
+          data.fetchAllGroceryAnalytics.monthly,
+          data.fetchAllMiscellaneousAnalytics.monthly,
+          data.fetchAllTransportFuelAnalytics.monthly
         ),
         yearly: data,
       };
