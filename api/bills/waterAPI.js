@@ -1,4 +1,3 @@
-// api/bills/waterAPI.js
 import api from "../apiInstance";
 
 // Get all water bills

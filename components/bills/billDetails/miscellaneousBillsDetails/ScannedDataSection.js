@@ -5,54 +5,47 @@ import { Ionicons } from "@expo/vector-icons";
 export default function ScannedDataSection({ bill }) {
     return (
         <View className="px-4 pb-4">
-            <View className="flex-row items-center mb-3">
-                <View className="w-8 h-8 bg-orange-100 rounded-lg items-center justify-center mr-2">
-                    <Ionicons name="scan" size={18} color="#f97316" />
-                </View>
-                <Text className="text-lg font-bold text-slate-900">
-                    Scanned Information
-                </Text>
-            </View>
+            <Text className="text-base font-bold text-slate-900 mb-3">
+                Scanned Information
+            </Text>
 
-            <View className="bg-white rounded-xl p-4">
-                <View className="flex-row justify-between items-center mb-4 pb-4 border-b border-slate-100">
+            <View className="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                <View className="flex-row items-center p-4 border-b border-slate-100">
+                    <View className="w-10 h-10 bg-purple-100 rounded-xl items-center justify-center mr-3">
+                        <Text style={{ fontSize: 20 }}>💰</Text>
+                    </View>
                     <View className="flex-1">
-                        <Text className="text-xs font-semibold text-slate-600 mb-1">
-                            Total Cost
-                        </Text>
-                        <Text className="text-2xl font-bold text-slate-900">
+                        <Text className="text-xs text-slate-500 mb-1">Bill Amount</Text>
+                        <Text className="text-lg font-bold text-slate-900">
                             ₱{bill.scannedCost.toFixed(2)}
                         </Text>
                     </View>
-                    <View className="w-px h-12 bg-slate-200 mx-4" />
+                </View>
+
+                <View className="flex-row items-center p-4 border-b border-slate-100">
+                    <View className="w-10 h-10 bg-purple-400 rounded-xl items-center justify-center mr-3">
+                        <Text style={{ fontSize: 20 }}>📦</Text>
+                    </View>
                     <View className="flex-1">
-                        <Text className="text-xs font-semibold text-slate-600 mb-1">
-                            Gas Weight
-                        </Text>
-                        <Text className="text-2xl font-bold text-slate-900">
-                            {bill.scannedKg} kg
+                        <Text className="text-xs text-slate-500 mb-1">Purchase Type</Text>
+                        <Text className="text-lg font-bold text-slate-900">
+                            {bill.purchaseType}
                         </Text>
                     </View>
                 </View>
 
-                <View className="space-y-3">
-                    <View className="flex-row justify-between items-center">
-                        <Text className="text-sm text-slate-600">Price per Kg</Text>
-                        <Text className="text-sm font-bold text-slate-900">
-                            ₱{(bill.scannedCost / bill.scannedKg).toFixed(2)}
-                        </Text>
+                <View className="flex-row items-center p-4">
+                    <View className="w-10 h-10 bg-purple-100 rounded-xl items-center justify-center mr-3">
+                        <Text style={{ fontSize: 20 }}>📅</Text>
                     </View>
-                    <View className="flex-row justify-between items-center">
-                        <Text className="text-sm text-slate-600">Refill Date</Text>
-                        <Text className="text-sm font-bold text-slate-900">
+                    <View className="flex-1">
+                        <Text className="text-xs text-slate-500 mb-1">Billing Date</Text>
+                        <Text className="text-lg font-bold text-slate-900">
                             {bill.scannedDate}
                         </Text>
                     </View>
-                    <View className="flex-row justify-between items-center">
-                        <Text className="text-sm text-slate-600">Provider</Text>
-                        <Text className="text-sm font-bold text-slate-900">Petron</Text>
-                    </View>
                 </View>
+
             </View>
         </View>
     );

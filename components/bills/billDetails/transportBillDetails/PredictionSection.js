@@ -4,77 +4,128 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function PredictionSection({ bill }) {
-  const costDiff = bill.predictedCost - bill.scannedCost;
+  const costDifference = bill.predictedCost - bill.scannedCost;
   const litersDiff = bill.predictedLiters - bill.scannedLiters;
+
+  const costPercentage = bill.scannedCost
+    ? ((costDifference / bill.scannedCost) * 100).toFixed(1)
+    : "0.0";
+
+  const consumptionPercentage = bill.scannedLiters
+    ? ((litersDiff / bill.scannedLiters) * 100).toFixed(1)
+    : "0.0";
+
+  let formattedPredictedDate = "";
+  if (bill.predictedDate) {
+    const date = new Date(bill.predictedDate);
+    formattedPredictedDate = date.toLocaleString("default", {
+      month: "long",
+      year: "numeric",
+    });
+  } else {
+    const nextMonthDate = new Date();
+    nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+    formattedPredictedDate = nextMonthDate.toLocaleString("default", {
+      month: "long",
+      year: "numeric",
+    });
+  }
 
   return (
     <View className="px-4 pb-4">
+      {/* Section Header */}
       <View className="flex-row items-center gap-2 mb-3">
-        <View className="w-8 h-8 bg-purple-100 rounded-lg items-center justify-center">
-          <Ionicons name="analytics" size={18} color="#9333ea" />
-        </View>
+        <Text style={{ fontSize: 18 }}>📈</Text>
         <Text className="text-base font-bold text-slate-900">
-          AI Prediction (Next Month)
+          AI Prediction for Next Month
         </Text>
       </View>
 
       <LinearGradient
-        colors={["#faf5ff", "#f3e8ff"]}
+        colors={["#fce6e6", "#ffb1b1"]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="rounded-2xl p-5 border-2 border-purple-200"
+        className="rounded-2xl p-5 border-2 border-red-400"
       >
-        <View className="flex-row items-center justify-between mb-4">
-          <View className="flex-1">
-            <Text className="text-sm text-purple-700 mb-1">Predicted Cost</Text>
-            <Text className="text-2xl font-bold text-purple-900">
-              ₱{bill.predictedCost.toFixed(2)}
-            </Text>
-            <View className="flex-row items-center gap-1 mt-1">
-              <Ionicons
-                name={costDiff > 0 ? "trending-up" : "trending-down"}
-                size={14}
-                color={costDiff > 0 ? "#dc2626" : "#16a34a"}
-              />
-              <Text
-                className={`text-xs font-semibold ${
-                  costDiff > 0 ? "text-red-600" : "text-green-600"
-                }`}
-              >
-                {costDiff > 0 ? "+" : ""}₱{Math.abs(costDiff).toFixed(2)}
-              </Text>
-            </View>
+        {/* Header */}
+        <View className="flex-row items-center gap-2 mb-4">
+          <View className="w-10 h-10 bg-red-500 rounded-xl items-center justify-center">
+            <Text style={{ fontSize: 18, color: "white" }}>📊</Text>
           </View>
-          <View className="flex-1 items-end">
-            <Text className="text-sm text-purple-700 mb-1">
-              Predicted Liters
+          <View>
+            <Text className="text-sm font-semibold text-slate-900">
+              {formattedPredictedDate}
             </Text>
-            <Text className="text-2xl font-bold text-purple-900">
-              {bill.predictedLiters} L
+            <Text className="text-xs text-slate-600">
+              Based on your usage pattern
             </Text>
-            <View className="flex-row items-center gap-1 mt-1">
-              <Ionicons
-                name={litersDiff > 0 ? "trending-up" : "trending-down"}
-                size={14}
-                color={litersDiff > 0 ? "#dc2626" : "#16a34a"}
-              />
-              <Text
-                className={`text-xs font-semibold ${
-                  litersDiff > 0 ? "text-red-600" : "text-green-600"
-                }`}
-              >
-                {litersDiff > 0 ? "+" : ""}
-                {Math.abs(litersDiff).toFixed(1)} L
-              </Text>
-            </View>
           </View>
         </View>
 
-        <View className="bg-white/60 rounded-xl p-3">
-          <View className="flex-row items-center gap-2">
-            <Ionicons name="information-circle" size={16} color="#9333ea" />
-            <Text className="text-xs text-purple-800 flex-1">
-              Based on your driving patterns and fuel price trends
+        <View className="space-y-3">
+          {/* Predicted Cost */}
+          <View className="bg-white/70 rounded-xl p-4">
+            <View className="flex-row items-center justify-between mb-2">
+              <Text className="text-sm text-slate-600">Predicted Cost</Text>
+              <View
+                className={`flex-row items-center gap-1 px-2 py-1 rounded-full ${costDifference > 0 ? "bg-red-100" : "bg-green-100"
+                  }`}
+              >
+                <Text style={{ fontSize: 12 }}>
+                  {costDifference > 0 ? "⬆️" : "⬇️"}
+                </Text>
+                <Text
+                  className={`text-xs font-bold ${costDifference > 0
+                      ? "text-red-600"
+                      : "text-green-600"
+                    }`}
+                >
+                  {Math.abs(costPercentage)}%
+                </Text>
+              </View>
+            </View>
+
+            <Text className="text-2xl font-bold text-red-600">
+              ₱{bill.predictedCost.toFixed(2)}
+            </Text>
+
+            <Text className="text-xs text-slate-500 mt-1">
+              {costDifference > 0 ? "+" : ""}₱
+              {Math.abs(costDifference).toFixed(2)} vs current
+            </Text>
+          </View>
+
+          {/* Predicted Consumption */}
+          <View className="bg-white/70 rounded-xl p-4">
+            <View className="flex-row items-center justify-between mb-2">
+              <Text className="text-sm text-slate-600">
+                Predicted Consumption
+              </Text>
+              <View
+                className={`flex-row items-center gap-1 px-2 py-1 rounded-full ${litersDiff > 0 ? "bg-red-100" : "bg-green-100"
+                  }`}
+              >
+                <Text style={{ fontSize: 12 }}>
+                  {litersDiff > 0 ? "⬆️" : "⬇️"}
+                </Text>
+                <Text
+                  className={`text-xs font-bold ${litersDiff > 0
+                      ? "text-red-600"
+                      : "text-green-600"
+                    }`}
+                >
+                  {Math.abs(consumptionPercentage)}%
+                </Text>
+              </View>
+            </View>
+
+            <Text className="text-2xl font-bold text-orange-600">
+              {bill.predictedLiters.toFixed(2)} Liters
+            </Text>
+
+            <Text className="text-xs text-slate-500 mt-1">
+              {litersDiff > 0 ? "+" : ""}
+              {Math.abs(litersDiff).toFixed(1)} kWh vs current
             </Text>
           </View>
         </View>

@@ -2,46 +2,48 @@ import React from "react";
 import { View, Text } from "react-native";
 
 export default function ComparisonChart({ bill }) {
-  const maxValue = Math.max(bill.scannedCost, bill.predictedCost);
-  const scannedHeight = (bill.scannedCost / maxValue) * 100;
-  const predictedHeight = (bill.predictedCost / maxValue) * 100;
+  const maxValue = Math.max(bill.scannedLiters, bill.predictedLiters);
+  const currentPercent = (bill.scannedLiters / maxValue) * 100;
+  const predictedPercent = (bill.predictedLiters / maxValue) * 100;
+
 
   return (
     <View className="px-4 pb-4">
       <Text className="text-base font-bold text-slate-900 mb-3">
-        Cost Comparison
+        Usage Comparison
       </Text>
-
       <View className="bg-white rounded-2xl p-5 border border-slate-200">
-        <View className="h-48 flex-row items-end justify-around gap-8">
-          <View className="flex-1 items-center">
-            <View className="w-full items-center" style={{ height: "100%" }}>
-              <View
-                className="w-full bg-gray-500 rounded-t-xl"
-                style={{ height: `${scannedHeight}%`, marginTop: "auto" }}
-              />
-            </View>
-            <Text className="text-sm font-semibold text-slate-900 mt-3">
-              Current
+        <View className="mb-4">
+          <View className="flex-row items-center justify-between mb-2">
+            <Text className="text-sm font-semibold text-slate-700">
+              Current Month
             </Text>
-            <Text className="text-xs text-slate-600">
-              ₱{bill.scannedCost.toFixed(2)}
+            <Text className="text-sm font-bold text-red-600">
+              {bill.scannedLiters} Liters
             </Text>
           </View>
+          <View className="h-3 bg-slate-100 rounded-full overflow-hidden">
+            <View
+              className="h-full bg-red-500 rounded-full"
+              style={{ width: `${currentPercent}%` }}
+            />
+          </View>
+        </View>
 
-          <View className="flex-1 items-center">
-            <View className="w-full items-center" style={{ height: "100%" }}>
-              <View
-                className="w-full bg-purple-500 rounded-t-xl"
-                style={{ height: `${predictedHeight}%`, marginTop: "auto" }}
-              />
-            </View>
-            <Text className="text-sm font-semibold text-slate-900 mt-3">
-              Predicted
+        <View>
+          <View className="flex-row items-center justify-between mb-2">
+            <Text className="text-sm font-semibold text-slate-700">
+              Predicted Next Month
             </Text>
-            <Text className="text-xs text-slate-600">
-              ₱{bill.predictedCost.toFixed(2)}
+            <Text className="text-sm font-bold text-orange-600">
+              {bill.predictedLiters.toFixed(2)} Liters
             </Text>
+          </View>
+          <View className="h-3 bg-slate-100 rounded-full overflow-hidden">
+            <View
+              className="h-full bg-orange-500 rounded-full"
+              style={{ width: `${predictedPercent}%` }}
+            />
           </View>
         </View>
       </View>

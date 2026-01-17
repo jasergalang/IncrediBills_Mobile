@@ -1,27 +1,42 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, StatusBar } from "react-native";
-import DetailsHeader from "../../../components/bills/billDetails/transportBillDetails/DetailsHeader.js";
+import { ScrollView, StatusBar, ActivityIndicator, Text } from "react-native";import DetailsHeader from "../../../components/bills/billDetails/transportBillDetails/DetailsHeader.js";
 import BillInfoCard from "../../../components/bills/billDetails/transportBillDetails/BillInfoCard.js";
 import ScannedDataSection from "../../../components/bills/billDetails/transportBillDetails/ScannedDataSection";
 import PredictionSection from "../../../components/bills/billDetails/transportBillDetails/PredictionSection";
 import ComparisonChart from "../../../components/bills/billDetails/transportBillDetails/ComparisonChart";
 import TipsSection from "../../../components/bills/billDetails/transportBillDetails/TipsSection";
 
+import { fetchTransportBillDetails } from "../../../redux/slices/bills/transportSlice.js";
+import { useDispatch, useSelector } from "react-redux";
 export default function TransportBillDetails({ route, navigation }) {
-  const { bill } = route.params || {
-    bill: {
-      id: 1,
-      name: "October Fuel Receipt.jpg",
-      date: "Oct 15, 2024",
-      scannedCost: 1020.0,
-      scannedLiters: 25.5,
-      scannedDate: "Oct 15, 2024",
-      predictedCost: 1150.0,
-      predictedLiters: 28.2,
-      status: "uploaded",
-    },
-  };
+
+  const { id } = route.params;
+  const dispatch = useDispatch();
+
+  const { selectedBill: bill, detailsLoading } = useSelector(
+    (state) => state.transport
+  );
+
+  useEffect(() => {
+    dispatch(fetchTransportBillDetails(id));
+  }, [id]);
+
+  if (detailsLoading) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color="#f91616" />
+      </SafeAreaView>
+    );
+  }
+
+  if (!bill) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center">
+        <Text>Failed to load bill details.</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">

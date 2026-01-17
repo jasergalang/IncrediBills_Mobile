@@ -15,12 +15,9 @@ export default function ComparisonChart({ bill }) {
 
     return (
         <View className="px-4 pb-4">
-            <View className="flex-row items-center mb-3">
-                <View className="w-8 h-8 bg-orange-100 rounded-lg items-center justify-center mr-2">
-                    <Ionicons name="bar-chart" size={18} color="#f97316" />
-                </View>
-                <Text className="text-lg font-bold text-slate-900">Cost Trends</Text>
-            </View>
+            <Text className="text-base font-bold text-slate-900 mb-3">
+                Cost Trends
+            </Text>
 
             <View className="bg-white rounded-xl p-4">
                 <View className="flex-row justify-between items-end h-40 mb-4">
@@ -30,7 +27,7 @@ export default function ComparisonChart({ bill }) {
                             <View key={index} className="flex-1 items-center">
                                 <View className="w-full px-1">
                                     <View
-                                        className={`w-full rounded-t-lg ${item.isPrediction ? "bg-orange-300" : "bg-orange-500"
+                                        className={`w-full rounded-t-lg ${item.isPrediction ? "bg-purple-300" : "bg-purple-500"
                                             }`}
                                         style={{ height: `${height}%` }}
                                     />
@@ -48,11 +45,11 @@ export default function ComparisonChart({ bill }) {
 
                 <View className="flex-row items-center justify-center space-x-4">
                     <View className="flex-row items-center">
-                        <View className="w-3 h-3 rounded-full bg-orange-500 mr-1" />
+                        <View className="w-3 h-3 rounded-full bg-purple-500 mr-1" />
                         <Text className="text-xs text-slate-600">Actual</Text>
                     </View>
                     <View className="flex-row items-center">
-                        <View className="w-3 h-3 rounded-full bg-orange-300 mr-1" />
+                        <View className="w-3 h-3 rounded-full bg-purple-300 mr-1" />
                         <Text className="text-xs text-slate-600">Predicted</Text>
                     </View>
                 </View>

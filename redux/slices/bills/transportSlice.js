@@ -2,6 +2,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import {
     fetchAllTransportBillsApi,
     uploadTransportBillApi,
+    fetchTransportBillByIdApi,
+    fetchTransportPredictionsApi,
     triggerTransportPredictionApi
 } from "../../../api/bills/transportAPI";
 
@@ -31,10 +33,40 @@ export const uploadTransportBill = createAsyncThunk(
             return data;
         } catch (err) {
             // ✅ FIX: Extract the error message properly
-            const errorMessage = err?.response?.data?.message || 
-                                err?.message || 
-                                "Upload failed";
+            const errorMessage = err?.response?.data?.message ||
+                err?.message ||
+                "Upload failed";
             return rejectWithValue(errorMessage);
+        }
+    }
+);
+
+export const fetchTransportBillDetails = createAsyncThunk(
+    "transport/fetchDetails",
+    async (id, { rejectWithValue }) => {
+        try {
+            const bill = await fetchTransportBillByIdApi(id);
+            const predictionsRes = await fetchTransportPredictionsApi();
+
+            let matchedPrediction = null;
+
+            if (predictionsRes?.predictions?.length) {
+                const billDate = new Date(bill.date);
+                const billMonth = billDate.getMonth();
+                const billYear = billDate.getFullYear();
+
+                const targetMonth = billMonth + 1 === 12 ? 0 : billMonth + 1;
+                const targetYear = billMonth + 1 === 12 ? billYear + 1 : billYear;
+
+                matchedPrediction = predictionsRes.predictions.find(p => {
+                    const d = new Date(p.predictedDate);
+                    return d.getMonth() === targetMonth && d.getFullYear() === targetYear;
+                });
+            }
+
+            return { bill, matchedPrediction };
+        } catch (err) {
+            return rejectWithValue("Failed to fetch bill details");
         }
     }
 );
@@ -44,6 +76,8 @@ const transportSlice = createSlice({
     initialState: {
         count: 0,
         bills: [],
+        selectedBill: null,
+        detailsLoading: false,
         loading: false,
         uploading: false,
         error: null,
@@ -84,6 +118,35 @@ const transportSlice = createSlice({
             .addCase(uploadTransportBill.rejected, (state, action) => {
                 state.uploading = false;
                 state.error = action.payload; // ✅ This is correct
+            })
+
+            // details
+            .addCase(fetchTransportBillDetails.pending, (state) => {
+                state.detailsLoading = true;
+                state.error = null;
+            })
+            .addCase(fetchTransportBillDetails.fulfilled, (state, action) => {
+                const { bill, matchedPrediction } = action.payload;
+
+                state.detailsLoading = false;
+                state.selectedBill = {
+                    _id: bill._id,
+                    name: bill.billImage?.[0]?.url.split("/").pop() || "Transport Fuel Bill",
+                    scannedCost: bill.cost,
+                    scannedLiters: bill.liters,
+                    scannedDate: new Date(bill.date).toLocaleDateString(),
+                    status: bill.status,
+                    predictedCost:
+                        matchedPrediction?.predictedCost || bill.cost * 1.1,
+                    predictedLiters:
+                        matchedPrediction?.predictedLiters ||
+                        bill.liters * 1.1,
+                    predictedDate: matchedPrediction?.predictedDate || null,
+                };
+            })
+            .addCase(fetchTransportBillDetails.rejected, (state, action) => {
+                state.detailsLoading = false;
+                state.error = action.payload;
             });
     },
 });

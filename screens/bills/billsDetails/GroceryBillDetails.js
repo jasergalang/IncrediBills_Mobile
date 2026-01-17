@@ -1,6 +1,6 @@
-import React from "react";
+import React, {useEffect} from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, StatusBar } from "react-native";
+import { ScrollView, StatusBar, ActivityIndicator, Text } from "react-native";
 import DetailsHeader from "../../../components/bills/billDetails/groceryBillDetails/DetailsHeader";
 import BillInfoCard from "../../../components/bills/billDetails/groceryBillDetails/BillInfoCard";
 import ScannedDataSection from "../../../components/bills/billDetails/groceryBillDetails/ScannedDataSection";
@@ -8,20 +8,36 @@ import PredictionSection from "../../../components/bills/billDetails/groceryBill
 import ComparisonChart from "../../../components/bills/billDetails/groceryBillDetails/ComparisonChart";
 import TipsSection from "../../../components/bills/billDetails/groceryBillDetails/TipsSection";
 
+import { useDispatch, useSelector } from "react-redux";
+import { fetchGroceryBillDetails } from "../../../redux/slices/bills/grocerySlice"
+
 export default function GroceryBillDetails({ route, navigation }) {
-  const { bill } = route.params || {
-    bill: {
-      id: 1,
-      name: "October Grocery Receipt.png",
-      date: "Oct 15, 2024",
-      scannedCost: 3500.0,
-      scannedItems: 45,
-      scannedDate: "Oct 15, 2024",
-      predictedCost: 3200.0,
-      predictedItems: 42,
-      status: "uploaded",
-    },
-  };
+  const { id } = route.params;
+  const dispatch = useDispatch();
+
+  const { selectedBill: bill, detailsLoading } = useSelector(
+    (state) => state.grocery
+  );
+
+  useEffect(() => {
+    dispatch(fetchGroceryBillDetails(id));
+  }, [id]);
+
+  if (detailsLoading) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center">
+        <ActivityIndicator size="large" color="#22c55e" />
+      </SafeAreaView>
+    );
+  }
+
+  if (!bill) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center">
+        <Text>Failed to load bill details.</Text>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">

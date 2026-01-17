@@ -7,7 +7,7 @@ export default function MiscellaneousRecent({ miscellaneousBills, removeUpload }
     const navigation = useNavigation();
 
     const getFilename = (url) => {
-        if (!url) return "Unknown File";
+        if (!url) return "Manual Input";
         return url.split("/").pop();
     };
 
@@ -47,7 +47,7 @@ export default function MiscellaneousRecent({ miscellaneousBills, removeUpload }
                             <View className="flex-row items-center gap-3">
                                 <Image
                                     source={{ uri: fileUrl }}
-                                    className="w-12 h-12 rounded-xl bg-amber-100"
+                                    className="w-12 h-12 rounded-xl bg-purple-100"
                                 />
                                 <View className="flex-1">
                                     <Text className="text-sm font-semibold text-slate-900 mb-1">

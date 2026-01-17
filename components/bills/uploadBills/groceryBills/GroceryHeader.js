@@ -12,7 +12,7 @@ export default function GroceryHeader({ navigation, category }) {
           <View className="flex-row items-center mb-1">
             <TouchableOpacity
               onPress={() => navigation.goBack()}
-              className="w-8 h-8 rounded-lg bg-slate-100 items-center justify-center mr-2"
+              className="w-8 h-8 rounded-lg bg-green-100 items-center justify-center mr-2"
             >
               <Text style={{ fontSize: 18 }}>❮</Text>
             </TouchableOpacity>

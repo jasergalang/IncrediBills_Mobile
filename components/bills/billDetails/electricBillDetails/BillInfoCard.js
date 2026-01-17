@@ -1,7 +1,6 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { Ionicons } from "@expo/vector-icons";
 
 export default function BillInfoCard({ bill }) {
   return (
@@ -22,33 +21,32 @@ export default function BillInfoCard({ bill }) {
               Electricity Bill
             </Text>
             <View className="flex-row items-center gap-2">
-              <Ionicons name="calendar-outline" size={14} color="#64748b" />
+
               <Text className="text-sm text-slate-600">
                 {bill.scannedDate || "N/A"}
               </Text>
             </View>
           </View>
 
-           <View
-            className={`px-3 py-1 rounded-full ${
-              bill.status === "Success" ? "bg-green-100" : "bg-red-100"
-            }`}
+          <View
+            className={`px-3 py-1 rounded-full ${bill.status === "Success" ? "bg-green-100" : "bg-red-100"
+              }`}
           >
             <Text
-              className={`text-xs font-bold ${
-                bill.status === "Success"
+              className={`text-xs font-bold ${bill.status === "Success"
                   ? "text-green-700"
                   : "text-red-700"
-              }`}
+                }`}
             >
               {bill.status === "Success" ? "Verified" : "Failed"}
             </Text>
           </View>
         </View>
 
+
         <View className="bg-white/60 rounded-xl p-4">
           <View className="flex-row justify-between items-center">
-            
+
             <View className="flex-1">
               <Text className="text-sm text-slate-600 mb-1">Total Amount</Text>
               <Text className="text-3xl font-bold text-amber-600">

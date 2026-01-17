@@ -7,7 +7,7 @@ export default function UploadRecent({ waterBills, removeUpload }) {
   const navigation = useNavigation();
 
   const getFilename = (url) => {
-    if (!url) return "Unknown File";
+    if (!url) return "Manual Input";
     return url.split("/").pop();
   };
 

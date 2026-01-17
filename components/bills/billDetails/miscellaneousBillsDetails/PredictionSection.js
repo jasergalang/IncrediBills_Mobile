@@ -1,72 +1,93 @@
 import React from "react";
 import { View, Text } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-
+import { LinearGradient } from "expo-linear-gradient";
 export default function PredictionSection({ bill }) {
-    const difference = bill.predictedCost - bill.scannedCost;
-    const percentChange = ((difference / bill.scannedCost) * 100).toFixed(1);
+    const costDifference = bill.predictedCost - bill.scannedCost;
+
+    const costPercentage = bill.scannedCost
+        ? ((costDifference / bill.scannedCost) * 100).toFixed(1)
+        : "0.0";
+
+    let formattedPredictedDate = "";
+    if (bill.predictedDate) {
+        const date = new Date(bill.predictedDate);
+        formattedPredictedDate = date.toLocaleString("default", {
+            month: "long",
+            year: "numeric",
+        });
+    } else {
+        const nextMonthDate = new Date();
+        nextMonthDate.setMonth(nextMonthDate.getMonth() + 1);
+        formattedPredictedDate = nextMonthDate.toLocaleString("default", {
+            month: "long",
+            year: "numeric",
+        });
+    }
 
     return (
         <View className="px-4 pb-4">
-            <View className="flex-row items-center mb-3">
-                <View className="w-8 h-8 bg-purple-100 rounded-lg items-center justify-center mr-2">
-                    <Ionicons name="analytics" size={18} color="#a855f7" />
-                </View>
-                <Text className="text-lg font-bold text-slate-900">
-                    Next Month Prediction
+            <View className="flex-row items-center gap-2 mb-3">
+                <Text style={{ fontSize: 18 }}>📈</Text>
+                <Text className="text-base font-bold text-slate-900">
+                    AI Prediction for Next Month
                 </Text>
             </View>
 
-            <View className="bg-white rounded-xl p-4">
-                <View className="flex-row justify-between items-center mb-4 pb-4 border-b border-slate-100">
-                    <View className="flex-1">
-                        <Text className="text-xs font-semibold text-slate-600 mb-1">
-                            Estimated Cost
+            <LinearGradient
+                colors={["#efebff", "#cfc7fe"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                className="rounded-2xl p-5 border-2 border-purple-300"
+            >
+                <View className="flex-row items-center gap-2 mb-4">
+                    <View className="w-10 h-10 bg-purple-500 rounded-xl items-center justify-center">
+                        <Text style={{ fontSize: 18, color: "white" }}>📊</Text>
+                    </View>
+                    <View>
+                        <Text className="text-sm font-semibold text-slate-900">
+                            {formattedPredictedDate}
                         </Text>
-                        <Text className="text-2xl font-bold text-slate-900">
+                        <Text className="text-xs text-slate-600">
+                            Based on your usage pattern
+                        </Text>
+                    </View>
+                </View>
+                <View className="space-y-3">
+                    <View className="bg-white/70 rounded-xl p-4">
+                        <View className="flex-row items-center justify-between mb-2">
+                            <Text className="text-sm text-slate-600">Predicted Cost</Text>
+                            <View
+                                className={`flex-row items-center gap-1 px-2 py-1 rounded-full ${costDifference > 0 ? "bg-red-100" : "bg-green-100"
+                                    }`}
+                            >
+                                <Text style={{ fontSize: 12 }}>
+                                    {costDifference > 0 ? "⬆️" : "⬇️"}
+                                </Text>
+                                <Text
+                                    className={`text-xs font-bold ${costDifference > 0
+                                            ? "text-red-600"
+                                            : "text-green-600"
+                                        }`}
+                                >
+                                    {Math.abs(costPercentage)}%
+                                </Text>
+                            </View>
+                        </View>
+
+                        <Text className="text-2xl font-bold text-purple-600">
                             ₱{bill.predictedCost.toFixed(2)}
                         </Text>
-                    </View>
-                    <View className="w-px h-12 bg-slate-200 mx-4" />
-                    <View className="flex-1">
-                        <Text className="text-xs font-semibold text-slate-600 mb-1">
-                            Estimated Usage
-                        </Text>
-                        <Text className="text-2xl font-bold text-slate-900">
-                            {bill.predictedKg} kg
-                        </Text>
-                    </View>
-                </View>
 
-                <View className="bg-orange-50 rounded-xl p-3 border border-orange-200">
-                    <View className="flex-row items-center justify-between">
-                        <View className="flex-row items-center flex-1">
-                            <Ionicons
-                                name={difference > 0 ? "trending-up" : "trending-down"}
-                                size={20}
-                                color={difference > 0 ? "#f97316" : "#22c55e"}
-                            />
-                            <Text className="text-sm font-semibold text-slate-700 ml-2">
-                                {difference > 0 ? "Expected Increase" : "Expected Decrease"}
-                            </Text>
-                        </View>
-                        <View className="flex-row items-center">
-                            <Text
-                                className={`text-lg font-bold ${difference > 0 ? "text-orange-600" : "text-green-600"
-                                    }`}
-                            >
-                                {difference > 0 ? "+" : ""}₱{difference.toFixed(2)}
-                            </Text>
-                            <Text
-                                className={`text-sm font-semibold ml-2 ${difference > 0 ? "text-orange-600" : "text-green-600"
-                                    }`}
-                            >
-                                ({percentChange}%)
-                            </Text>
-                        </View>
+                        <Text className="text-xs text-slate-500 mt-1">
+                            {costDifference > 0 ? "+" : ""}₱
+                            {Math.abs(costDifference).toFixed(2)} vs current
+                        </Text>
                     </View>
                 </View>
-            </View>
+            </LinearGradient>
+
+          
         </View>
     );
 }

@@ -1,10 +1,19 @@
-// api/bills/waterAPI.js
 import api from "../apiInstance";
 
 // Get all miscellaneous bills
 export const fetchAllMiscellaneousBillsApi = async () => {
   const res = await api.get("/miscellaneous-bill/bills");
   return res.data; // { count, bills }
+};
+
+export const fetchMiscellaneousBillByIdApi = async (id) => {
+  const res = await api.get(`/miscellaneous-bill/uploaded/${id}`);
+  return res.data;
+};
+
+export const fetchMiscellaneousPredictionsApi = async () => {
+  const res = await api.get("/miscellaneous-bill/predictions");
+  return res.data;
 };
 
 // Upload miscellaneous bill (OCR or manual)

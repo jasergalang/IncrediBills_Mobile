@@ -9,8 +9,7 @@ import GroceryInput from "../../../components/bills/uploadBills/groceryBills/Gro
 import GroceryActions from "../../../components/bills/uploadBills/groceryBills/GroceryActions";
 import GroceryRecent from "../../../components/bills/uploadBills/groceryBills/GroceryRecent";
 import GroceryTips from "../../../components/bills/uploadBills/groceryBills/GroceryTips";
-import baseURL from "../../../assets/common/baseUrl";
-import { useAuth } from "../../../context/auth";
+
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -23,7 +22,6 @@ import { fetchBills } from "../../../redux/slices/bills/billSlice";
 
 export default function GroceryBills({ navigation }) {
   const category = { name: "Groceries", icon: "🛒", color: "green" };
-  const { token, getToken } = useAuth();
   const dispatch = useDispatch();
 
   const { bills, count, uploading } = useSelector(

@@ -8,7 +8,7 @@ export default function DetailsHeader({ navigation, billName }) {
       <View className="flex-row items-center gap-3">
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          className="w-10 h-10 rounded-xl bg-slate-100 items-center justify-center"
+          className="w-10 h-10 rounded-xl bg-blue-100 items-center justify-center"
         >
           <Text style={{ fontSize: 18 }}>❮</Text>
         </TouchableOpacity>
