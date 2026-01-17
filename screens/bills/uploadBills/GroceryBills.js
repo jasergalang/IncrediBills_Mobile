@@ -30,7 +30,6 @@ export default function GroceryBills({ navigation }) {
     (state) => state.grocery
   );
 
-
   const [selectedImageUri, setSelectedImageUri] = useState(null);
   const [store, setStore] = useState("");
   const [paymentStatus, setPaymentStatus] = useState("");
@@ -86,8 +85,8 @@ export default function GroceryBills({ navigation }) {
         Alert.alert("Error", "Please fill in all required manual fields.");
         return;
       }
-    } else if (!paymentStatus) {
-      Alert.alert("Error", "Please select payment status.");
+    } else if (!paymentStatus || !categoryType) {
+      Alert.alert("Error", "Please select payment status and category.");
       return;
     }
 
@@ -113,9 +112,8 @@ export default function GroceryBills({ navigation }) {
         formData.append("useOCR", "false");
         formData.append("date", date);
         formData.append("cost", cost);
-        formData.append("items", items);
+        formData.append("quantity", items);
       }
-
       formData.append("store", store);
       formData.append("paymentStatus", paymentStatus);
       formData.append("category", categoryType);
@@ -151,8 +149,6 @@ export default function GroceryBills({ navigation }) {
       );
     }
   };
-
-  
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">

@@ -46,22 +46,15 @@ export default function GroceryInput({
     "Mixed Items",
   ];
 
-  const [localDate, setLocalDate] = React.useState(
-    date || new Date().toISOString().slice(0, 10)
-  );
+  const [localDate, setLocalDate] = React.useState(date || new Date().toISOString().slice(0, 10));
 
   const formatDisplay = (iso) => {
     if (!iso) return "";
     const d = new Date(iso);
     if (isNaN(d)) return "";
-    return d
-      .toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      })
-      .replace(",", "");
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }).replace(",", "");
   };
+
 
   React.useEffect(() => {
     if (date) setLocalDate(date);
@@ -454,34 +447,33 @@ export default function GroceryInput({
 
       {/* Submit Button */}
       <TouchableOpacity
-        className={`rounded-xl py-4 items-center ${
-          useManualEntry
-            ? store &&
-              date &&
-              cost &&
-              items &&
-              category &&
-              paymentStatus &&
-              !isSubmitting
-              ? "bg-green-500"
-              : "bg-slate-300"
-            : hasImage &&
-              category &&
-              paymentStatus &&
-              !isSubmitting
+        className={`rounded-xl py-4 items-center ${useManualEntry
+          ? store &&
+            date &&
+            cost &&
+            items &&
+            category &&
+            paymentStatus &&
+            !isSubmitting
             ? "bg-green-500"
             : "bg-slate-300"
-        }`}
+          : hasImage &&
+            category &&
+            paymentStatus &&
+            !isSubmitting
+            ? "bg-green-500"
+            : "bg-slate-300"
+          }`}
         onPress={onSubmit}
         disabled={
           isSubmitting ||
           (useManualEntry
             ? !store ||
-              !date ||
-              !cost ||
-              !items ||
-              !category ||
-              !paymentStatus
+            !date ||
+            !cost ||
+            !items ||
+            !category ||
+            !paymentStatus
             : !hasImage || !category || !paymentStatus)
         }
       >
