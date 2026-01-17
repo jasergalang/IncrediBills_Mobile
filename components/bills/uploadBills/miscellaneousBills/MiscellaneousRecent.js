@@ -1,57 +1,92 @@
 import React from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Image } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 
-export default function MiscellaneousRecent({ uploads, removeUpload }) {
+export default function MiscellaneousRecent({ miscellaneousBills, removeUpload }) {
     const navigation = useNavigation();
 
-    if (uploads.length === 0) return null;
+    const getFilename = (url) => {
+        if (!url) return "Unknown File";
+        return url.split("/").pop();
+    };
 
     return (
-        <View className="px-4 pb-4">
-            <Text className="text-lg font-bold text-slate-900 mb-3">
-                Recent Uploads
-            </Text>
-            {uploads.map((upload) => (
-                <TouchableOpacity
-                    key={upload.id}
-                    onPress={() =>
-                        navigation.navigate("KitchenGasBillDetails", {
-                            bill: {
-                                ...upload,
-                                scannedCost: 550,
-                                scannedKg: 11,
-                                scannedDate: upload.date,
-                                predictedCost: 580,
-                                predictedKg: 11.5,
-                            },
-                        })
-                    }
-                    className="bg-white rounded-xl p-4 mb-3 flex-row items-center"
-                >
-                    <View className="w-12 h-12 bg-orange-100 rounded-xl items-center justify-center mr-3">
-                        <Ionicons name="document-text" size={24} color="#f97316" />
-                    </View>
-                    <View className="flex-1">
-                        <Text className="text-sm font-bold text-slate-900 mb-1">
-                            {upload.name}
-                        </Text>
-                        <Text className="text-xs text-slate-600">
-                            {upload.size} • {upload.date}
-                        </Text>
-                    </View>
-                    <TouchableOpacity
-                        onPress={(e) => {
-                            e.stopPropagation();
-                            removeUpload(upload.id);
-                        }}
-                        className="w-8 h-8 items-center justify-center"
-                    >
-                        <Ionicons name="trash-outline" size={20} color="#ef4444" />
-                    </TouchableOpacity>
+        <View className="px-4 pb-6">
+            <View className="flex-row items-center justify-between mb-4">
+                <View>
+                    <Text className="text-base font-bold text-slate-900 mb-1">
+                        Recent Uploads
+                    </Text>
+
+                    <Text className="text-sm text-slate-600">
+                        {miscellaneousBills.length} files uploaded
+                    </Text>
+                </View>
+
+                <TouchableOpacity className="bg-slate-100 px-3 py-2 rounded-lg">
+                    <Text className="text-sm font-semibold text-slate-700">
+                        View All
+                    </Text>
                 </TouchableOpacity>
-            ))}
+            </View>
+
+            <View className="space-y-3">
+                {miscellaneousBills.map((bill) => {
+                    const fileUrl = bill.billImage?.[0]?.url;
+                    const fileName = getFilename(fileUrl);
+
+                    return (
+                        <TouchableOpacity
+                            key={bill._id}
+                            onPress={() =>
+                                navigation.navigate("MiscellaneousBillDetails", { id: bill._id })
+                            }
+                            className="bg-white rounded-2xl p-4 border border-slate-200"
+                        >
+                            <View className="flex-row items-center gap-3">
+                                <Image
+                                    source={{ uri: fileUrl }}
+                                    className="w-12 h-12 rounded-xl bg-amber-100"
+                                />
+                                <View className="flex-1">
+                                    <Text className="text-sm font-semibold text-slate-900 mb-1">
+                                        {fileName}
+                                    </Text>
+                                    <Text className="text-xs text-slate-500">
+                                        {new Date(bill.createdAt).toLocaleString()}
+                                    </Text>
+                                </View>
+
+                                {bill.status === "Success" ? (
+                                    <Ionicons
+                                        name="checkmark-circle-outline"
+                                        size={28}
+                                        color="#22c55e"
+                                    />
+                                ) : (
+                                    <Ionicons
+                                        name="close-circle-outline"
+                                        size={28}
+                                        color="#ef4444"
+                                    />
+                                )}
+
+                                <TouchableOpacity
+                                    onPress={(e) => {
+                                        e.stopPropagation();
+                                        removeUpload(bill._id);
+                                    }}
+                                    className="w-8 h-8 bg-slate-100 rounded-lg items-center justify-center ml-1"
+                                >
+                                    <Ionicons name="close" size={18} color="#64748b" />
+                                </TouchableOpacity>
+
+                            </View>
+                        </TouchableOpacity>
+                    );
+                })}
+            </View>
         </View>
     );
 }

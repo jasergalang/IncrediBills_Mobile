@@ -1,90 +1,208 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ScrollView, StatusBar, View } from "react-native";
+import { ScrollView, StatusBar, View, Platform, Alert } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import GroceryHeader from "../../../components/bills/uploadBills/groceryBills/GroceryHeader.js";
-import GrocerySummaryCards from "../../../components/bills/uploadBills/groceryBills/GrocerySummaryCards.js";
-import GroceryBox from "../../../components/bills/uploadBills/groceryBills/GroceryBox.js";
-import GroceryActions from "../../../components/bills/uploadBills/groceryBills/GroceryActions.js";
-import GroceryRecent from "../../../components/bills/uploadBills/groceryBills/GroceryRecent.js";
-import GroceryTips from "../../../components/bills/uploadBills/groceryBills/GroceryTips.js";
+import GroceryHeader from "../../../components/bills/uploadBills/groceryBills/GroceryHeader";
+import GrocerySummaryCards from "../../../components/bills/uploadBills/groceryBills/GrocerySummaryCards";
+import GroceryBox from "../../../components/bills/uploadBills/groceryBills/GroceryBox";
+import GroceryInput from "../../../components/bills/uploadBills/groceryBills/GroceryInput";
+import GroceryActions from "../../../components/bills/uploadBills/groceryBills/GroceryActions";
+import GroceryRecent from "../../../components/bills/uploadBills/groceryBills/GroceryRecent";
+import GroceryTips from "../../../components/bills/uploadBills/groceryBills/GroceryTips";
+import baseURL from "../../../assets/common/baseUrl";
+import { useAuth } from "../../../context/auth";
 
-const recentUploads = [
-    {
-        id: 1,
-        name: "October Grocery Receipt.png",
-        size: "2.3 MB",
-        date: "Oct 15 at 10:30 AM",
-        status: "uploaded",
-    },
-    {
-        id: 2,
-        name: "September SM Receipt.pdf",
-        size: "1.9 MB",
-        date: "Sep 20 at 2:15 PM",
-        status: "uploaded",
-    },
-    {
-        id: 3,
-        name: "August Supermarket Bill.jpg",
-        size: "3.1 MB",
-        date: "Aug 10 at 9:45 AM",
-        status: "uploaded",
-    },
-    {
-        id: 4,
-        name: "July Grocery Bill.png",
-        size: "2.2 MB",
-        date: "Jul 5 at 11:20 AM",
-        status: "uploading",
-    },
-];
+import { useDispatch, useSelector } from "react-redux";
+import {
+  fetchGroceryBills,
+  uploadGroceryBill,
+  removeGroceryBillLocal,
+} from "../../../redux/slices/bills/grocerySlice";
+import { fetchAnalytics } from "../../../redux/slices/analytics/analyticsSlice";
+import { fetchBills } from "../../../redux/slices/bills/billSlice";
 
 export default function GroceryBills({ navigation }) {
-    const category = { name: "Groceries", icon: "🛒", color: "green" };
-    const [uploads, setUploads] = useState(recentUploads);
+  const category = { name: "Groceries", icon: "🛒", color: "green" };
+  const { token, getToken } = useAuth();
+  const dispatch = useDispatch();
 
-    const pickImage = async () => {
-        const result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.IMAGE,
-            allowsEditing: true,
-            quality: 1,
+  const { bills, count, uploading } = useSelector(
+    (state) => state.grocery
+  );
+
+
+  const [selectedImageUri, setSelectedImageUri] = useState(null);
+  const [store, setStore] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState("");
+  const [feedback, setFeedback] = useState("");
+  const [date, setDate] = useState("");
+  const [cost, setCost] = useState("");
+  const [items, setItems] = useState("");
+  const [categoryType, setCategoryType] = useState("");
+  const [useManualEntry, setUseManualEntry] = useState(false);
+
+  useEffect(() => {
+    dispatch(fetchGroceryBills());
+  }, [dispatch]);
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: false,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      const uri = result.assets[0].uri;
+      setSelectedImageUri(uri);
+    }
+  };
+
+  const takePhoto = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+    if (!result.canceled) {
+      const uri = result.assets[0].uri;
+      setSelectedImageUri(uri);
+    }
+  };
+
+  const removeSelectedImage = () => {
+    setSelectedImageUri(null);
+  };
+
+  const uploadBill = async () => {
+    if (uploading) return;
+
+    if (!useManualEntry && !selectedImageUri) {
+      Alert.alert("Error", "Please select an image first.");
+      return;
+    }
+
+    if (useManualEntry) {
+      if (!store || !paymentStatus || !date || !cost || !items || !categoryType) {
+        Alert.alert("Error", "Please fill in all required manual fields.");
+        return;
+      }
+    } else if (!paymentStatus) {
+      Alert.alert("Error", "Please select payment status.");
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+
+      if (!useManualEntry && selectedImageUri) {
+        const filename = selectedImageUri.split("/").pop();
+        const ext = filename.split(".").pop();
+        const type = `image/${ext}`;
+
+        formData.append("billImage", {
+          uri:
+            Platform.OS === "android"
+              ? selectedImageUri
+              : selectedImageUri.replace("file://", ""),
+          name: filename,
+          type,
         });
-        if (!result.canceled) {
-            console.log("Image selected:", result.assets[0].uri);
-            // Add upload logic here
-        }
-    };
 
-    const takePhoto = async () => {
-        const result = await ImagePicker.launchCameraAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.IMAGE,
-            allowsEditing: true,
-            quality: 1,
-        });
-        if (!result.canceled) {
-            console.log("Photo taken:", result.assets[0].uri);
-            // Add upload logic here
-        }
-    };
+        formData.append("useOCR", "true");
+      } else {
+        formData.append("useOCR", "false");
+        formData.append("date", date);
+        formData.append("cost", cost);
+        formData.append("items", items);
+      }
 
-    const removeUpload = (id) => {
-        setUploads(uploads.filter((item) => item.id !== id));
-    };
+      formData.append("store", store);
+      formData.append("paymentStatus", paymentStatus);
+      formData.append("category", categoryType);
+      if (feedback) formData.append("feedback", feedback);
 
-    return (
-        <SafeAreaView className="flex-1 bg-slate-50">
-            <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
-            <GroceryHeader navigation={navigation} category={category} />
-            <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-                <GrocerySummaryCards category={category} />
-                <View className="mx-4">
-                    <GroceryBox pickImage={pickImage} category={category} />
-                    <GroceryActions pickImage={pickImage} takePhoto={takePhoto} />
-                </View>
-                <GroceryRecent uploads={uploads} removeUpload={removeUpload} />
-                <GroceryTips category={category} />
-            </ScrollView>
-        </SafeAreaView>
-    );
+      const resultAction = await dispatch(uploadGroceryBill(formData));
+
+      if (uploadGroceryBill.rejected.match(resultAction)) {
+        throw new Error(resultAction.payload || "Upload failed");
+      }
+
+      // Refresh analytics after successful upload
+      dispatch(fetchAnalytics());
+      dispatch(fetchBills());
+
+      // Reset form
+      setSelectedImageUri(null);
+      setStore("");
+      setPaymentStatus("");
+      setFeedback("");
+      setDate("");
+      setCost("");
+      setItems("");
+      setCategoryType("");
+      setUseManualEntry(false);
+
+      Alert.alert("Success", "Grocery bill uploaded successfully!");
+    } catch (err) {
+      console.error("Upload error:", err);
+      Alert.alert(
+        "Upload Failed",
+        err?.message || err?.toString() || "An error occurred while uploading the bill."
+      );
+    }
+  };
+
+  
+
+  return (
+    <SafeAreaView className="flex-1 bg-slate-50">
+      <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
+      <GroceryHeader navigation={navigation} category={category} />
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <GrocerySummaryCards groceryBills={{ bills, count }} category={category} />
+        <View className="mx-4">
+          {!useManualEntry && (
+            <GroceryBox
+              pickImage={pickImage}
+              category={category}
+              selectedImageUri={selectedImageUri}
+              onRemoveImage={removeSelectedImage}
+            />
+          )}
+
+          <GroceryInput
+            store={store}
+            setStore={setStore}
+            paymentStatus={paymentStatus}
+            setPaymentStatus={setPaymentStatus}
+            feedback={feedback}
+            setFeedback={setFeedback}
+            date={date}
+            setDate={setDate}
+            cost={cost}
+            setCost={setCost}
+            items={items}
+            setItems={setItems}
+            category={categoryType}
+            setCategory={setCategoryType}
+            useManualEntry={useManualEntry}
+            setUseManualEntry={setUseManualEntry}
+            onSubmit={uploadBill}
+            hasImage={!!selectedImageUri}
+            isSubmitting={uploading}
+          />
+
+          <GroceryActions pickImage={pickImage} takePhoto={takePhoto} />
+        </View>
+
+        <GroceryRecent
+          groceryBills={bills}
+          removeUpload={(id) => {
+            dispatch(removeGroceryBillLocal(id));
+          }}
+        />
+        <GroceryTips category={category} />
+      </ScrollView>
+    </SafeAreaView>
+  );
 }

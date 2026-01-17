@@ -1,46 +1,68 @@
-import React, { useState } from "react";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState, useEffect } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
     View,
     StatusBar,
     ScrollView,
     RefreshControl,
+    Alert,
+    Platform,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import MiscellaneousActions from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousActions";
-import MiscellaneousBox from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousBox";
+
+import MiscellaneousHeader from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousHeader";
 import MiscellaneousSummaryCards from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousSummaryCards";
+import MiscellaneousBox from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousBox";
+import MiscellaneousInput from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousInput";
+import MiscellaneousActions from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousActions";
+import MiscellaneousRecent from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousRecent";
 import MiscellaneousTips from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousTips";
-import MiscellaneousHeader from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousHeader"
-import MiscellaneousRecent from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousRecent" 
-export default function MiscellaneousBills({ navigation, }) {
+
+import { useAuth } from "../../../context/auth";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMiscellaneousBills, uploadMiscellaneousBill, removeMiscellaneousBillLocal, } from "../../../redux/slices/bills/miscellaneousSlice"
+import { fetchAnalytics } from "../../../redux/slices/analytics/analyticsSlice";
+import { fetchBills } from "../../../redux/slices/bills/billSlice";
+
+export default function MiscellaneousBills({ navigation }) {
+    const category = { name: "Miscellaneous", icon: "📦", color: "purple" };
+
+    const { token, getToken } = useAuth();
+    const dispatch = useDispatch();
+
+    const { bills, count, uploading } = useSelector(
+        (state) => state.miscellaneous
+    );
     const [refreshing, setRefreshing] = useState(false);
-     const category = { name: "Miscellaneous", icon: "📦", color: "purple" };
-    const [uploads, setUploads] = useState([
-        {
-            id: 1,
-            name: "October Gas Receipt.jpg",
-            size: "1.9 MB",
-            date: "Oct 15, 2024",
-            status: "uploaded",
-        },
-        {
-            id: 2,
-            name: "September Petron Bill.pdf",
-            size: "1.5 MB",
-            date: "Sep 20, 2024",
-            status: "uploaded",
-        },
-    ]);
+
+
+    // Image
+    const [selectedImageUri, setSelectedImageUri] = useState(null);
+
+    // Form fields
+    const [purchaseType, setPurchaseType] = useState("");
+    const [categoryType, setCategoryType] = useState("");
+    const [paymentStatus, setPaymentStatus] = useState("");
+    const [feedback, setFeedback] = useState("");
+    const [date, setDate] = useState("");
+    const [cost, setCost] = useState("");
+    const [useManualEntry, setUseManualEntry] = useState(false);
+
+    useEffect(() => {
+        dispatch(fetchMiscellaneousBills());
+    }, [dispatch]);
+
+    /* ---------------- IMAGE PICKERS ---------------- */
+
     const pickImage = async () => {
         const result = await ImagePicker.launchImageLibraryAsync({
             mediaTypes: ImagePicker.MediaTypeOptions.IMAGE,
             allowsEditing: true,
             quality: 1,
         });
+
         if (!result.canceled) {
-            console.log("Image selected:", result.assets[0].uri);
-            // Add upload logic here
+            setSelectedImageUri(result.assets[0].uri);
         }
     };
 
@@ -50,24 +72,111 @@ export default function MiscellaneousBills({ navigation, }) {
             allowsEditing: true,
             quality: 1,
         });
+
         if (!result.canceled) {
-            console.log("Photo taken:", result.assets[0].uri);
-            // Add upload logic here
+            setSelectedImageUri(result.assets[0].uri);
         }
     };
+
+    const removeSelectedImage = () => {
+        setSelectedImageUri(null);
+    };
+
+
+    const uploadBill = async () => {
+        if (uploading) return;
+
+        if (!useManualEntry && !selectedImageUri) {
+            Alert.alert("Error", "Please select an image first.");
+            return;
+        }
+
+        if (
+            !purchaseType ||
+            !categoryType ||
+            !paymentStatus ||
+            (useManualEntry && (!date || !cost))
+        ) {
+            Alert.alert("Error", "Please fill in all required fields.");
+            return;
+        }
+
+        try {
+
+            const formData = new FormData();
+
+            if (!useManualEntry && selectedImageUri) {
+                const filename = selectedImageUri.split("/").pop();
+                const ext = filename.split(".").pop();
+
+                formData.append("billImage", {
+                    uri:
+                        Platform.OS === "android"
+                            ? selectedImageUri
+                            : selectedImageUri.replace("file://", ""),
+                    name: filename,
+                    type: `image/${ext}`,
+                });
+
+                formData.append("useOCR", "true");
+            } else {
+                formData.append("useOCR", "false");
+                formData.append("date", date);
+                formData.append("cost", cost);
+            }
+
+            formData.append("purchaseType", purchaseType);
+            formData.append("category", categoryType);
+            formData.append("paymentStatus", paymentStatus);
+            if (feedback) formData.append("feedback", feedback);
+
+            const resultAction = await dispatch(uploadMiscellaneousBill(formData));
+
+            if (uploadMiscellaneousBill.rejected.match(resultAction)) {
+                throw new Error(resultAction.payload || "Upload failed");
+            }
+
+            // Refresh analytics after successful upload
+            dispatch(fetchAnalytics());
+            dispatch(fetchBills());
+
+            // Reset form
+            setSelectedImageUri(null);
+            setPurchaseType("");
+            setCategoryType("");
+            setPaymentStatus("");
+            setFeedback("");
+            setDate("");
+            setCost("");
+            setUseManualEntry(false);
+
+            Alert.alert("Success", "Miscellaneous bill uploaded successfully!");
+        } catch (err) {
+            Alert.alert("Upload Failed", "Something went wrong.");
+        } finally {
+            setUploading(false);
+        }
+    };
+
+    /* ---------------- REFRESH ---------------- */
+
     const onRefresh = () => {
         setRefreshing(true);
         setTimeout(() => setRefreshing(false), 2000);
     };
 
     const removeUpload = (id) => {
-        setUploads(uploads.filter((item) => item.id !== id));
+        setUploads((prev) => prev.filter((item) => item.id !== id));
     };
+
+    /* ---------------- UI ---------------- */
 
     return (
         <SafeAreaView className="flex-1 bg-slate-50">
             <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
-            <MiscellaneousHeader navigation={navigation} category={category}/>
+
+            <MiscellaneousHeader navigation={navigation} category={category} />
+
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
@@ -75,14 +184,52 @@ export default function MiscellaneousBills({ navigation, }) {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
-                <MiscellaneousSummaryCards category={category}/>
+                <MiscellaneousSummaryCards category={category} />
 
                 <View className="mx-4">
-                    <MiscellaneousBox pickImage={pickImage} category={category}/>
-                    <MiscellaneousActions pickImage={pickImage} takePhoto={takePhoto}/>
+                    {!useManualEntry && (
+                        <MiscellaneousBox
+                            pickImage={pickImage}
+                            category={category}
+                            selectedImageUri={selectedImageUri}
+                            onRemoveImage={removeSelectedImage}
+                        />
+                    )}
+
+                    <MiscellaneousInput
+                        purchaseType={purchaseType}
+                        setPurchaseType={setPurchaseType}
+                        category={categoryType}
+                        setCategory={setCategoryType}
+                        paymentStatus={paymentStatus}
+                        setPaymentStatus={setPaymentStatus}
+                        feedback={feedback}
+                        setFeedback={setFeedback}
+                        date={date}
+                        setDate={setDate}
+                        cost={cost}
+                        setCost={setCost}
+                        useManualEntry={useManualEntry}
+                        setUseManualEntry={setUseManualEntry}
+                        onSubmit={uploadBill}
+                        hasImage={!!selectedImageUri}
+                        isSubmitting={uploading}
+                    />
+
+                    <MiscellaneousActions
+                        pickImage={pickImage}
+                        takePhoto={takePhoto}
+                    />
                 </View>
-                <MiscellaneousRecent uploads={uploads} removeUpload={removeUpload}/>
-                <MiscellaneousTips category={category}/>
+
+                <MiscellaneousRecent
+                    miscellaneousBills={bills}
+                    removeUpload={(id) => {
+                        dispatch(removeMiscellaneousBillLocal(id));
+                    }}
+                />
+
+                <MiscellaneousTips category={category} />
             </ScrollView>
         </SafeAreaView>
     );

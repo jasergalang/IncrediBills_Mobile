@@ -9,6 +9,9 @@ import predictionsSlice from './slices/prediction/predictionSlice';
 import electricSlice from './slices/bills/electricSlice';
 import waterSlice from './slices/bills/waterSlice';
 import userSlice from './slices/user/userSlice';
+import grocerySlice from './slices/bills/grocerySlice'
+import miscellaneousSlice from './slices/bills/miscellaneousSlice'
+import transportSlice from './slices/bills/transportSlice'
 const store = configureStore({
     reducer: {
         login: loginReducer,
@@ -20,6 +23,9 @@ const store = configureStore({
         electric: electricSlice,
         water: waterSlice,
         user: userSlice,
+        grocery: grocerySlice,
+        miscellaneous: miscellaneousSlice,
+        transport: transportSlice
     },
 });
 export default store;

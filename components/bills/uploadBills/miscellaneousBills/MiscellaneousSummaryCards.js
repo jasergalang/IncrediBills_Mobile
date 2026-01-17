@@ -16,7 +16,7 @@ export default function MiscellaneousSummaryCards() {
           </View>
         </View>
         <Text className="text-sm font-semibold text-slate-600 mb-1">
-          Kitchen Gas Bill
+          October 2025
         </Text>
         <Text className="text-3xl font-bold text-slate-900 mb-2">₱550</Text>
         <Text className="text-xs text-orange-600 font-semibold">
