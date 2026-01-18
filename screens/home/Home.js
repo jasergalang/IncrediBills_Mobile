@@ -12,7 +12,7 @@ import AchievementsBanner from "../../components/home/AchievementsBanner";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { useDispatch, useSelector } from "react-redux";
-import { fetchUser } from "../../redux/slices/user/userSlice"; // ✅ New import
+import { fetchUser } from "../../redux/slices/user/userSlice";
 import { fetchBills } from "../../redux/slices/bills/billSlice";
 import { fetchPredictions } from "../../redux/slices/prediction/predictionSlice";
 import { fetchAnalytics } from "../../redux/slices/analytics/analyticsSlice";
@@ -23,7 +23,6 @@ export default function Home({ navigation }) {
   const [refreshing, setRefreshing] = useState(false);
   const dispatch = useDispatch();
 
-  // ✅ Redux state - no need for token anymore
   const { userData } = useSelector((state) => state.user);
   const bills = useSelector(
     (state) => state.bills || { latestAmounts: {}, recentBills: [] }
@@ -31,11 +30,11 @@ export default function Home({ navigation }) {
   const predictions = useSelector(
     (state) => state.predictions || { electricity: [], water: [] }
   );
-  const analytics = useSelector((state) => state.analytics);
+  const analytics = useSelector((state) => state.analytics || { monthly: [] });
 
   const { latestAmounts, recentBills, loading } = bills;
+  const { monthly = [] } = analytics;
 
-  // ✅ Fetch all data
   const fetchAll = async () => {
     await Promise.all([
       dispatch(fetchUser()),
@@ -57,25 +56,36 @@ export default function Home({ navigation }) {
     setRefreshing(false);
   };
 
-
-  // Categories (SpendingOverview)
+  // Categories (SpendingOverview) - using monthly analytics like Analytics screen
   const categories = useMemo(() => {
-    const total = Object.values(latestAmounts || {}).reduce(
-      (sum, amount) => sum + (amount || 0),
-      0
-    );
+    // Get the latest month's data from monthly analytics (same as Analytics screen)
+    const latest = monthly.length > 0 ? monthly[monthly.length - 1] : {};
+    
+    const monthlyAmountsData = {
+      electricity: latest.electricity || 0,
+      water: latest.water || 0,
+      fuel: latest.fuel || 0,
+      grocery: latest.grocery || 0,
+      miscellaneous: latest.miscellaneous || 0,
+    };
 
-    return utilities.map((u) => {
-      const amount = latestAmounts?.[u.id] || 0;
-      return {
-        category: u.name,
-        amount,
-        percent: total ? Math.round((amount / total) * 100) : 0,
-        icon: u.icon,
-        color: u.color,
-      };
-    });
-  }, [latestAmounts]);
+    // Calculate total
+    const total = Object.values(monthlyAmountsData).reduce((a, b) => a + b, 0);
+
+    // Map to category objects and filter out zero amounts
+    return utilities
+      .map((u) => {
+        const amount = monthlyAmountsData[u.id] || 0;
+        return {
+          category: u.name,
+          amount,
+          percent: total ? Math.round((amount / total) * 100) : 0,
+          icon: u.icon,
+          color: u.color,
+        };
+      })
+      .filter((cat) => cat.amount > 0);
+  }, [monthly]);
 
   // Upcoming Bills (from predictions)
   const upcomingBills = useMemo(() => {
@@ -111,30 +121,49 @@ export default function Home({ navigation }) {
     return bills;
   }, [predictions]);
 
-  // StatsCards data
+  // StatsCards data - using monthly analytics for current month total
   const statsData = useMemo(() => {
-    const currentTotal = Object.values(latestAmounts || {}).reduce(
-      (sum, amount) => sum + (amount || 0),
-      0
-    );
+    // Get current month total from latest monthly analytics (same as Analytics screen)
+    const latest = monthly.length > 0 ? monthly[monthly.length - 1] : {};
+    const currentTotal = (latest.electricity || 0) + 
+                        (latest.water || 0) + 
+                        (latest.fuel || 0) + 
+                        (latest.grocery || 0) + 
+                        (latest.miscellaneous || 0);
+
+    // Get previous month total for percentage calculation
+    const previous = monthly.length > 1 ? monthly[monthly.length - 2] : {};
+    const previousTotal = (previous.electricity || 0) + 
+                         (previous.water || 0) + 
+                         (previous.fuel || 0) + 
+                         (previous.grocery || 0) + 
+                         (previous.miscellaneous || 0);
 
     const predictedTotal = upcomingBills.reduce(
       (sum, bill) => sum + (bill?.amount || 0),
       0
     );
 
-    const percentChange =
-      currentTotal > 0
-        ? Math.round(((predictedTotal - currentTotal) / currentTotal) * 100)
-        : 0;
+    const totalSpentChange = previousTotal > 0
+      ? Math.round(((currentTotal - previousTotal) / previousTotal) * 100)
+      : 0;
+
+    const predictionChange = currentTotal > 0
+      ? Math.round(((predictedTotal - currentTotal) / currentTotal) * 100)
+      : 0;
 
     return {
       totalSpent: Math.round(currentTotal),
+      totalSpentChange,
       nextMonthPrediction: Math.round(predictedTotal),
-      predictionChange: percentChange,
+      predictionChange,
       billsUploaded: bills.billsUploaded || 0,
+      savedAmount: 0, // Can be calculated based on budget vs actual
+      savedChange: 0,
+      billsChange: 0,
     };
-  }, [latestAmounts, upcomingBills, bills.billsUploaded]);
+  }, [monthly, upcomingBills, bills.billsUploaded]);
+
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
