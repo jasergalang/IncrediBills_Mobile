@@ -7,7 +7,7 @@ import UtilityKPICards from "../../components/analytics/UtilityKPICards";
 import AnomalyAlerts from "../../components/analytics/AnomalyAlerts";
 import SpendingTrendsChart from "../../components/analytics/SpendingTrendsChart";
 import CategoryBreakdown from "../../components/analytics/CategoryBreakdown";
-import TipsSection from "../../components/analytics/TipsSection";
+import ExportSchedulePanel from "../../components/analytics/ExportSchedulePanel";
 import GameKPICards from "../../components/analytics/GameKPICards";
 import AchievementsProgress from "../../components/analytics/AchievementsProgress";
 import RecentRewards from "../../components/analytics/RecentRewards";
@@ -64,21 +64,21 @@ export default function Analytics({ navigation }) {
     // Calculate total spending based on selected categories
     const totalSpending = latestMonths.reduce((sum, m) => {
       let monthTotal = 0;
-      
+
       if (selectedCategories.includes("all")) {
         // Sum all available categories
-        monthTotal = (m.electricity || 0) + 
-                     (m.water || 0) + 
-                     (m.fuel || 0) + 
-                     (m.grocery || 0) + 
-                     (m.miscellaneous || 0);
+        monthTotal = (m.electricity || 0) +
+          (m.water || 0) +
+          (m.fuel || 0) +
+          (m.grocery || 0) +
+          (m.miscellaneous || 0);
       } else {
         // Sum only selected categories
         selectedCategories.forEach((category) => {
           monthTotal += m[category] || 0;
         });
       }
-      
+
       return sum + monthTotal;
     }, 0);
 
@@ -111,14 +111,14 @@ export default function Analytics({ navigation }) {
   const spendingData = useMemo(() => {
     return monthly.map((m) => {
       const monthIndex = parseInt(m.month?.split("-")[1], 10) - 1;
-      
+
       let amount = 0;
       if (selectedCategories.includes("all")) {
-        amount = (m.electricity || 0) + 
-                 (m.water || 0) + 
-                 (m.fuel || 0) + 
-                 (m.grocery || 0) + 
-                 (m.miscellaneous || 0);
+        amount = (m.electricity || 0) +
+          (m.water || 0) +
+          (m.fuel || 0) +
+          (m.grocery || 0) +
+          (m.miscellaneous || 0);
       } else {
         selectedCategories.forEach((category) => {
           amount += m[category] || 0;
@@ -138,7 +138,7 @@ export default function Analytics({ navigation }) {
   const categories = useMemo(() => {
     // Get the latest month's data from monthly analytics (which sums all bills per month)
     const latest = monthly.length > 0 ? monthly[monthly.length - 1] : {};
-    
+
     const monthlyAmountsData = {
       electricity: latest.electricity || 0,
       water: latest.water || 0,
@@ -232,14 +232,38 @@ export default function Analytics({ navigation }) {
 
             <CategoryBreakdown categories={categories} />
 
-            <TipsSection type="utility" />
+            <ExportSchedulePanel />
           </>
         ) : (
           <>
             <GameKPICards gameKPI={{}} />
             <AchievementsProgress achievements={[]} />
             <RecentRewards rewards={[]} />
-            <TipsSection type="games" />
+            {/* <ExportSchedulePanel
+              profile={profile}
+              kpiData={utilityKPI}
+              timeSeriesData={spendingData}
+              categoryBreakdown={categories}
+              dateRange={dateRange}
+              selectedCategories={selectedCategories}
+              totalAmount={utilityKPI.totalSpending}
+            /> */}
+            <ExportSchedulePanel
+              profile={profile}
+              kpiData={utilityKPI}
+              timeSeriesData={spendingData}
+              categoryBreakdown={categories}
+              rollingAverages={{
+                sevenDay: 0,    // Add your calculation
+                thirtyDay: 0,   // Add your calculation
+                ninetyDay: 0    // Add your calculation
+              }}
+              anomalies={anomalies}
+              peakUsageData={[]}  // Add if available
+              dateRange={dateRange}
+              selectedCategories={selectedCategories}
+              totalAmount={utilityKPI.totalSpending}
+            />
           </>
         )}
       </ScrollView>
