@@ -9,24 +9,21 @@ import ElectricInput from "../../../components/bills/uploadBills/electricBills/E
 import ElectricActions from "../../../components/bills/uploadBills/electricBills/ElectricActions";
 import ElectricRecent from "../../../components/bills/uploadBills/electricBills/ElectricRecent";
 import ElectricTips from "../../../components/bills/uploadBills/electricBills/ElectricTips";
-import baseURL from "../../../assets/common/baseUrl";
-import { useAuth } from "../../../context/auth";
-
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchElectricBills,
   uploadElectricBill,
   removeElectricBillLocal,
+  clearRecommendations
 } from "../../../redux/slices/bills/electricSlice";
 import { fetchAnalytics } from "../../../redux/slices/analytics/analyticsSlice";
 import { fetchBills } from "../../../redux/slices/bills/billSlice";
 
 export default function ElectricBills({ navigation }) {
   const category = { name: "Electricity", icon: "⚡", color: "amber" };
-  const { token, getToken } = useAuth();
   const dispatch = useDispatch();
 
-  const { bills, count, uploading } = useSelector(
+  const { bills, count, uploading, recommendations } = useSelector(
     (state) => state.electric
   );
 
@@ -43,7 +40,11 @@ export default function ElectricBills({ navigation }) {
   useEffect(() => {
     dispatch(fetchElectricBills());
   }, [dispatch]);
-
+  useEffect(() => {
+    return () => {
+      dispatch(clearRecommendations());
+    };
+  }, [dispatch]);
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -122,7 +123,7 @@ export default function ElectricBills({ navigation }) {
 
       // ✅ FIX: Use the action result directly
       const resultAction = await dispatch(uploadElectricBill(formData));
-      
+
       // ✅ Check if the action was rejected
       if (uploadElectricBill.rejected.match(resultAction)) {
         throw new Error(resultAction.payload || "Upload failed");
@@ -147,7 +148,7 @@ export default function ElectricBills({ navigation }) {
     } catch (err) {
       console.error("Upload error:", err);
       Alert.alert(
-        "Upload Failed", 
+        "Upload Failed",
         err?.message || err?.toString() || "An error occurred while uploading the bill."
       );
     }
@@ -194,13 +195,13 @@ export default function ElectricBills({ navigation }) {
           <ElectricActions pickImage={pickImage} takePhoto={takePhoto} />
         </View>
 
-        <ElectricRecent 
-          electricBills={bills} 
+        <ElectricRecent
+          electricBills={bills}
           removeUpload={(id) => {
             dispatch(removeElectricBillLocal(id));
-          }} 
+          }}
         />
-        <ElectricTips category={category} />
+        <ElectricTips recommendations={recommendations} />
       </ScrollView>
     </SafeAreaView>
   );

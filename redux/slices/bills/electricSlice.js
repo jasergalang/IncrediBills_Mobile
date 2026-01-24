@@ -80,6 +80,7 @@ const electricSlice = createSlice({
         count: 0,
         bills: [],
         selectedBill: null,
+        recommendations: [],
         detailsLoading: false,
         loading: false,
         uploading: false,
@@ -89,6 +90,9 @@ const electricSlice = createSlice({
         removeElectricBillLocal: (state, action) => {
             state.bills = state.bills.filter(b => b._id !== action.payload);
             state.count -= 1;
+        },
+        clearRecommendations: (state) => { // ✅ Add this
+            state.recommendations = [];
         },
     },
     extraReducers: (builder) => {
@@ -114,9 +118,17 @@ const electricSlice = createSlice({
                 state.uploading = true;
                 state.error = null; // ✅ Clear previous errors
             })
-            .addCase(uploadElectricBill.fulfilled, (state) => {
+            // .addCase(uploadElectricBill.fulfilled, (state) => {
+            //     state.uploading = false;
+            //     state.error = null;
+            // })
+            .addCase(uploadElectricBill.fulfilled, (state, action) => {
                 state.uploading = false;
                 state.error = null;
+                // Store recommendations from response
+                if (action.payload?.recommendations) {
+                    state.recommendations = action.payload.recommendations;
+                }
             })
             .addCase(uploadElectricBill.rejected, (state, action) => {
                 state.uploading = false;
@@ -154,5 +166,5 @@ const electricSlice = createSlice({
     },
 });
 
-export const { removeElectricBillLocal } = electricSlice.actions;
+export const { removeElectricBillLocal, clearRecommendations } = electricSlice.actions;
 export default electricSlice.reducer;
