@@ -9,23 +9,22 @@ import WaterInput from "../../../components/bills/uploadBills/waterBills/WaterIn
 import UploadActions from "../../../components/bills/uploadBills/waterBills/WaterActions";
 import UploadRecent from "../../../components/bills/uploadBills/waterBills/WaterRecent";
 import UploadTips from "../../../components/bills/uploadBills/waterBills/WaterTips";
-import { useAuth } from "../../../context/auth";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchWaterBills,
   uploadWaterBill,
   removeWaterBillLocal,
+  clearRecommendations
 } from "../../../redux/slices/bills/waterSlice";
 import { fetchAnalytics } from "../../../redux/slices/analytics/analyticsSlice";
 import { fetchBills } from "../../../redux/slices/bills/billSlice";
 
 export default function UploadBill({ navigation }) {
   const category = { name: "Water", icon: "💧", color: "blue" };
-  const { token, getToken } = useAuth();
   const dispatch = useDispatch();
 
-  const { bills, count, uploading } = useSelector((state) => state.water);
+  const { bills, count, uploading, recommendations } = useSelector((state) => state.water);
 
   const [selectedImageUri, setSelectedImageUri] = useState(null);
   const [billingPeriod, setBillingPeriod] = useState("");
@@ -39,6 +38,12 @@ export default function UploadBill({ navigation }) {
 
   useEffect(() => {
     dispatch(fetchWaterBills());
+  }, [dispatch]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearRecommendations());
+    };
   }, [dispatch]);
 
   const pickImage = async () => {
@@ -199,7 +204,7 @@ export default function UploadBill({ navigation }) {
             dispatch(removeWaterBillLocal(id));
           }}
         />
-        <UploadTips category={category} />
+        <UploadTips recommendations={recommendations} />
       </ScrollView>
     </SafeAreaView>
   );

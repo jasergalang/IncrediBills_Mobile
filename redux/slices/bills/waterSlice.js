@@ -91,6 +91,7 @@ const waterSlice = createSlice({
         count: 0,
         bills: [],
         selectedBill: null,
+        recommendations: [],
         detailsLoading: false,
         loading: false,
         uploading: false,
@@ -100,6 +101,9 @@ const waterSlice = createSlice({
         removeWaterBillLocal: (state, action) => {
             state.bills = state.bills.filter(b => b._id !== action.payload);
             state.count -= 1;
+        },
+        clearRecommendations: (state) => { // ✅ Add this
+            state.recommendations = [];
         },
     },
     extraReducers: (builder) => {
@@ -125,9 +129,13 @@ const waterSlice = createSlice({
                 state.uploading = true;
                 state.error = null;
             })
-            .addCase(uploadWaterBill.fulfilled, (state) => {
+            .addCase(uploadWaterBill.fulfilled, (state, action) => {
                 state.uploading = false;
                 state.error = null;
+                 // Store recommendations from response
+                if (action.payload?.recommendations) {
+                    state.recommendations = action.payload.recommendations;
+                }
             })
             .addCase(uploadWaterBill.rejected, (state, action) => {
                 state.uploading = false;
@@ -165,5 +173,5 @@ const waterSlice = createSlice({
     },
 });
 
-export const { removeWaterBillLocal } = waterSlice.actions;
+export const { removeWaterBillLocal, clearRecommendations } = waterSlice.actions;
 export default waterSlice.reducer;

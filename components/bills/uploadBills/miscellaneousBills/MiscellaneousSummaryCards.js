@@ -101,7 +101,7 @@ export default function MiscellaneousSummaryCards({ miscellaneousBills }) {
 
       <View className="flex-row gap-3 mt-3">
         <View className="flex-1 bg-white rounded-xl p-4">
-          <Text className="text-xs font-semibold text-slate-600 mb-1">Latest Type</Text>
+          <Text className="text-xs font-semibold text-slate-600 mb-1">Purchase Type</Text>
           <Text className="text-base font-bold text-slate-900">{purchaseType}</Text>
         </View>
         <View className="flex-1 bg-white rounded-xl p-4">

@@ -77,6 +77,7 @@ const grocerySlice = createSlice({
         count: 0,
         bills: [],
         selectedBill: null,
+        recommendations: [],
         detailsLoading: false,
         loading: false,
         uploading: false,
@@ -86,6 +87,9 @@ const grocerySlice = createSlice({
         removeGroceryBillLocal: (state, action) => {
             state.bills = state.bills.filter(b => b._id !== action.payload);
             state.count -= 1;
+        },
+        clearRecommendations: (state) => { // ✅ Add this
+            state.recommendations = [];
         },
     },
     extraReducers: (builder) => {
@@ -111,9 +115,13 @@ const grocerySlice = createSlice({
                 state.uploading = true;
                 state.error = null; // ✅ Clear previous errors
             })
-            .addCase(uploadGroceryBill.fulfilled, (state) => {
+            .addCase(uploadGroceryBill.fulfilled, (state, action) => {
                 state.uploading = false;
                 state.error = null;
+
+                if (action.payload?.recommendations) {
+                    state.recommendations = action.payload.recommendations;
+                }
             })
             .addCase(uploadGroceryBill.rejected, (state, action) => {
                 state.uploading = false;
@@ -150,5 +158,5 @@ const grocerySlice = createSlice({
     },
 });
 
-export const { removeGroceryBillLocal } = grocerySlice.actions;
+export const { removeGroceryBillLocal, clearRecommendations } = grocerySlice.actions;
 export default grocerySlice.reducer;

@@ -77,6 +77,7 @@ const transportSlice = createSlice({
         count: 0,
         bills: [],
         selectedBill: null,
+        recommendations: [],
         detailsLoading: false,
         loading: false,
         uploading: false,
@@ -86,6 +87,9 @@ const transportSlice = createSlice({
         removetransportBillLocal: (state, action) => {
             state.bills = state.bills.filter(b => b._id !== action.payload);
             state.count -= 1;
+        },
+        clearRecommendations: (state) => { // ✅ Add this
+            state.recommendations = [];
         },
     },
     extraReducers: (builder) => {
@@ -111,9 +115,13 @@ const transportSlice = createSlice({
                 state.uploading = true;
                 state.error = null; // ✅ Clear previous errors
             })
-            .addCase(uploadTransportBill.fulfilled, (state) => {
+            .addCase(uploadTransportBill.fulfilled, (state, action) => {
                 state.uploading = false;
                 state.error = null;
+
+                if (action.payload?.recommendations) {
+                    state.recommendations = action.payload.recommendations;
+                }
             })
             .addCase(uploadTransportBill.rejected, (state, action) => {
                 state.uploading = false;
@@ -151,5 +159,5 @@ const transportSlice = createSlice({
     },
 });
 
-export const { removeTransportBillLocal } = transportSlice.actions;
+export const { removeTransportBillLocal, clearRecommendations } = transportSlice.actions;
 export default transportSlice.reducer;

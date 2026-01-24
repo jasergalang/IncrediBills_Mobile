@@ -23,6 +23,7 @@ import {
   fetchTransportBills,
   uploadTransportBill,
   removeTransportBillLocal,
+  clearRecommendations,
 } from "../../../redux/slices/bills/transportSlice";
 import { fetchAnalytics } from "../../../redux/slices/analytics/analyticsSlice";
 import { fetchBills } from "../../../redux/slices/bills/billSlice";
@@ -32,7 +33,7 @@ export default function TransportBills({ navigation }) {
 
   const dispatch = useDispatch();
 
-  const { bills, uploading, count } = useSelector((state) => state.transport);
+  const { bills, uploading, count, recommendations } = useSelector((state) => state.transport);
 
   const [refreshing, setRefreshing] = useState(false);
   const [selectedImageUri, setSelectedImageUri] = useState(null);
@@ -48,6 +49,12 @@ export default function TransportBills({ navigation }) {
 
   useEffect(() => {
     dispatch(fetchTransportBills());
+  }, [dispatch]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearRecommendations());
+    };
   }, [dispatch]);
 
   const pickImage = async () => {
@@ -174,7 +181,7 @@ export default function TransportBills({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <TransportSummaryCards transportBills={{ bills, count }} category={category}/>
+        <TransportSummaryCards transportBills={{ bills, count }} category={category} />
 
         <View className="mx-4">
           {!useManualEntry && (
@@ -218,7 +225,7 @@ export default function TransportBills({ navigation }) {
           }
         />
 
-        <TransportTips category={category} />
+        <TransportTips  recommendations={recommendations}  />
       </ScrollView>
     </SafeAreaView>
   );

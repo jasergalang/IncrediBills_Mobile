@@ -77,6 +77,7 @@ const miscellaneousSlice = createSlice({
         count: 0,
         bills: [],
         selectedBill: null,
+        recommendations: [],
         detailsLoading: false,
         loading: false,
         uploading: false,
@@ -86,6 +87,9 @@ const miscellaneousSlice = createSlice({
         removeMiscellaneousBillLocal: (state, action) => {
             state.bills = state.bills.filter(b => b._id !== action.payload);
             state.count -= 1;
+        },
+        clearRecommendations: (state) => { // ✅ Add this
+            state.recommendations = [];
         },
     },
     extraReducers: (builder) => {
@@ -111,9 +115,13 @@ const miscellaneousSlice = createSlice({
                 state.uploading = true;
                 state.error = null; // ✅ Clear previous errors
             })
-            .addCase(uploadMiscellaneousBill.fulfilled, (state) => {
+            .addCase(uploadMiscellaneousBill.fulfilled, (state, action) => {
                 state.uploading = false;
                 state.error = null;
+
+                if (action.payload?.recommendations) {
+                    state.recommendations = action.payload.recommendations;
+                }
             })
             .addCase(uploadMiscellaneousBill.rejected, (state, action) => {
                 state.uploading = false;
@@ -151,5 +159,5 @@ const miscellaneousSlice = createSlice({
     },
 });
 
-export const { removeMiscellaneousBillLocal } = miscellaneousSlice.actions;
+export const { removeMiscellaneousBillLocal, clearRecommendations } = miscellaneousSlice.actions;
 export default miscellaneousSlice.reducer;

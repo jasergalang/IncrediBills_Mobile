@@ -16,6 +16,7 @@ import {
   fetchGroceryBills,
   uploadGroceryBill,
   removeGroceryBillLocal,
+  clearRecommendations
 } from "../../../redux/slices/bills/grocerySlice";
 import { fetchAnalytics } from "../../../redux/slices/analytics/analyticsSlice";
 import { fetchBills } from "../../../redux/slices/bills/billSlice";
@@ -24,7 +25,7 @@ export default function GroceryBills({ navigation }) {
   const category = { name: "Groceries", icon: "🛒", color: "green" };
   const dispatch = useDispatch();
 
-  const { bills, count, uploading } = useSelector(
+  const { bills, count, uploading, recommendations } = useSelector(
     (state) => state.grocery
   );
 
@@ -40,6 +41,12 @@ export default function GroceryBills({ navigation }) {
 
   useEffect(() => {
     dispatch(fetchGroceryBills());
+  }, [dispatch]);
+
+  useEffect(() => {
+    return () => {
+      dispatch(clearRecommendations());
+    };
   }, [dispatch]);
 
   const pickImage = async () => {
@@ -195,7 +202,7 @@ export default function GroceryBills({ navigation }) {
             dispatch(removeGroceryBillLocal(id));
           }}
         />
-        <GroceryTips category={category} />
+        <GroceryTips recommendations={recommendations} />
       </ScrollView>
     </SafeAreaView>
   );

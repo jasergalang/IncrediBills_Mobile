@@ -18,19 +18,17 @@ import MiscellaneousActions from "../../../components/bills/uploadBills/miscella
 import MiscellaneousRecent from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousRecent";
 import MiscellaneousTips from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousTips";
 
-import { useAuth } from "../../../context/auth";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchMiscellaneousBills, uploadMiscellaneousBill, removeMiscellaneousBillLocal, } from "../../../redux/slices/bills/miscellaneousSlice"
+import { fetchMiscellaneousBills, uploadMiscellaneousBill, removeMiscellaneousBillLocal, clearRecommendations, } from "../../../redux/slices/bills/miscellaneousSlice"
 import { fetchAnalytics } from "../../../redux/slices/analytics/analyticsSlice";
 import { fetchBills } from "../../../redux/slices/bills/billSlice";
 
 export default function MiscellaneousBills({ navigation }) {
     const category = { name: "Miscellaneous", icon: "📦", color: "purple" };
 
-    const { token, getToken } = useAuth();
     const dispatch = useDispatch();
 
-    const { bills, count, uploading } = useSelector(
+    const { bills, count, uploading, recommendations } = useSelector(
         (state) => state.miscellaneous
     );
     const [refreshing, setRefreshing] = useState(false);
@@ -50,6 +48,12 @@ export default function MiscellaneousBills({ navigation }) {
 
     useEffect(() => {
         dispatch(fetchMiscellaneousBills());
+    }, [dispatch]);
+
+    useEffect(() => {
+        return () => {
+            dispatch(clearRecommendations());
+        };
     }, [dispatch]);
 
     const pickImage = async () => {
@@ -218,7 +222,7 @@ export default function MiscellaneousBills({ navigation }) {
                     }}
                 />
 
-                <MiscellaneousTips category={category} />
+                <MiscellaneousTips recommendations={recommendations} />
             </ScrollView>
         </SafeAreaView>
     );
