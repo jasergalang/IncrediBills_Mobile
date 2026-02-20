@@ -2,7 +2,6 @@ import React, { useState, useCallback, useMemo } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar, ScrollView, RefreshControl } from "react-native";
 import HomeHeader from "../../components/home/HomeHeader";
-import WelcomeCard from "../../components/home/WelcomeCard";
 import StatsCards from "../../components/home/StatsCards";
 import QuickActions from "../../components/home/QuickActions";
 import RecentBills from "../../components/home/RecentBills";
@@ -60,13 +59,14 @@ export default function Home({ navigation }) {
   const categories = useMemo(() => {
     // Get the latest month's data from monthly analytics (same as Analytics screen)
     const latest = monthly.length > 0 ? monthly[monthly.length - 1] : {};
-    
+
     const monthlyAmountsData = {
       electricity: latest.electricity || 0,
       water: latest.water || 0,
       fuel: latest.fuel || 0,
       grocery: latest.grocery || 0,
       miscellaneous: latest.miscellaneous || 0,
+      kitchenGas: latest.kitchenGas || 0,
     };
 
     // Calculate total
@@ -97,6 +97,7 @@ export default function Home({ navigation }) {
       { key: 'fuel', id: 'fuel' },
       { key: 'grocery', id: 'grocery' },
       { key: 'miscellaneous', id: 'miscellaneous' },
+      { key: 'kitchenGas', id: 'kitchenGas' },
     ];
 
     predictionCategories.forEach(({ key, id }) => {
@@ -121,53 +122,101 @@ export default function Home({ navigation }) {
     return bills;
   }, [predictions]);
 
-  // StatsCards data - using monthly analytics for current month total
   const statsData = useMemo(() => {
-    // Get current month total from latest monthly analytics (same as Analytics screen)
-    const latest = monthly.length > 0 ? monthly[monthly.length - 1] : {};
-    const currentTotal = (latest.electricity || 0) + 
-                        (latest.water || 0) + 
-                        (latest.fuel || 0) + 
-                        (latest.grocery || 0) + 
-                        (latest.miscellaneous || 0);
+    const allBills = bills.allBills;
 
-    // Get previous month total for percentage calculation
-    const previous = monthly.length > 1 ? monthly[monthly.length - 2] : {};
-    const previousTotal = (previous.electricity || 0) + 
-                         (previous.water || 0) + 
-                         (previous.fuel || 0) + 
-                         (previous.grocery || 0) + 
-                         (previous.miscellaneous || 0);
+    if (!allBills) {
+      return {
+        totalSpent: 0,
+        totalSpentChange: 0,
+        nextMonthPrediction: 0,
+        predictionChange: 0,
+        billsUploaded: 0,
+        savedAmount: 0,
+        savedChange: 0,
+      };
+    }
 
-    const predictedTotal = upcomingBills.reduce(
-      (sum, bill) => sum + (bill?.amount || 0),
-      0
-    );
+    // 🔹 Step 1: Get latest month across ALL categories
+    let latestDate = null;
 
-    const totalSpentChange = previousTotal > 0
-      ? Math.round(((currentTotal - previousTotal) / previousTotal) * 100)
-      : 0;
+    Object.values(allBills).forEach((categoryBills) => {
+      categoryBills.forEach((bill) => {
+        const billDate = new Date(bill.billMonth || bill.date);
+        if (!latestDate || billDate > latestDate) {
+          latestDate = billDate;
+        }
+      });
+    });
 
-    const predictionChange = currentTotal > 0
-      ? Math.round(((predictedTotal - currentTotal) / currentTotal) * 100)
-      : 0;
+    if (!latestDate) return {};
+
+    const latestMonth = latestDate.getMonth();
+    const latestYear = latestDate.getFullYear();
+
+    // 🔹 Step 2: Get actual total for that month
+    let actualTotal = 0;
+    const categoriesWithLatestMonth = [];
+
+    Object.entries(allBills).forEach(([key, categoryBills]) => {
+      const match = categoryBills.find((bill) => {
+        const d = new Date(bill.billMonth || bill.date);
+        return (
+          d.getMonth() === latestMonth &&
+          d.getFullYear() === latestYear
+        );
+      });
+
+      if (match) {
+        actualTotal += match.cost || 0;
+        categoriesWithLatestMonth.push(key);
+      }
+    });
+
+    // 🔹 Step 3: Get next month prediction
+    let predictedTotal = 0;
+
+    const nextMonthDate = new Date(latestYear, latestMonth + 1);
+
+    categoriesWithLatestMonth.forEach((key) => {
+      const categoryPredictions = predictions[key] || [];
+
+      const match = categoryPredictions.find((pred) => {
+        const d = new Date(pred.predictedDate);
+        return (
+          d.getMonth() === nextMonthDate.getMonth() &&
+          d.getFullYear() === nextMonthDate.getFullYear()
+        );
+      });
+
+      if (match) {
+        predictedTotal += match.predictedCost || 0;
+      }
+    });
+
+    // 🔹 Step 4: Compute saved
+    const savedAmount = predictedTotal - actualTotal;
+
+    const predictionChange =
+      actualTotal > 0
+        ? Math.round(((predictedTotal - actualTotal) / actualTotal) * 100)
+        : 0;
 
     return {
-      totalSpent: Math.round(currentTotal),
-      totalSpentChange,
+      totalSpent: Math.round(actualTotal),
+      totalSpentChange: 0, // optional if you want month-to-month change
       nextMonthPrediction: Math.round(predictedTotal),
       predictionChange,
       billsUploaded: bills.billsUploaded || 0,
-      savedAmount: 0, // Can be calculated based on budget vs actual
-      savedChange: 0,
-      billsChange: 0,
+      savedAmount: Math.round(savedAmount),
+      savedChange: predictionChange,
     };
-  }, [monthly, upcomingBills, bills.billsUploaded]);
+  }, [bills.allBills, predictions]);
 
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
-      <HomeHeader navigation={navigation} />
+      <HomeHeader navigation={navigation} userData={userData} />
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
@@ -178,7 +227,6 @@ export default function Home({ navigation }) {
           />
         }
       >
-        <WelcomeCard userData={userData} />
         <StatsCards statsData={statsData} />
         <QuickActions navigation={navigation} />
         <AchievementsBanner navigation={navigation} />

@@ -12,6 +12,7 @@ export const fetchBills = createAsyncThunk(
         fetchAllGroceryBill,
         fetchAllTransportBill,
         fetchAllMiscellaneousBill,
+        fetchAllKitchenGasBill,
       } = await fetchAllBills();
 
       // Get latest bills for each category
@@ -20,6 +21,7 @@ export const fetchBills = createAsyncThunk(
       const latestGrocery = getLatestBill(fetchAllGroceryBill);
       const latestTransport = getLatestBill(fetchAllTransportBill);
       const latestMiscellaneous = getLatestBill(fetchAllMiscellaneousBill);
+      const latestKitchenGas = getLatestBill(fetchAllKitchenGasBill);
 
       // Combine all bills for recent bills section
       const allBills = [
@@ -28,6 +30,7 @@ export const fetchBills = createAsyncThunk(
         ...fetchAllGroceryBill,
         ...fetchAllTransportBill,
         ...fetchAllMiscellaneousBill,
+        ...fetchAllKitchenGasBill,
       ];
 
       return {
@@ -37,20 +40,23 @@ export const fetchBills = createAsyncThunk(
           grocery: latestGrocery?.cost || 0,
           fuel: latestTransport?.cost || 0,
           miscellaneous: latestMiscellaneous?.cost || 0,
+          kitchenGas: latestKitchenGas?.cost || 0,
         },
         recentBills: transformBills(
           { bills: fetchAllElectricBill },
           { bills: fetchAllWaterBill },
           { bills: fetchAllGroceryBill },
           { bills: fetchAllTransportBill },
-          { bills: fetchAllMiscellaneousBill }
+          { bills: fetchAllMiscellaneousBill },
+          { bills: fetchAllKitchenGasBill }
         ),
         billsUploaded:
           fetchAllElectricBill.length +
           fetchAllWaterBill.length +
           fetchAllGroceryBill.length +
           fetchAllTransportBill.length +
-          fetchAllMiscellaneousBill.length,
+          fetchAllMiscellaneousBill.length +
+          fetchAllKitchenGasBill.length,
         // Store all bills by category for detailed views
         allBills: {
           electricity: fetchAllElectricBill,
@@ -58,6 +64,7 @@ export const fetchBills = createAsyncThunk(
           grocery: fetchAllGroceryBill,
           fuel: fetchAllTransportBill,
           miscellaneous: fetchAllMiscellaneousBill,
+          kitchenGas: fetchAllKitchenGasBill,
         },
       };
     } catch (err) {
@@ -75,6 +82,7 @@ const billsSlice = createSlice({
       grocery: 0,
       fuel: 0,
       miscellaneous: 0,
+      kitchenGas: 0,
     },
     recentBills: [],
     billsUploaded: 0,
@@ -84,6 +92,7 @@ const billsSlice = createSlice({
       grocery: [],
       fuel: [],
       miscellaneous: [],
+      kitchenGas: [],
     },
     loading: false,
     error: null,

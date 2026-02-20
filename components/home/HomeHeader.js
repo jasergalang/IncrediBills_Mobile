@@ -2,13 +2,13 @@ import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function DashboardHeader({ navigation }) {
+export default function DashboardHeader({ navigation, userData }) {
   return (
     <View className="bg-white border-b border-slate-200 px-4 py-4">
       <View className="flex-row items-center justify-between">
         <View>
-          <Text className="text-2xl font-bold text-slate-900">Dashboard</Text>
-          <Text className="text-sm text-slate-600">Welcome back! 👋</Text>
+          <Text className="text-2xl font-bold text-slate-900">Welcome back, {userData.firstName}! 👋</Text>
+          <Text className="text-sm text-slate-600">Here's what's happening with your bills today.</Text>
         </View>
         <View className="flex-row gap-2">
           <TouchableOpacity className="w-10 h-10 rounded-xl bg-blue-100 items-center justify-center">
