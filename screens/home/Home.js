@@ -228,8 +228,7 @@ export default function Home({ navigation }) {
         <StatsCards statsData={statsData} />
         <QuickActions navigation={navigation} />
         <RecentBills bills={latestPerCategoryBills} navigation={navigation} />
-        <SpendingOverview spendingData={categories} />
-        {/* <UpcomingBills bills={upcomingBills} navigation={navigation} /> */}
+        <SpendingOverview allBills={bills.allBills} />
       </ScrollView>
     </SafeAreaView>
   );

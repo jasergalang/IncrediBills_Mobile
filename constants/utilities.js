@@ -19,7 +19,7 @@ export const utilities = [
     backgroundColor: "#fef3c7",
     borderColor: "#f59e0b",
     provider: "Meralco",
-    backgroundColor2: "amber-100",
+    backgroundColor2: "orange-100",
   },
   {
     id: "kitchenGas",
