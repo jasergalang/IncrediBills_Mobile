@@ -6,7 +6,7 @@ export default function UpcomingBills({ bills }) {
   return (
     <View className="px-4 pb-6">
       <Text className="text-base font-bold text-slate-900 mb-3">
-        Upcoming Bills
+        Predicted Upcoming Bills
       </Text>
       {bills.map((bill) => (
         <LinearGradient

@@ -4,7 +4,7 @@ import Constants from "expo-constants";
 const extra = Constants.expoConfig?.extra || Constants.manifest?.extra || {};
 
 // 1. Define the input IP (Changed name to RAW_BASE to match your usage below)
-const RAW_BASE = extra.BASE_IP || extra.BASEIP || process.env.BASEIP || "192.168.0.100";
+const RAW_BASE = extra.BASE_IP || extra.BASEIP || process.env.BASEIP || "192.168.0.105";
 const DEFAULT_PORT = "3000";
 
 // 2. Define the missing normalize function

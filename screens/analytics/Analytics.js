@@ -239,27 +239,11 @@ export default function Analytics({ navigation }) {
             <GameKPICards gameKPI={{}} />
             <AchievementsProgress achievements={[]} />
             <RecentRewards rewards={[]} />
-            {/* <ExportSchedulePanel
-              profile={profile}
-              kpiData={utilityKPI}
-              timeSeriesData={spendingData}
-              categoryBreakdown={categories}
-              dateRange={dateRange}
-              selectedCategories={selectedCategories}
-              totalAmount={utilityKPI.totalSpending}
-            /> */}
             <ExportSchedulePanel
               profile={profile}
               kpiData={utilityKPI}
               timeSeriesData={spendingData}
               categoryBreakdown={categories}
-              rollingAverages={{
-                sevenDay: 0,    // Add your calculation
-                thirtyDay: 0,   // Add your calculation
-                ninetyDay: 0    // Add your calculation
-              }}
-              anomalies={anomalies}
-              peakUsageData={[]}  // Add if available
               dateRange={dateRange}
               selectedCategories={selectedCategories}
               totalAmount={utilityKPI.totalSpending}
