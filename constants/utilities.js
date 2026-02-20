@@ -17,6 +17,15 @@ export const utilities = [
     borderColor: "#f59e0b",
     provider: "Meralco",
   },
+  {
+    id: "kitchenGas",
+    name: "Kitchen Gas",
+    icon: "🔥",
+    color: "orange",
+    backgroundColor: "#fed7aa",
+    borderColor: "#fb923c",
+    provider: "Shell",
+  },
 
   {
     id: "fuel",
@@ -37,7 +46,7 @@ export const utilities = [
     provider: "SM Supermarket",
   },
 
-    {
+  {
     id: "miscellaneous",
     name: "Miscellaneous",
     icon: "📦",

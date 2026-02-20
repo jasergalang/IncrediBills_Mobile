@@ -7,7 +7,6 @@ import QuickActions from "../../components/home/QuickActions";
 import RecentBills from "../../components/home/RecentBills";
 import SpendingOverview from "../../components/home/SpendingOverview";
 import UpcomingBills from "../../components/home/UpcomingBills";
-import AchievementsBanner from "../../components/home/AchievementsBanner";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -212,7 +211,41 @@ export default function Home({ navigation }) {
       savedChange: predictionChange,
     };
   }, [bills.allBills, predictions]);
+  const latestPerCategoryBills = useMemo(() => {
+    const allBills = bills.allBills;
+    if (!allBills) return [];
 
+    const result = [];
+
+    Object.entries(allBills).forEach(([key, categoryBills]) => {
+      if (!categoryBills || categoryBills.length === 0) return;
+
+      // Sort descending by date
+      const sorted = [...categoryBills].sort(
+        (a, b) =>
+          new Date(b.billMonth || b.date) -
+          new Date(a.billMonth || a.date)
+      );
+
+      const latest = sorted[0];
+
+      const util = utilities.find((u) => u.id === key);
+
+      if (latest && util) {
+        result.push({
+          id: `${key}-${latest._id || latest.id}`,
+          name: util.name,
+          amount: latest.cost || 0,
+          date: formatBillDate(latest.billMonth || latest.date),
+          icon: util.icon,
+          color: util.color,
+          status: latest.status || "Success",
+        });
+      }
+    });
+
+    return result;
+  }, [bills.allBills]);
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
@@ -229,8 +262,7 @@ export default function Home({ navigation }) {
       >
         <StatsCards statsData={statsData} />
         <QuickActions navigation={navigation} />
-        <AchievementsBanner navigation={navigation} />
-        <RecentBills bills={recentBills.slice(0, 5)} navigation={navigation} />
+        <RecentBills bills={latestPerCategoryBills} navigation={navigation} />
         <SpendingOverview spendingData={categories} />
         <UpcomingBills bills={upcomingBills} navigation={navigation} />
       </ScrollView>
