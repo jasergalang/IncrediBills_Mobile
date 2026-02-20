@@ -1,3 +1,5 @@
+// import { blue } from "react-native-reanimated/lib/typescript/Colors";
+
 export const utilities = [
   {
     id: "water",
@@ -7,6 +9,7 @@ export const utilities = [
     backgroundColor: "#dbeafe",
     borderColor: "#3b82f6",
     provider: "Manila Water",
+    backgroundColor2: "blue-100",
   },
   {
     id: "electricity",
@@ -16,6 +19,7 @@ export const utilities = [
     backgroundColor: "#fef3c7",
     borderColor: "#f59e0b",
     provider: "Meralco",
+    backgroundColor2: "amber-100",
   },
   {
     id: "kitchenGas",
@@ -25,6 +29,7 @@ export const utilities = [
     backgroundColor: "#fed7aa",
     borderColor: "#fb923c",
     provider: "Shell",
+    backgroundColor2: "orange-100",
   },
 
   {
@@ -35,6 +40,7 @@ export const utilities = [
     backgroundColor: "#feadaa",
     borderColor: "#f91616",
     provider: "Shell",
+    backgroundColor2: "red-100",
   },
   {
     id: "grocery",
@@ -44,6 +50,7 @@ export const utilities = [
     backgroundColor: "#bbf7d0",
     borderColor: "#22c55e",
     provider: "SM Supermarket",
+    backgroundColor2: "green-100",
   },
 
   {
@@ -54,5 +61,6 @@ export const utilities = [
     backgroundColor: "#ceace5",
     borderColor: "#ad65e4",
     provider: "Other",
+    backgroundColor2: "purple-100",
   },
 ];

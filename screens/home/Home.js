@@ -6,7 +6,6 @@ import StatsCards from "../../components/home/StatsCards";
 import QuickActions from "../../components/home/QuickActions";
 import RecentBills from "../../components/home/RecentBills";
 import SpendingOverview from "../../components/home/SpendingOverview";
-import UpcomingBills from "../../components/home/UpcomingBills";
 import { useFocusEffect } from "@react-navigation/native";
 
 import { useDispatch, useSelector } from "react-redux";
@@ -81,45 +80,11 @@ export default function Home({ navigation }) {
           percent: total ? Math.round((amount / total) * 100) : 0,
           icon: u.icon,
           color: u.color,
+          backgroundColor: u.backgroundColor2,
         };
       })
       .filter((cat) => cat.amount > 0);
   }, [monthly]);
-
-  // Upcoming Bills (from predictions)
-  const upcomingBills = useMemo(() => {
-    const bills = [];
-
-    const predictionCategories = [
-      { key: 'electricity', id: 'electricity' },
-      { key: 'water', id: 'water' },
-      { key: 'fuel', id: 'fuel' },
-      { key: 'grocery', id: 'grocery' },
-      { key: 'miscellaneous', id: 'miscellaneous' },
-      { key: 'kitchenGas', id: 'kitchenGas' },
-    ];
-
-    predictionCategories.forEach(({ key, id }) => {
-      const latestPrediction = getLatestBill(predictions[key] || []);
-
-      if (latestPrediction) {
-        const util = utilities.find((u) => u.id === id);
-
-        if (util) {
-          bills.push({
-            id,
-            type: util.name,
-            amount: latestPrediction.predictedCost || 0,
-            dueDate: formatBillDate(latestPrediction.predictedDate),
-            icon: util.icon,
-            color: util.color,
-          });
-        }
-      }
-    });
-
-    return bills;
-  }, [predictions]);
 
   const statsData = useMemo(() => {
     const allBills = bills.allBills;
@@ -264,7 +229,7 @@ export default function Home({ navigation }) {
         <QuickActions navigation={navigation} />
         <RecentBills bills={latestPerCategoryBills} navigation={navigation} />
         <SpendingOverview spendingData={categories} />
-        <UpcomingBills bills={upcomingBills} navigation={navigation} />
+        {/* <UpcomingBills bills={upcomingBills} navigation={navigation} /> */}
       </ScrollView>
     </SafeAreaView>
   );
