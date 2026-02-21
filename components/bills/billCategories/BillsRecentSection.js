@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { useDispatch } from "react-redux";
 import BillModal from "./BillModal";
 
+
 import { updateElectricBill } from "../../../redux/slices/bills/electricSlice";
 import { updateWaterBill } from "../../../redux/slices/bills/waterSlice";
 import { updateGroceryBill } from "../../../redux/slices/bills/grocerySlice";
@@ -57,11 +58,14 @@ export default function BillsRecentSection({
   utilities,
   recentBills,
   filteredBills,
+  navigation,
+  onAddBill,
 }) {
   const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedBill, setSelectedBill] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -125,6 +129,7 @@ export default function BillsRecentSection({
           </Text>
         </View>
         <TouchableOpacity
+          onPress={onAddBill}  
           style={{ backgroundColor: "#4F46E5" }}
           className="flex-row items-center gap-2 px-4 py-3 rounded-xl"
         >

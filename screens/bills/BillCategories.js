@@ -8,6 +8,7 @@ import BillsTrendsChart from "../../components/bills/billCategories/BillsTrendCh
 import BillsRecentSection from "../../components/bills/billCategories/BillsRecentSection";
 import { utilities } from "../../constants/utilities";
 import { useFocusEffect } from "@react-navigation/native";
+import AddNewBill from "../../components/bills/billCategories/AddNewBill";
 
 import { useSelector, useDispatch } from "react-redux";
 import { fetchBills } from "../../redux/slices/bills/billSlice";
@@ -18,6 +19,7 @@ import { fetchAnalytics } from "../../redux/slices/analytics/analyticsSlice";
 export default function BillCategories({ navigation }) {
   const [activeTab, setActiveTab] = useState("all");
   const [timeRange, setTimeRange] = useState("month");
+  const [addBillVisible, setAddBillVisible] = useState(false);
 
   const dispatch = useDispatch();
   const { token } = useAuth();
@@ -110,6 +112,11 @@ export default function BillCategories({ navigation }) {
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
       <BillsHeader navigation={navigation} />
+      <AddNewBill
+        visible={addBillVisible}
+        onClose={() => setAddBillVisible(false)}
+        navigation={navigation}
+      />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <BillsTotalCard
           totalAmount={totalAmount}
@@ -125,12 +132,16 @@ export default function BillCategories({ navigation }) {
           setTimeRange={setTimeRange}
           monthlyData={analytics?.monthly || []}
         />
+
+
         <BillsRecentSection
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           utilities={utilities}
           recentBills={recentBills || []}
           filteredBills={filteredBills || []}
+          navigation={navigation}
+          onAddBill={() => setAddBillVisible(true)}
         />
       </ScrollView>
     </SafeAreaView>
