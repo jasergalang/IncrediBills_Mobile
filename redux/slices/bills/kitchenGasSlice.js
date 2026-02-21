@@ -6,8 +6,6 @@ import {
     uploadKitchenGasBillApi,
     triggerKitchenGasPredictionApi,
 } from "../../../api/bills/kitchenGasAPI";
-import { clearRecommendations } from "./electricSlice";
-import { clear } from "react-native/types_generated/Libraries/LogBox/Data/LogBoxData";
 
 export const fetchKitchenGasBills = createAsyncThunk(
     "kitchenGas/fetchAll",
@@ -98,7 +96,7 @@ const kitchenGasSlice = createSlice({
                 state.loading = false;
                 state.count = action.payload.count || 0;
                 state.bills = action.payload.bills || [];
-                state.count = action.payload.count;
+                state.error = null;
             })
             .addCase(fetchKitchenGasBills.rejected, (state, action) => {
                 state.loading = false;

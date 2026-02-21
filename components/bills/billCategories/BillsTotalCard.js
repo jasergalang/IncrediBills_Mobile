@@ -6,7 +6,7 @@ export default function BillsTotalCard({ totalAmount, totalChange = 0}) {
     <View className="p-4">
       <View
         className="rounded-2xl p-6"
-        style={{ backgroundColor: "#eff6ff" }}
+        style={{ backgroundColor: "#ccd5e0" }}
       >
         <View className="flex-row items-center justify-between mb-4">
           <View className="w-12 h-12 bg-blue-500 rounded-xl items-center justify-center">
@@ -14,7 +14,7 @@ export default function BillsTotalCard({ totalAmount, totalChange = 0}) {
           </View>
           <View className="bg-white px-3 py-1 rounded-full">
             <Text className="text-xs font-semibold text-slate-600">
-              This Month
+              All Time
             </Text>
           </View>
         </View>

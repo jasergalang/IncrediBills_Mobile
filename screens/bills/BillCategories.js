@@ -101,6 +101,7 @@ export default function BillCategories({ navigation }) {
       fuel: "TransportBills",
       grocery: "GroceryBills",
       miscellaneous: "MiscellaneousBills",
+      kitchenGas: "KitchenGasBills",
     };
     navigation.navigate(routes[category.id] || "BillCategories", { category });
   };

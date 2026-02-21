@@ -15,36 +15,6 @@ export function formatBillDate(date) {
   });
 }
 
-// export function transformBills(electricData, waterData) {
-//   const formatDate = (date) =>
-//     new Date(date).toLocaleDateString("en-US", {
-//       month: "long",
-//       year: "numeric",
-//     });
-
-//   const mapBill = (bill, typeId) => {
-//     const util = utilities.find((u) => u.id === typeId);
-//     return {
-//       id: bill._id,
-//       type: typeId,
-//       name: util?.name || typeId,
-//       provider: util?.provider || "",
-//       icon: util?.icon || "",
-//       color: util?.color || "gray",
-//       amount: bill.cost || 0,
-//       date: formatDate(bill.date),
-//       createdAt: bill.createdAt,
-//       status: bill.status,
-//     };
-//   };
-
-//   const electric = electricData.bills.map((b) => mapBill(b, "electricity"));
-//   const water = waterData.bills.map((b) => mapBill(b, "water"));
-
-//   return [...electric, ...water].sort(
-//     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-//   );
-// }
 export function transformBills(...billDataObjects) {
   const formatDate = (date) =>
     new Date(date).toLocaleDateString("en-US", {
@@ -72,7 +42,7 @@ export function transformBills(...billDataObjects) {
   };
 
   // Map of expected bill types in order
-  const billTypes = ["electricity", "water", "grocery", "fuel", "miscellaneous"];
+  const billTypes = ["electricity", "water", "grocery", "fuel", "miscellaneous", "kitchenGas"];
   
   const allBills = [];
 
@@ -90,16 +60,7 @@ export function transformBills(...billDataObjects) {
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
 }
-// export const mergeMonthlyAnalytics = (a, b) => {
-//   const all = new Set([...Object.keys(a), ...Object.keys(b)]);
-//   const sorted = [...all].sort();
 
-//   return sorted.map((m) => ({
-//     month: m,
-//     water: a[m]?.totalCost || 0,
-//     electricity: b[m]?.totalCost || 0,
-//   }));
-// };
 export const mergeMonthlyAnalytics = (
   waterData,
   electricityData,
