@@ -98,7 +98,7 @@ export default function WaterInput({
 
   return (
     <View className="bg-white rounded-2xl p-4 mb-4 shadow-sm">
-      <Text className="text-lg font-semibold text-slate-800 mb-4">Bill Information</Text>
+      {/* <Text className="text-lg font-semibold text-slate-800 mb-4">Bill Information</Text> */}
 
       {/* Manual / OCR Toggle */}
       <View className="mb-4 p-3 bg-blue-50 rounded-xl border border-blue-100">

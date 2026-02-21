@@ -74,93 +74,100 @@ export default function KitchenGasBills({ navigation }) {
         setSelectedImageUri(null);
     };
 
-     const uploadBill = async () => {
-       if (uploading) return;
-   
-       if (!useManualEntry && !selectedImageUri) {
-         Alert.alert("Error", "Please select an image first.");
-         return;
-       }
-   
-       if (useManualEntry) {
-         if (!billingPeriod || !provider || !paymentStatus || !date || !cost || !consumption) {
-           Alert.alert("Error", "Please fill in all required manual fields.");
-           return;
-         }
-       } else if (!paymentStatus) {
-         Alert.alert("Error", "Please select payment status.");
-         return;
-       }
-   
-       try {
-         const formData = new FormData();
-   
-         if (!useManualEntry && selectedImageUri) {
-           const filename = selectedImageUri.split("/").pop();
-           const ext = filename.split(".").pop();
-           const type = `image/${ext}`;
-   
-           formData.append("billImage", {
-             uri:
-               Platform.OS === "android"
-                 ? selectedImageUri
-                 : selectedImageUri.replace("file://", ""),
-             name: filename,
-             type,
-           });
-   
-           formData.append("useOCR", "true");
-         } else {
-           formData.append("useOCR", "false");
-           formData.append("date", date);
-           formData.append("cost", cost);
-           formData.append("consumption", consumption);
-         }
-   
-         formData.append("billingPeriod", billingPeriod);
-         formData.append("provider", provider);
-         formData.append("paymentStatus", paymentStatus);
-         if (feedback) formData.append("feedback", feedback);
-   
-         // ✅ FIX: Use the action result directly
-         const resultAction = await dispatch(uploadKitchenGasBill(formData));
-   
-         // ✅ Check if the action was rejected
-         if (uploadKitchenGasBill.rejected.match(resultAction)) {
-           throw new Error(resultAction.payload || "Upload failed");
-         }
-   
-         // ✅ Refresh analytics after successful upload
-         dispatch(fetchAnalytics());
-         dispatch(fetchBills());
-   
-         // Reset form
-         setSelectedImageUri(null);
-         setBillingPeriod("");
-         setProvider("");
-         setPaymentStatus("");
-         setFeedback("");
-         setDate("");
-         setCost("");
-         setConsumption("");
-         setUseManualEntry(false);
-   
-         Alert.alert("Success", "Electric bill uploaded successfully!");
-       } catch (err) {
-         console.error("Upload error:", err);
-         Alert.alert(
-           "Upload Failed",
-           err?.message || err?.toString() || "An error occurred while uploading the bill."
-         );
-       }
-     };
+    const uploadBill = async () => {
+        if (uploading) return;
 
-     return (
+        if (!useManualEntry && !selectedImageUri) {
+            Alert.alert("Error", "Please select an image first.");
+            return;
+        }
+
+        if (useManualEntry) {
+            if (!billingPeriod || !provider || !paymentStatus || !date || !cost || !consumption) {
+                Alert.alert("Error", "Please fill in all required manual fields.");
+                return;
+            }
+        } else if (!paymentStatus) {
+            Alert.alert("Error", "Please select payment status.");
+            return;
+        }
+
+        try {
+            const formData = new FormData();
+
+            if (!useManualEntry && selectedImageUri) {
+                const filename = selectedImageUri.split("/").pop();
+                const ext = filename.split(".").pop();
+                const type = `image/${ext}`;
+
+                formData.append("billImage", {
+                    uri:
+                        Platform.OS === "android"
+                            ? selectedImageUri
+                            : selectedImageUri.replace("file://", ""),
+                    name: filename,
+                    type,
+                });
+
+                formData.append("useOCR", "true");
+            } else {
+                formData.append("useOCR", "false");
+                formData.append("date", date);
+                formData.append("cost", cost);
+                formData.append("consumption", consumption);
+            }
+
+            formData.append("billingPeriod", billingPeriod);
+            formData.append("provider", provider);
+            formData.append("paymentStatus", paymentStatus);
+            if (feedback) formData.append("feedback", feedback);
+
+            // ✅ FIX: Use the action result directly
+            const resultAction = await dispatch(uploadKitchenGasBill(formData));
+
+            // ✅ Check if the action was rejected
+            if (uploadKitchenGasBill.rejected.match(resultAction)) {
+                throw new Error(resultAction.payload || "Upload failed");
+            }
+
+            // ✅ Refresh analytics after successful upload
+            dispatch(fetchAnalytics());
+            dispatch(fetchBills());
+
+            // Reset form
+            setSelectedImageUri(null);
+            setBillingPeriod("");
+            setProvider("");
+            setPaymentStatus("");
+            setFeedback("");
+            setDate("");
+            setCost("");
+            setConsumption("");
+            setUseManualEntry(false);
+
+            const newBillId = resultAction.payload?.kitchenGasBill?._id;
+            // console.log("NEW BILL ID:", newBillId);
+
+            if (newBillId) {
+                navigation.navigate("KitchenGasBillDetails", { id: newBillId });
+            } else {
+                Alert.alert("Success", "Kitchen Gas bill uploaded successfully!");
+            }
+        } catch (err) {
+            console.error("Upload error:", err);
+            Alert.alert(
+                "Upload Failed",
+                err?.message || err?.toString() || "An error occurred while uploading the bill."
+            );
+        }
+    };
+
+    return (
         <SafeAreaView className="flex-1 bg-slate-50">
             <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
             <KitchenGasHeader navigation={navigation} category={category} />
             <ScrollView contentInsetAdjustmentBehavior="automatic">
-                <KitchenGasSummaryCards kitchenGasBills={{ bills, count }} />
+                {/* <KitchenGasSummaryCards kitchenGasBills={{ bills, count }} /> */}
                 <KitchenGasBox
                     pickImage={pickImage}
                     category={category}
@@ -188,9 +195,8 @@ export default function KitchenGasBills({ navigation }) {
                 <View className="px-4">
                     <TouchableOpacity
                         onPress={uploadBill}
-                        className={`w-full py-3 rounded-xl items-center justify-center ${
-                            uploading ? "bg-gray-300" : "bg-amber-500" 
-                        }`}
+                        className={`w-full py-3 rounded-xl items-center justify-center ${uploading ? "bg-gray-300" : "bg-amber-500"
+                            }`}
                         disabled={uploading}
                     >
                         <Text className="text-white font-semibold text-lg">

@@ -157,7 +157,15 @@ export default function TransportBills({ navigation }) {
       setCost("");
       setUseManualEntry(false);
 
-      Alert.alert("Success", "Transport bill uploaded successfully!");
+
+      const newBillId = resultAction.payload?.transportFuelBill?._id;
+      // console.log("NEW BILL ID:", newBillId);
+
+      if (newBillId) {
+        navigation.navigate("TransportBillDetails", { id: newBillId });
+      } else {
+        Alert.alert("Success", "Transport bill uploaded successfully!");
+      }
     } catch (err) {
       Alert.alert("Upload Failed", "Something went wrong.");
     }
@@ -181,9 +189,9 @@ export default function TransportBills({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        <TransportSummaryCards transportBills={{ bills, count }} category={category} />
+        {/* <TransportSummaryCards transportBills={{ bills, count }} category={category} /> */}
 
-        <View className="mx-4">
+        <View className="mx-4 my-4">
           {!useManualEntry && (
             <TransportBox
               pickImage={pickImage}
@@ -214,8 +222,8 @@ export default function TransportBills({ navigation }) {
             hasImage={!!selectedImageUri}
             isSubmitting={uploading}
           />
-
-          <TransportActions pickImage={pickImage} takePhoto={takePhoto} />
+          {/* 
+          <TransportActions pickImage={pickImage} takePhoto={takePhoto} /> */}
         </View>
 
         <TransportRecent
@@ -225,7 +233,7 @@ export default function TransportBills({ navigation }) {
           }
         />
 
-        <TransportTips  recommendations={recommendations}  />
+        <TransportTips recommendations={recommendations} />
       </ScrollView>
     </SafeAreaView>
   );

@@ -151,7 +151,15 @@ export default function MiscellaneousBills({ navigation }) {
             setCost("");
             setUseManualEntry(false);
 
-            Alert.alert("Success", "Miscellaneous bill uploaded successfully!");
+
+            const newBillId = resultAction.payload?.miscellaneousBill?._id;
+            // console.log("NEW BILL ID:", newBillId);
+
+            if (newBillId) {
+                navigation.navigate("MiscellaneousBillDetails", { id: newBillId });
+            } else {
+                Alert.alert("Success", "Miscellaneous bill uploaded successfully!");
+            }
         } catch (err) {
             Alert.alert("Upload Failed", "Something went wrong.");
         } finally {
@@ -177,9 +185,9 @@ export default function MiscellaneousBills({ navigation }) {
                     <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
                 }
             >
-                <MiscellaneousSummaryCards miscellaneousBills={{ bills, count }} category={category} />
+                {/* <MiscellaneousSummaryCards miscellaneousBills={{ bills, count }} category={category} /> */}
 
-                <View className="mx-4">
+                <View className="mx-4 my-4">
                     {!useManualEntry && (
                         <MiscellaneousBox
                             pickImage={pickImage}
@@ -209,10 +217,10 @@ export default function MiscellaneousBills({ navigation }) {
                         isSubmitting={uploading}
                     />
 
-                    <MiscellaneousActions
+                    {/* <MiscellaneousActions
                         pickImage={pickImage}
                         takePhoto={takePhoto}
-                    />
+                    /> */}
                 </View>
 
                 <MiscellaneousRecent

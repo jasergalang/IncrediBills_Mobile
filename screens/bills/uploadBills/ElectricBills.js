@@ -144,7 +144,13 @@ export default function ElectricBills({ navigation }) {
       setConsumption("");
       setUseManualEntry(false);
 
-      Alert.alert("Success", "Electric bill uploaded successfully!");
+      const newBillId = resultAction.payload?.electricBill?._id;
+
+      if (newBillId) {
+        navigation.navigate("ElectricBillDetails", { id: newBillId });
+      } else {
+        Alert.alert("Success", "Electric bill uploaded successfully!");
+      }
     } catch (err) {
       console.error("Upload error:", err);
       Alert.alert(
@@ -159,8 +165,8 @@ export default function ElectricBills({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
       <ElectricHeader navigation={navigation} category={category} />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <ElectricSummaryCards electricBills={{ bills, count }} />
-        <View className="mx-4">
+        {/* <ElectricSummaryCards electricBills={{ bills, count }} /> */}
+        <View className="mx-4 my-4">
           {!useManualEntry && (
             <ElectricBox
               pickImage={pickImage}
@@ -192,7 +198,7 @@ export default function ElectricBills({ navigation }) {
             isSubmitting={uploading}
           />
 
-          <ElectricActions pickImage={pickImage} takePhoto={takePhoto} />
+          {/* <ElectricActions pickImage={pickImage} takePhoto={takePhoto} /> */}
         </View>
 
         <ElectricRecent

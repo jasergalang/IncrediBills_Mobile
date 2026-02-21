@@ -123,37 +123,32 @@ export default function UploadBill({ navigation }) {
       formData.append("paymentStatus", paymentStatus);
       if (feedback) formData.append("feedback", feedback);
 
-      // ✅ Dispatch Redux action
       const resultAction = await dispatch(uploadWaterBill(formData));
-
-      // ✅ Check if the action was rejected
+      // console.log("FULL PAYLOAD:", JSON.stringify(resultAction.payload, null, 2))
       if (uploadWaterBill.rejected.match(resultAction)) {
         throw new Error(resultAction.payload || "Upload failed");
       }
 
-      // ✅ Refresh analytics and bills after successful upload
       dispatch(fetchAnalytics());
       dispatch(fetchBills());
 
-      // Reset form
-      setSelectedImageUri(null);
-      setBillingPeriod("");
-      setProvider("");
-      setPaymentStatus("");
-      setFeedback("");
-      setDate("");
-      setCost("");
-      setConsumption("");
-      setUseManualEntry(false);
+      setSelectedImageUri(null); setBillingPeriod(""); setProvider("");
+      setPaymentStatus(""); setFeedback(""); setDate("");
+      setCost(""); setConsumption(""); setUseManualEntry(false);
 
-      Alert.alert("Success", "Water bill uploaded successfully!");
+      const newBillId = resultAction.payload?.waterBill?._id;
+      // console.log("NEW BILL ID:", newBillId);
+
+      if (newBillId) {
+        navigation.navigate("WaterBillDetails", { id: newBillId });
+      } else {
+        Alert.alert("Success", "Water bill uploaded successfully!");
+      }
     } catch (err) {
       console.error("Upload error:", err);
-      Alert.alert(
-        "Upload Failed",
-        err?.message || err?.toString() || "An error occurred while uploading the bill."
-      );
+      Alert.alert("Upload Failed", err?.message || "An error occurred.");
     }
+
   };
 
   return (
@@ -161,8 +156,8 @@ export default function UploadBill({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
       <UploadHeader navigation={navigation} category={category} />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <WaterSummaryCards waterBills={{ bills, count }} />
-        <View className="mx-4">
+        {/* <WaterSummaryCards waterBills={{ bills, count }} /> */}
+        <View className="mx-4 my-4">
           {!useManualEntry && (
             <UploadBox
               pickImage={pickImage}
@@ -194,7 +189,7 @@ export default function UploadBill({ navigation }) {
             isSubmitting={uploading}
           />
 
-          <UploadActions pickImage={pickImage} takePhoto={takePhoto} />
+          {/* <UploadActions pickImage={pickImage} takePhoto={takePhoto} /> */}
         </View>
 
         {/* ✅ Use Redux action for removal */}

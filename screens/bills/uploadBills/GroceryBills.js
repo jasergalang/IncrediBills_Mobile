@@ -145,7 +145,14 @@ export default function GroceryBills({ navigation }) {
       setCategoryType("");
       setUseManualEntry(false);
 
-      Alert.alert("Success", "Grocery bill uploaded successfully!");
+      const newBillId = resultAction.payload?.groceryBill?._id;
+      // console.log("NEW BILL ID:", newBillId);
+
+      if (newBillId) {
+        navigation.navigate("GroceryBillDetails", { id: newBillId });
+      } else {
+        Alert.alert("Success", "Grocery bill uploaded successfully!");
+      }
     } catch (err) {
       console.error("Upload error:", err);
       Alert.alert(
@@ -160,8 +167,8 @@ export default function GroceryBills({ navigation }) {
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
       <GroceryHeader navigation={navigation} category={category} />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
-        <GrocerySummaryCards groceryBills={{ bills, count }} category={category} />
-        <View className="mx-4">
+        {/* <GrocerySummaryCards groceryBills={{ bills, count }} category={category} /> */}
+        <View className="mx-4 my-4">
           {!useManualEntry && (
             <GroceryBox
               pickImage={pickImage}
@@ -193,7 +200,7 @@ export default function GroceryBills({ navigation }) {
             isSubmitting={uploading}
           />
 
-          <GroceryActions pickImage={pickImage} takePhoto={takePhoto} />
+          {/* <GroceryActions pickImage={pickImage} takePhoto={takePhoto} /> */}
         </View>
 
         <GroceryRecent
