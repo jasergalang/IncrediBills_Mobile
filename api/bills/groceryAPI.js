@@ -26,3 +26,8 @@ export const triggerGroceryPredictionApi = async () => {
   const res = await api.post("/grocery-bill/predict");
   return res.data;
 };
+
+export const updateGroceryBillApi = async (billId, updatedData) => {
+  const res = await api.put(`/grocery-bill/${billId}`, updatedData);
+  return res.data;
+}

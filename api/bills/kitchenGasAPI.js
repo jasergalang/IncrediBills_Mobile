@@ -27,3 +27,8 @@ export const triggerKitchenGasPredictionApi = async () => {
   const res = await api.post("/kitchen-gas-bill/predict");
   return res.data;
 };
+
+export const updateKitchenGasBillApi = async (billId, updatedData) => {
+  const res = await api.put(`/kitchen-gas-bill/${billId}`, updatedData);
+  return res.data;
+}

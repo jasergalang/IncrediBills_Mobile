@@ -28,3 +28,8 @@ export const triggerElectricPredictionApi = async () => {
   const res = await api.post("/electric-bill/predict");
   return res.data;
 };
+
+export const updateElectricBillApi = async (billId, updatedData) => {
+  const res = await api.put(`/electric-bill/${billId}`, updatedData);
+  return res.data;
+}

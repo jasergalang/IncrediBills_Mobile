@@ -29,3 +29,8 @@ export const triggerMiscellaneousPredictionApi = async () => {
   const res = await api.post("/miscellaneous-bill/predict");
   return res.data;
 };
+
+export const updateMiscellaneousBillApi = async (billId, updatedData) => {
+  const res = await api.put(`/miscellaneous-bill/${billId}`, updatedData);
+  return res.data;
+}

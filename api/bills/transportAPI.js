@@ -29,3 +29,8 @@ export const triggerTransportPredictionApi = async () => {
   const res = await api.post("/transport-fuel-bill/predict");
   return res.data;
 };
+
+export const updateTransportBillApi = async (billId, updatedData) => {
+  const res = await api.put(`/transport-fuel-bill/${billId}`, updatedData);
+  return res.data;
+}

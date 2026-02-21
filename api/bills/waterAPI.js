@@ -29,3 +29,8 @@ export const triggerWaterPredictionApi = async () => {
   const res = await api.post("/water-bill/predict");
   return res.data;
 };
+
+export const updateWaterBillApi = async (billId, updatedData) => {
+  const res = await api.put(`/water-bill/${billId}`, updatedData);
+  return res.data;
+}
