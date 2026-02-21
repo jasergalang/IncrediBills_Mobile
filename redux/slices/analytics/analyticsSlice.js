@@ -7,17 +7,21 @@ export const fetchAnalytics = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const data = await fetchAnalyticsApi();
+
       return {
         monthly: mergeMonthlyAnalytics(
           data.fetchAllWaterAnalytics.monthly,
           data.fetchAllElectricAnalytics.monthly,
           data.fetchAllGroceryAnalytics.monthly,
-          data.fetchAllMiscellaneousAnalytics.monthly,
-          data.fetchAllTransportFuelAnalytics.monthly
+          data.fetchAllTransportFuelAnalytics.monthly,   // fuel (4th param)
+          data.fetchAllMiscellaneousAnalytics.monthly,   // misc (5th param)
+          data.fetchAllKitchenGasAnalytics.monthly       // kitchenGas (6th param)
         ),
         yearly: data,
+        
       };
-    } catch {
+      
+    } catch (error) {
       return rejectWithValue("Failed to fetch analytics");
     }
   }

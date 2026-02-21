@@ -128,8 +128,6 @@ export default function BillCategories({ navigation }) {
         />
         <BillsTrendsChart
           totalChange={totalChange}
-          timeRange={timeRange}
-          setTimeRange={setTimeRange}
           monthlyData={analytics?.monthly || []}
         />
 

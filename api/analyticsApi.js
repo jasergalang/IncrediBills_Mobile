@@ -1,12 +1,13 @@
 import api from "./apiInstance";
 
 export const fetchAnalyticsApi = async () => {
-  const [electric, water, grocery, fuel, miscellaneous] = await Promise.all([
+  const [electric, water, grocery, fuel, miscellaneous, kitchenGas] = await Promise.all([
     api.get("/electric-bill/analytics"),
     api.get("/water-bill/analytics"),
     api.get("/grocery-bill/analytics"),
     api.get("/transport-fuel-bill/analytics"),
-    api.get("/miscellaneous-bill/analytics")
+    api.get("/miscellaneous-bill/analytics"),
+    api.get("/kitchen-gas-bill/analytics"),
   ]);
 
   return {
@@ -15,5 +16,6 @@ export const fetchAnalyticsApi = async () => {
     fetchAllGroceryAnalytics: grocery.data || { monthly: [], yearly: {} },
     fetchAllTransportFuelAnalytics: fuel.data || { monthly: [], yearly: {} },
     fetchAllMiscellaneousAnalytics: miscellaneous.data || { monthly: [], yearly: {} },
+    fetchAllKitchenGasAnalytics: kitchenGas.data || { monthly: [], yearly: {} },
   };
 };
