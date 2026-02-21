@@ -30,8 +30,7 @@ export default function Home({ navigation }) {
   const analytics = useSelector((state) => state.analytics || { monthly: [] });
 
   const { latestAmounts, recentBills, loading } = bills;
-  const { monthly = [] } = analytics;
-
+  
   const fetchAll = async () => {
     await Promise.all([
       dispatch(fetchUser()),
@@ -52,39 +51,6 @@ export default function Home({ navigation }) {
     await fetchAll();
     setRefreshing(false);
   };
-
-  // Categories (SpendingOverview) - using monthly analytics like Analytics screen
-  const categories = useMemo(() => {
-    // Get the latest month's data from monthly analytics (same as Analytics screen)
-    const latest = monthly.length > 0 ? monthly[monthly.length - 1] : {};
-
-    const monthlyAmountsData = {
-      electricity: latest.electricity || 0,
-      water: latest.water || 0,
-      fuel: latest.fuel || 0,
-      grocery: latest.grocery || 0,
-      miscellaneous: latest.miscellaneous || 0,
-      kitchenGas: latest.kitchenGas || 0,
-    };
-
-    // Calculate total
-    const total = Object.values(monthlyAmountsData).reduce((a, b) => a + b, 0);
-
-    // Map to category objects and filter out zero amounts
-    return utilities
-      .map((u) => {
-        const amount = monthlyAmountsData[u.id] || 0;
-        return {
-          category: u.name,
-          amount,
-          percent: total ? Math.round((amount / total) * 100) : 0,
-          icon: u.icon,
-          color: u.color,
-          backgroundColor: u.backgroundColor2,
-        };
-      })
-      .filter((cat) => cat.amount > 0);
-  }, [monthly]);
 
   const statsData = useMemo(() => {
     const allBills = bills.allBills;
@@ -204,6 +170,7 @@ export default function Home({ navigation }) {
           date: formatBillDate(latest.billMonth || latest.date),
           icon: util.icon,
           color: util.color,
+          backgroundColor: util.backgroundColor2,
           status: latest.status || "Success",
         });
       }

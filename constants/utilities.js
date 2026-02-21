@@ -9,7 +9,7 @@ export const utilities = [
     backgroundColor: "#dbeafe",
     borderColor: "#3b82f6",
     provider: "Manila Water",
-    backgroundColor2: "blue-100",
+    backgroundColor2: "blue-50",
   },
   {
     id: "electricity",
@@ -19,7 +19,7 @@ export const utilities = [
     backgroundColor: "#fef3c7",
     borderColor: "#f59e0b",
     provider: "Meralco",
-    backgroundColor2: "orange-100",
+    backgroundColor2: "amber-50",
   },
   {
     id: "kitchenGas",
@@ -29,7 +29,7 @@ export const utilities = [
     backgroundColor: "#fed7aa",
     borderColor: "#fb923c",
     provider: "Shell",
-    backgroundColor2: "orange-100",
+    backgroundColor2: "orange-50",
   },
 
   {
@@ -40,7 +40,7 @@ export const utilities = [
     backgroundColor: "#feadaa",
     borderColor: "#f91616",
     provider: "Shell",
-    backgroundColor2: "red-100",
+    backgroundColor2: "red-50",
   },
   {
     id: "grocery",
@@ -50,7 +50,7 @@ export const utilities = [
     backgroundColor: "#bbf7d0",
     borderColor: "#22c55e",
     provider: "SM Supermarket",
-    backgroundColor2: "green-100",
+    backgroundColor2: "green-50",
   },
 
   {
@@ -61,6 +61,6 @@ export const utilities = [
     backgroundColor: "#ceace5",
     borderColor: "#ad65e4",
     provider: "Other",
-    backgroundColor2: "purple-100",
+    backgroundColor2: "purple-50",
   },
 ];
