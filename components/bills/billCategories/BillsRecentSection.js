@@ -1,8 +1,55 @@
 import React, { useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
-import BillModal from "./BillModal"; // 👈 import the separated modal
+import { useDispatch } from "react-redux";
+import BillModal from "./BillModal";
+
+import { updateElectricBill } from "../../../redux/slices/bills/electricSlice";
+import { updateWaterBill } from "../../../redux/slices/bills/waterSlice";
+import { updateGroceryBill } from "../../../redux/slices/bills/grocerySlice";
+import { updateMiscellaneousBill } from "../../../redux/slices/bills/miscellaneousSlice";
+import { updateTransportBill } from "../../../redux/slices/bills/transportSlice";
+import { updateKitchenGasBill } from "../../../redux/slices/bills/kitchenGasSlice";
 
 const BILLS_PER_PAGE = 5;
+
+// Maps bill type → correct update thunk
+const updateThunkMap = {
+  electricity: updateElectricBill,
+  water: updateWaterBill,
+  grocery: updateGroceryBill,
+  miscellaneous: updateMiscellaneousBill,
+  fuel: updateTransportBill,
+  kitchenGas: updateKitchenGasBill,
+};
+
+// Maps the modal's flat fields → the backend field names each slice expects
+const buildUpdatedData = (type, fields) => {
+  const {
+    provider, amount, status, date,
+    consumption, billingPeriod,
+    store, category, quantity,
+    purchaseType,
+    stationLocation, liters,
+    cylinders, cylinderSize, cycleDays,
+    feedback,
+  } = fields;
+
+  switch (type) {
+    case "electricity":
+    case "water":
+      return { provider, cost: parseFloat(amount) || 0, consumption, status, date, billingPeriod, feedback };
+    case "grocery":
+      return { cost: parseFloat(amount) || 0, category, store, quantity, paymentStatus: status, date, feedback };
+    case "miscellaneous":
+      return { cost: parseFloat(amount) || 0, category, purchaseType, paymentStatus: status, date, feedback };
+    case "fuel":
+      return { cost: parseFloat(amount) || 0, liters, provider, stationLocation, paymentStatus: status, status, feedback };
+    case "kitchenGas":
+      return { cost: parseFloat(amount) || 0, provider, cylinders, cylinderSize, cycleDays, paymentStatus: status, date, feedback };
+    default:
+      return { cost: parseFloat(amount) || 0, provider, status, date, feedback };
+  }
+};
 
 export default function BillsRecentSection({
   activeTab,
@@ -11,6 +58,7 @@ export default function BillsRecentSection({
   recentBills,
   filteredBills,
 }) {
+  const dispatch = useDispatch();
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedBill, setSelectedBill] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -44,16 +92,23 @@ export default function BillsRecentSection({
     setModalVisible(true);
   };
 
-  const handleSave = (updatedBill) => {
-    // dispatch(updateBill(updatedBill))
-    console.log("Saved bill:", updatedBill);
+  const handleSave = (updatedFields) => {
+    const { type, _id } = updatedFields;
+    const thunk = updateThunkMap[type];
+
+    if (thunk && _id) {
+      const updatedData = buildUpdatedData(type, updatedFields);
+      dispatch(thunk({ billId: _id, updatedData }));
+    } else {
+      console.warn("No update thunk found for type:", type);
+    }
+
     setModalVisible(false);
   };
 
   return (
     <View className="bg-white rounded-2xl border border-slate-200 mx-4 p-4 mb-6">
 
-      {/* Modal is now imported from its own file */}
       <BillModal
         bill={selectedBill}
         visible={modalVisible}
@@ -111,7 +166,7 @@ export default function BillsRecentSection({
         ) : (
           paginatedBills.map((bill) => (
             <View
-              key={bill.id}
+              key={bill._id || bill.id}
               className={`bg-${bill.color}-50 rounded-xl p-4 border border-${bill.color}-100`}
             >
               <View className="flex-row items-center justify-between mb-3">
@@ -136,16 +191,22 @@ export default function BillsRecentSection({
                 <View>
                   <Text className="text-xs text-slate-600 mb-1">Amount</Text>
                   <Text className={`text-lg font-bold text-${bill.color}-600`}>
-                    ₱{bill.amount.toLocaleString()}
+                    ₱{(bill.amount ?? bill.cost ?? 0).toLocaleString()}
                   </Text>
                 </View>
                 <View>
-                  <Text className="text-xs text-slate-600 mb-1">Due Date</Text>
+                  <Text className="text-xs text-slate-600 mb-1">Date</Text>
                   <Text className="text-sm font-semibold text-slate-900">{bill.date}</Text>
                 </View>
                 <View>
-                  <View className={`px-3 py-1 rounded-full ${bill.status === "Success" ? "bg-green-100" : "bg-red-100"}`}>
-                    <Text className={`text-xs font-semibold ${bill.status === "Success" ? "text-green-700" : "text-red-700"}`}>
+                  <View
+                    className={`px-3 py-1 rounded-full ${bill.status === "Success" ? "bg-green-100" : "bg-red-100"
+                      }`}
+                  >
+                    <Text
+                      className={`text-xs font-semibold ${bill.status === "Success" ? "text-green-700" : "text-red-700"
+                        }`}
+                    >
                       {bill.status === "Success" ? "✓ Paid" : "✗ Failed"}
                     </Text>
                   </View>
@@ -172,14 +233,17 @@ export default function BillsRecentSection({
               disabled={currentPage === 1}
               className="w-8 h-8 rounded-lg items-center justify-center bg-slate-100"
             >
-              <Text className={`text-sm font-semibold ${currentPage === 1 ? "text-slate-300" : "text-slate-600"}`}>{"<"}</Text>
+              <Text className={`text-sm font-semibold ${currentPage === 1 ? "text-slate-300" : "text-slate-600"}`}>
+                {"<"}
+              </Text>
             </TouchableOpacity>
 
             {getPageNumbers().map((page) => (
               <TouchableOpacity
                 key={page}
                 onPress={() => goToPage(page)}
-                className={`w-8 h-8 rounded-lg items-center justify-center ${currentPage === page ? "bg-blue-600" : "bg-slate-100"}`}
+                className={`w-8 h-8 rounded-lg items-center justify-center ${currentPage === page ? "bg-blue-600" : "bg-slate-100"
+                  }`}
               >
                 <Text className={`text-xs font-semibold ${currentPage === page ? "text-white" : "text-slate-600"}`}>
                   {page}
@@ -192,7 +256,9 @@ export default function BillsRecentSection({
               disabled={currentPage === totalPages}
               className="w-8 h-8 rounded-lg items-center justify-center bg-slate-100"
             >
-              <Text className={`text-sm font-semibold ${currentPage === totalPages ? "text-slate-300" : "text-slate-600"}`}>{">"}</Text>
+              <Text className={`text-sm font-semibold ${currentPage === totalPages ? "text-slate-300" : "text-slate-600"}`}>
+                {">"}
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -25,28 +25,54 @@ export function transformBills(...billDataObjects) {
   const mapBill = (bill, typeId) => {
     const util = utilities.find((u) => u.id === typeId);
     return {
-      id: bill._id,
+      // ── Identity ─────────────────────────────────────────────────────────
+      _id: bill._id,          // keep _id so update thunks can find the doc
+      id: bill._id,           // alias for any legacy references
+
+      // ── UI meta (from utilities config) ──────────────────────────────────
       type: typeId,
       name: util?.name || typeId,
-      provider: util?.provider || "",
       icon: util?.icon || "",
       color: util?.color || "gray",
-      amount: bill.cost || 0,
+
+      // ── Common fields ─────────────────────────────────────────────────────
+      provider: bill.provider || "",
+      amount: bill.cost || 0,       // normalised alias
+      cost: bill.cost || 0,         // original backend field
       date: formatDate(bill.date),
       createdAt: bill.createdAt,
-      status: bill.status,
-      // Include additional fields that might be useful
-      consumption: bill.consumption || null,
+      status: bill.status || null,
+      paymentStatus: bill.paymentStatus || null,
+      billingPeriod: bill.billingPeriod || null,
+
+      // ── Electricity / Water ───────────────────────────────────────────────
+      consumption: bill.consumption ?? null,
       unit: bill.unit || null,
+
+      // ── Grocery ───────────────────────────────────────────────────────────
+      store: bill.store || null,
+      category: bill.category || null,
+      quantity: bill.quantity ?? null,
+
+      // ── Miscellaneous ─────────────────────────────────────────────────────
+      purchaseType: bill.purchaseType || null,
+
+      // ── Transport / Fuel ──────────────────────────────────────────────────
+      liters: bill.liters ?? null,
+      stationLocation: bill.stationLocation || null,
+
+      // ── Kitchen Gas ───────────────────────────────────────────────────────
+      cylinders: bill.cylinders ?? null,
+      cylinderSize: bill.cylinderSize || null,
+      cycleDays: bill.cycleDays ?? null,
     };
   };
 
-  // Map of expected bill types in order
+  // Map of expected bill types in order (must match the order args are passed)
   const billTypes = ["electricity", "water", "grocery", "fuel", "miscellaneous", "kitchenGas"];
-  
+
   const allBills = [];
 
-  // Process each bill data object
   billDataObjects.forEach((billData, index) => {
     if (billData && billData.bills && Array.isArray(billData.bills)) {
       const typeId = billTypes[index] || `unknown-${index}`;
@@ -55,7 +81,7 @@ export function transformBills(...billDataObjects) {
     }
   });
 
-  // Sort by createdAt date (most recent first)
+  // Sort by createdAt (most recent first)
   return allBills.sort(
     (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
   );
@@ -68,7 +94,6 @@ export const mergeMonthlyAnalytics = (
   fuelData,
   miscellaneousData
 ) => {
-  // Collect all unique months from all datasets
   const allMonths = new Set([
     ...Object.keys(waterData || {}),
     ...Object.keys(electricityData || {}),
@@ -77,10 +102,8 @@ export const mergeMonthlyAnalytics = (
     ...Object.keys(miscellaneousData || {}),
   ]);
 
-  // Sort months chronologically
   const sortedMonths = [...allMonths].sort();
 
-  // Create merged data for each month
   return sortedMonths.map((month) => ({
     month,
     water: waterData?.[month]?.totalCost || 0,
