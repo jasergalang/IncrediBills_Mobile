@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+
+import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { StatusBar, ScrollView } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,20 +16,17 @@ import { fetchBills } from "../../redux/slices/bills/billSlice";
 import { useAuth } from "../../context/auth";
 import { fetchPredictions } from "../../redux/slices/prediction/predictionSlice";
 
-export default function Prediction() {
-  const [selectedUtility, setSelectedUtility] = useState(null);
+// Initialize directly — no useEffect needed, never null
+const defaultUtility = utilities.find(u => u.id === "water") || utilities[0];
 
-  useEffect(() => {
-    const waterUtility = utilities.find(u => u.id === "water");
-    setSelectedUtility(waterUtility);
-  }, []);
+export default function Prediction() {
+  const [selectedUtility, setSelectedUtility] = React.useState(defaultUtility);
 
   const navigation = useNavigation();
   const dispatch = useDispatch();
   const { token } = useAuth();
 
   const { recentBills } = useSelector((state) => state.bills);
-
 
   useFocusEffect(
     React.useCallback(() => {
@@ -39,11 +37,8 @@ export default function Prediction() {
     }, [dispatch, token])
   );
 
-
   const filteredBills = selectedUtility
-    ? recentBills?.filter(
-      (bill) => bill.type === selectedUtility.id
-    )
+    ? recentBills?.filter((bill) => bill.type === selectedUtility.id)
     : [];
 
   return (
@@ -62,22 +57,18 @@ export default function Prediction() {
           setSelectedUtility={setSelectedUtility}
         />
 
-        <SummaryCards
-          selectedUtility={selectedUtility} />
+        <SummaryCards selectedUtility={selectedUtility} />
+
         <PredictionChart
           selectedUtility={selectedUtility}
           bills={filteredBills}
-          onSavePress={() => { }}
-          onAlertPress={() => { }}
         />
-
 
         <BillHistory
           billsHistory={filteredBills}
           selectedCategory={selectedUtility?.name}
           selectedUtility={selectedUtility}
         />
-
       </ScrollView>
     </SafeAreaView>
   );
