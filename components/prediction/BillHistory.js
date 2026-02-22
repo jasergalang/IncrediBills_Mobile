@@ -153,6 +153,41 @@ export default function BillHistory({ billsHistory = [], selectedCategory, selec
           );
         })}
 
+        {/* ── Stats Cards: Lowest & Highest ── */}
+        {(() => {
+          const amounts = billsHistory.map((b) => b.cost ?? b.amount ?? 0).filter((v) => v > 0);
+          if (amounts.length === 0) return null;
+          const lowestVal = Math.min(...amounts);
+          const highestVal = Math.max(...amounts);
+          const lowestBill = billsHistory.find((b) => (b.cost ?? b.amount ?? 0) === lowestVal);
+          const highestBill = billsHistory.find((b) => (b.cost ?? b.amount ?? 0) === highestVal);
+          return (
+            <View className="flex-row gap-3 mt-3 mb-1">
+              {/* Lowest */}
+              <View className="flex-1 rounded-xl p-3" style={{ backgroundColor: "#f0fdf4" }}>
+                <Text className="text-xs text-slate-500 font-medium mb-1">Lowest</Text>
+                <Text className="text-lg font-bold" style={{ color: "#16a34a" }}>
+                  ₱{lowestVal.toLocaleString()}
+                </Text>
+                <Text className="text-xs mt-0.5" style={{ color: "#86efac" }}>
+                  {lowestBill?.date ?? "—"}
+                </Text>
+              </View>
+
+              {/* Highest */}
+              <View className="flex-1 rounded-xl p-3" style={{ backgroundColor: "#fff1f2" }}>
+                <Text className="text-xs text-slate-500 font-medium mb-1">Highest</Text>
+                <Text className="text-lg font-bold" style={{ color: "#dc2626" }}>
+                  ₱{highestVal.toLocaleString()}
+                </Text>
+                <Text className="text-xs mt-0.5" style={{ color: "#fca5a5" }}>
+                  {highestBill?.date ?? "—"}
+                </Text>
+              </View>
+            </View>
+          );
+        })()}
+
         {/* Pagination Footer */}
         {totalPages > 1 && (
           <View className="flex-row items-center justify-between mt-3 pt-3 border-t border-slate-100">
