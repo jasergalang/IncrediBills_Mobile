@@ -9,8 +9,6 @@ import UtilityPicker from "../../components/prediction/UtilityPicker";
 import SummaryCards from "../../components/prediction/SummaryCards";
 import PredictionChart from "../../components/prediction/PredictionChart";
 import BillHistory from "../../components/prediction/BillHistory";
-import ContributingFactors from "../../components/prediction/ContributingFactors";
-import AIAction from "../../components/prediction/AIAction";
 
 import { utilities } from "../../constants/utilities";
 import { fetchBills } from "../../redux/slices/bills/billSlice";
@@ -80,8 +78,6 @@ export default function Prediction() {
           selectedUtility={selectedUtility}
         />
 
-        <ContributingFactors />
-        <AIAction />
       </ScrollView>
     </SafeAreaView>
   );

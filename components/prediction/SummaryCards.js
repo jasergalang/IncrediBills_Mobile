@@ -16,10 +16,6 @@ export default function SummaryCards({ selectedUtility }) {
   const currentAmount = latestAmounts?.[utilityId] || 0;
 
   const utilityPredictions = predictions?.[utilityId] || [];
-  // const latestPrediction =
-  //   utilityPredictions.length > 0
-  //     ? utilityPredictions[utilityPredictions.length - 1]?.predictedCost || 0
-  //     : 0;
   const latestPrediction =
     utilityPredictions.length > 0
       ? [...utilityPredictions].sort(
@@ -52,8 +48,8 @@ export default function SummaryCards({ selectedUtility }) {
   };
 
   return (
-    <View className="pb-2 mb-2">
-      <View className="flex-row gap-3 mb-3">
+    <View className=" mb-2">
+      <View className="flex-row gap-3 mb-2">
 
         {/* Current Bill */}
         <View className="flex-1 rounded-2xl p-4 border" style={currentCardStyle}>
@@ -98,10 +94,6 @@ export default function SummaryCards({ selectedUtility }) {
             </Text>
           </View>
 
-          {/* <Text className="text-xl font-bold text-green-500">
-            ₱{savings.toLocaleString()}
-          </Text>
-          <Text className="text-xs text-slate-400">Expected Increase</Text> */}
           <Text className={`text-xl font-bold ${changeColor}`}>
             ₱{changeValue.toLocaleString()}
           </Text>

@@ -89,7 +89,7 @@ export default function PredictionChart({ selectedUtility, onSavePress, onAlertP
   if (!utilityId) return <View className="p-5"><Text>Select a utility to see chart</Text></View>;
 
   return (
-    <View className="bg-white rounded-2xl border border-slate-200 p-5 mb-6">
+    <View className="bg-white rounded-2xl border border-slate-200 p-3 mb-6">
       <View className="mb-5">
         <View className="flex-row items-center justify-between mb-4">
           <View className="flex-1">

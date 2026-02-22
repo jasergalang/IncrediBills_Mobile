@@ -1,99 +1,83 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity, Text, ScrollView } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import AlertModal from "./AlertModal";
+import { useSelector } from "react-redux";
 
 export default function UtilityPicker({ utilities, selectedUtility, setSelectedUtility }) {
-    const [selectedRange, setSelectedRange] = useState("1 month");
-    const [showRangeDropdown, setShowRangeDropdown] = useState(false);
+    const [alertModalVisible, setAlertModalVisible] = useState(false);
 
-    const predictionRanges = ["1 month", "3 months", "6 months", "1 year"];
+    // Match the same selector shape used in SummaryCards
+    const predictions = useSelector((state) => state.predictions);
+
+    const predictedAmount = (() => {
+        if (!predictions || !selectedUtility) return null;
+        const utilityPredictions = predictions[selectedUtility.id];
+        if (!Array.isArray(utilityPredictions) || utilityPredictions.length === 0) return null;
+        const latest = [...utilityPredictions].sort(
+            (a, b) => new Date(b.predictedDate) - new Date(a.predictedDate)
+        )[0];
+        return latest?.predictedCost ?? null;
+    })();
+
+    const currentCardStyle = {
+        backgroundColor: selectedUtility.backgroundColor,
+        borderColor: selectedUtility.borderColor,
+    };
 
     return (
-        <View className="px-2 pb-2 mb-4">
-            <Text className="text-lg font-bold text-slate-900 mb-2">
-                Configure Prediction
-            </Text>
-            
-            {/* Category and Range Selection Row */}
-            <View className="flex-row items-center justify-between mb-2">
-                <Text className="text-xs text-slate-400">
-                    📊 Select Category and Prediction Range
-                </Text>
-                
-                {/* Prediction Range Dropdown */}
-                <View className="relative">
-                    <TouchableOpacity
-                        onPress={() => setShowRangeDropdown(!showRangeDropdown)}
-                        className="flex-row items-center bg-blue-100 px-3 py-1.5 rounded-lg border border-blue-200"
-                    >
-                        <Text className="text-xs text-blue-700 font-semibold mr-1">
-                            📅 {selectedRange}
-                        </Text>
-                        <Ionicons 
-                            name={showRangeDropdown ? "chevron-up" : "chevron-down"} 
-                            size={14} 
-                            color="#1d4ed8" 
-                        />
-                    </TouchableOpacity>
+        <>
+            <View className="bg-white rounded-2xl border border-slate-200 p-3 mb-2">
+                {/* Header Row */}
+                <View className="flex-row items-center justify-between mb-2">
+                    <Text className="text-lg font-bold text-slate-900">
+                        Configure Prediction
+                    </Text>
 
-                    {/* Dropdown Menu */}
-                    {showRangeDropdown && (
-                        <View className="absolute top-9 right-0 bg-white border-2 border-blue-300 rounded-xl shadow-2xl z-10 min-w-[130px] overflow-hidden">
-                            {predictionRanges.map((range, index) => (
-                                <TouchableOpacity
-                                    key={range}
-                                    onPress={() => {
-                                        setSelectedRange(range);
-                                        setShowRangeDropdown(false);
-                                    }}
-                                    className={`px-4 py-3 ${
-                                        index !== predictionRanges.length - 1 ? "border-b border-slate-100" : ""
-                                    } ${
-                                        selectedRange === range ? "bg-blue-600" : "bg-slate-50 hover:bg-slate-100"
-                                    }`}
-                                >
-                                    <Text
-                                        className={`text-sm font-medium ${
-                                            selectedRange === range
-                                                ? "text-white font-bold"
-                                                : "text-slate-700"
-                                        }`}
-                                    >
-                                        {selectedRange === range ? "✓ " : ""}{range}
-                                    </Text>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
-                    )}
+                    {/* Set Alert Button */}
+                    <TouchableOpacity
+                        onPress={() => setAlertModalVisible(true)}
+                        className="flex-row items-center bg-orange-400 px-3 py-2 rounded-lg"
+                    >
+                        <Text className="text-xs text-white font-semibold ml-1">🔔 Set Alert</Text>
+                    </TouchableOpacity>
                 </View>
+
+                {/* Category Label */}
+                <Text className="text-xs text-slate-400 mb-2">📊 Select Category</Text>
+
+                {/* Utility Categories Scroll */}
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    <View className="flex-row gap-2">
+                        {utilities.map((utility) => (
+                            <TouchableOpacity
+                                key={utility.id}
+                                onPress={() => setSelectedUtility(utility)}
+                                className={`px-4 py-2 rounded-lg ${selectedUtility?.id === utility.id
+                                        ? ''
+                                        : 'bg-slate-100'
+                                    }`}
+                                style={selectedUtility?.id === utility.id ? currentCardStyle : undefined}
+                            >
+                                <Text
+                                    className={`font-semibold text-sm ${selectedUtility?.id === utility.id
+                                        ? "text-black"
+                                        : "text-slate-600"
+                                        }`}
+                                >
+                                    {utility.name}
+                                </Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                </ScrollView>
             </View>
 
-            {/* Utility Categories Scroll */}
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                <View className="flex-row gap-2">
-                    {utilities.map((utility) => (
-                        <TouchableOpacity
-                            key={utility.id}
-                            onPress={() => setSelectedUtility(utility)}
-                            className={`px-4 py-2 rounded-lg ${
-                                selectedUtility?.id === utility.id 
-                                    ? "bg-blue-600" 
-                                    : "bg-slate-100"
-                            }`}
-                        >
-                            <Text
-                                className={`font-semibold text-sm ${
-                                    selectedUtility?.id === utility.id 
-                                        ? "text-white" 
-                                        : "text-slate-600"
-                                }`}
-                            >
-                                {utility.name}
-                            </Text>
-                        </TouchableOpacity>
-                    ))}
-                </View>
-            </ScrollView>
-        </View>
+            <AlertModal
+                visible={alertModalVisible}
+                onClose={() => setAlertModalVisible(false)}
+                selectedUtility={selectedUtility}
+                predictedAmount={predictedAmount}
+            />
+        </>
     );
 }
