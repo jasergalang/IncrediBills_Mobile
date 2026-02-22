@@ -29,6 +29,7 @@ export const fetchPredictions = createAsyncThunk(
         fuel: data.fetchAllTransportPrediction || [],
         grocery: data.fetchAllGroceryPrediction || [],
         miscellaneous: data.fetchAllMiscellaneousPrediction || [],
+        kitchenGas: data.fetchAllKitchenGasPrediction || [],
         // Compute changes for each category
         computedChanges: {
           electricity: calculateChange(data.fetchAllElectricPrediction),
@@ -36,6 +37,7 @@ export const fetchPredictions = createAsyncThunk(
           fuel: calculateChange(data.fetchAllTransportPrediction),
           grocery: calculateChange(data.fetchAllGroceryPrediction),
           miscellaneous: calculateChange(data.fetchAllMiscellaneousPrediction),
+          kitchenGas: calculateChange(data.fetchAllKitchenGasPrediction),
         },
       };
     } catch (error) {
@@ -61,6 +63,7 @@ const predictionsSlice = createSlice({
       fuel: 0,
       grocery: 0,
       miscellaneous: 0,
+      kitchenGas: 0,
     },
     loading: false,
     error: null,
@@ -83,6 +86,7 @@ const predictionsSlice = createSlice({
         state.fuel = action.payload.fuel;
         state.grocery = action.payload.grocery;
         state.miscellaneous = action.payload.miscellaneous;
+        state.kitchenGas = action.payload.kitchenGas;
         state.computedChanges = action.payload.computedChanges;
       })
       .addCase(fetchPredictions.rejected, (state, action) => {

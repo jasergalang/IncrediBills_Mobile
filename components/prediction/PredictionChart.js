@@ -118,7 +118,7 @@ export default function PredictionChart({ selectedUtility, bills = [] }) {
   const activeIsActual = activeBar?.type === 'actual';
 
   return (
-    <View className="bg-white rounded-2xl border border-slate-200 p-3 mb-6">
+    <View className="bg-white rounded-2xl border border-slate-200 p-3 mb-2">
       {/* Header */}
       <View className="flex-row items-center justify-between mb-4">
         <View>
