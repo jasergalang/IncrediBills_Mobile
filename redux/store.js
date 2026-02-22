@@ -27,7 +27,7 @@ const store = configureStore({
         grocery: grocerySlice,
         miscellaneous: miscellaneousSlice,
         transport: transportSlice,
-        kitchenGasSlice: kitchenGasSlice
+        kitchenGas: kitchenGasSlice
     },
 });
 export default store;

@@ -22,7 +22,7 @@ export default function KitchenGasHeader({ navigation, category }) {
           </View>
 
           <Text className="text-sm text-slate-600">
-            Upload and manage your electricity bills
+            Upload and manage your kitchen gas bills
           </Text>
         </View>
 
@@ -30,7 +30,7 @@ export default function KitchenGasHeader({ navigation, category }) {
         <View className="flex-row gap-2">
           <TouchableOpacity className="w-10 h-10 rounded-xl bg-blue-100 items-center justify-center">
             <Text style={{ fontSize: 20 }}>🔔</Text>
-            <View className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full" />
+            <View className="absolute top-1 right-1 w-2 h-2 bg-orange-500 rounded-full" />
           </TouchableOpacity>
 
           <TouchableOpacity
