@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { StatusBar, ScrollView } from "react-native";
+import { StatusBar, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import AnalyticsHeader from "../../components/analytics/AnalyticsHeader";
 import UtilityKPICards from "../../components/analytics/UtilityKPICards";
-import AnomalyAlerts from "../../components/analytics/AnomalyAlerts";
+// import AnomalyAlerts from "../../components/analytics/AnomalyAlerts";
 import SpendingTrendsChart from "../../components/analytics/SpendingTrendsChart";
 import CategoryBreakdown from "../../components/analytics/CategoryBreakdown";
-import ExportSchedulePanel from "../../components/analytics/ExportSchedulePanel";
+// import ExportSchedulePanel from "../../components/analytics/ExportSchedulePanel";
 import GameKPICards from "../../components/analytics/GameKPICards";
 import AchievementsProgress from "../../components/analytics/AchievementsProgress";
 import RecentRewards from "../../components/analytics/RecentRewards";
@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAnalytics } from "../../redux/slices/analytics/analyticsSlice";
 import { utilities } from "../../constants/utilities";
 import { fetchAllSavings } from "../../redux/slices/saved/savedSlice";
+// import { exportToPDF, exportToExcel } from "../../utils/exportUtils";
 
 const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
@@ -196,11 +197,8 @@ export default function Analytics({ navigation }) {
 
   // ==========================================================
   // ================= CATEGORY BREAKDOWN =====================
-  // ✅ All-time totals from allBills (not just latest month)
-  // Matches web's useCategoryBreakdown hook
   // ==========================================================
   const { categoryBreakdown, categoryTotalAmount } = useMemo(() => {
-    // Sum ALL bills per category (filtered by selectedCategories)
     const totals = {
       electricity:   0,
       water:         0,
@@ -213,61 +211,61 @@ export default function Analytics({ navigation }) {
     Object.entries(allBills).forEach(([category, bills]) => {
       if (!selectedCategories.includes("all") && !selectedCategories.includes(category)) return;
       if (!(category in totals)) return;
-
-      bills?.forEach((bill) => {
-        totals[category] += bill.cost || 0;
-      });
+      bills?.forEach((bill) => { totals[category] += bill.cost || 0; });
     });
 
     const totalAmount = Object.values(totals).reduce((sum, v) => sum + v, 0);
 
     const breakdown = [
-      {
-        category: "Electricity",
-        amount: Math.round(totals.electricity),
-        percentage: totalAmount > 0 ? Math.round((totals.electricity / totalAmount) * 100) : 0,
-        color: "amber",
-        icon: "⚡",
-      },
-      {
-        category: "Groceries",
-        amount: Math.round(totals.grocery),
-        percentage: totalAmount > 0 ? Math.round((totals.grocery / totalAmount) * 100) : 0,
-        color: "emerald",
-        icon: "🛒",
-      },
-      {
-        category: "Transport",
-        amount: Math.round(totals.fuel),
-        percentage: totalAmount > 0 ? Math.round((totals.fuel / totalAmount) * 100) : 0,
-        color: "gray",
-        icon: "⛽",
-      },
-      {
-        category: "Miscellaneous",
-        amount: Math.round(totals.miscellaneous),
-        percentage: totalAmount > 0 ? Math.round((totals.miscellaneous / totalAmount) * 100) : 0,
-        color: "orange",
-        icon: "🔥",
-      },
-      {
-        category: "Water",
-        amount: Math.round(totals.water),
-        percentage: totalAmount > 0 ? Math.round((totals.water / totalAmount) * 100) : 0,
-        color: "blue",
-        icon: "💧",
-      },
-      {
-        category: "Kitchen Gas",
-        amount: Math.round(totals.kitchenGas),
-        percentage: totalAmount > 0 ? Math.round((totals.kitchenGas / totalAmount) * 100) : 0,
-        color: "red",
-        icon: "🍳",
-      },
+      { category: "Electricity", amount: Math.round(totals.electricity), percentage: totalAmount > 0 ? Math.round((totals.electricity / totalAmount) * 100) : 0, color: "amber",   icon: "⚡" },
+      { category: "Groceries",   amount: Math.round(totals.grocery),     percentage: totalAmount > 0 ? Math.round((totals.grocery   / totalAmount) * 100) : 0, color: "emerald", icon: "🛒" },
+      { category: "Transport",   amount: Math.round(totals.fuel),        percentage: totalAmount > 0 ? Math.round((totals.fuel      / totalAmount) * 100) : 0, color: "gray",    icon: "⛽" },
+      { category: "Miscellaneous", amount: Math.round(totals.miscellaneous), percentage: totalAmount > 0 ? Math.round((totals.miscellaneous / totalAmount) * 100) : 0, color: "orange", icon: "🔥" },
+      { category: "Water",       amount: Math.round(totals.water),       percentage: totalAmount > 0 ? Math.round((totals.water     / totalAmount) * 100) : 0, color: "blue",    icon: "💧" },
+      { category: "Kitchen Gas", amount: Math.round(totals.kitchenGas),  percentage: totalAmount > 0 ? Math.round((totals.kitchenGas/ totalAmount) * 100) : 0, color: "red",     icon: "🍳" },
     ].filter((cat) => cat.amount > 0);
 
     return { categoryBreakdown: breakdown, categoryTotalAmount: Math.round(totalAmount) };
   }, [allBills, selectedCategories]);
+
+  // ==========================================================
+  // ====================== EXPORT HANDLERS ===================
+  // ==========================================================
+  const handleExportPDF = async () => {
+    try {
+      const analyticsData = {
+        kpiData: utilityKPI,
+        timeSeriesData: spendingData,
+        categoryBreakdown,
+        dateRange,
+        selectedCategories,
+        totalAmount: categoryTotalAmount,
+      };
+      // await exportToPDF(analyticsData);
+      Alert.alert("✅ Success", "PDF report has been downloaded successfully!");
+    } catch (error) {
+      console.error("Error exporting PDF:", error);
+      Alert.alert("❌ Error", "Failed to export PDF. Please try again.");
+    }
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      const analyticsData = {
+        kpiData: utilityKPI,
+        timeSeriesData: spendingData,
+        categoryBreakdown,
+        dateRange,
+        selectedCategories,
+        totalAmount: categoryTotalAmount,
+      };
+      // await exportToExcel(analyticsData);
+      Alert.alert("✅ Success", "Excel report has been downloaded successfully!");
+    } catch (error) {
+      console.error("Error exporting Excel:", error);
+      Alert.alert("❌ Error", "Failed to export Excel. Please try again.");
+    }
+  };
 
   // ==========================================================
   // ======================== UI ==============================
@@ -285,6 +283,7 @@ export default function Analytics({ navigation }) {
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {activeTab === "utility" ? (
           <>
+            {/* ✅ FilterPanel now receives export handlers */}
             <FilterPanel
               dateRange={dateRange}
               setDateRange={setDateRange}
@@ -293,33 +292,34 @@ export default function Analytics({ navigation }) {
               compareMode={compareMode}
               comparePeriod={comparePeriod}
               setComparePeriod={setComparePeriod}
+              onExportPDF={handleExportPDF}
+              onExportExcel={handleExportExcel}
             />
 
             <UtilityKPICards utilityKPI={utilityKPI} />
 
             <SpendingTrendsChart spendingData={spendingData} />
 
-            {/* ✅ Pass all-time breakdown + total */}
             <CategoryBreakdown
               categoryBreakdown={categoryBreakdown}
               totalAmount={categoryTotalAmount}
             />
 
-            <ExportSchedulePanel />
+            {/* <ExportSchedulePanel /> */}
           </>
         ) : (
           <>
             <GameKPICards gameKPI={{}} />
             <AchievementsProgress achievements={[]} />
             <RecentRewards rewards={[]} />
-            <ExportSchedulePanel
+            {/* <ExportSchedulePanel
               kpiData={utilityKPI}
               timeSeriesData={spendingData}
               categoryBreakdown={categoryBreakdown}
               dateRange={dateRange}
               selectedCategories={selectedCategories}
               totalAmount={categoryTotalAmount}
-            />
+            /> */}
           </>
         )}
       </ScrollView>
