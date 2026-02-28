@@ -11,7 +11,7 @@ export default function AnalyticsHeader({ activeTab, setActiveTab, navigation })
             Analytics 📊
           </Text>
           <Text className="text-sm text-slate-600">
-            Your insights dashboard
+            Insights and Trends for your utility usage
           </Text>
         </View>
         <View className="flex-row gap-2">

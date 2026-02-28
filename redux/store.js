@@ -13,6 +13,7 @@ import grocerySlice from './slices/bills/grocerySlice'
 import miscellaneousSlice from './slices/bills/miscellaneousSlice'
 import transportSlice from './slices/bills/transportSlice'
 import kitchenGasSlice from './slices/bills/kitchenGasSlice'
+import savedSlice from './slices/saved/savedSlice';
 const store = configureStore({
     reducer: {
         login: loginReducer,
@@ -27,7 +28,8 @@ const store = configureStore({
         grocery: grocerySlice,
         miscellaneous: miscellaneousSlice,
         transport: transportSlice,
-        kitchenGas: kitchenGasSlice
+        kitchenGas: kitchenGasSlice,
+        saved: savedSlice,
     },
 });
 export default store;

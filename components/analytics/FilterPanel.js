@@ -12,6 +12,7 @@ export default function FiltersPanel({
     { id: "fuel", name: "Transport", icon: "🚗" },
     { id: "grocery", name: "Groceries", icon: "🛒" },
     { id: "miscellaneous", name: "Miscellaneous", icon: "📦" },
+    { id: "kitchenGas", name: "Kitchen Gas", icon: "🔥" },
   ];
 
   return (
@@ -50,7 +51,7 @@ export default function FiltersPanel({
                     : "text-slate-600"
                 }`}
               >
-                {category.icon} {category.name}
+                {category.name}
               </Text>
             </TouchableOpacity>
           ))}
