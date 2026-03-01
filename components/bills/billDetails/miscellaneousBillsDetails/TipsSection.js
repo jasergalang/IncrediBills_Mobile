@@ -1,8 +1,105 @@
-import React from "react";
-import { View, Text } from "react-native";
+import React, { useState, useRef } from "react";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
+import { Audio } from "expo-av";
+import fastAPI_Url from "../../../../assets/common/fastAPI_Url";
+
+const TTS_API_URL = `${fastAPI_Url}/tts/generate`;
 
 export default function TipsSection({ recommendations }) {
+  const [speaking, setSpeaking] = useState(null);
+  const [loading, setLoading] = useState(null);
+  const soundRef = useRef(null);
+
+  const stopCurrentAudio = async () => {
+    if (soundRef.current) {
+      try {
+        await soundRef.current.stopAsync();
+        await soundRef.current.unloadAsync();
+      } catch (_) {}
+      soundRef.current = null;
+    }
+    setSpeaking(null);
+    setLoading(null);
+  };
+
+  const speakTip = async (tip, index) => {
+    if (speaking === index) {
+      await stopCurrentAudio();
+      return;
+    }
+
+    await stopCurrentAudio();
+    setLoading(index);
+
+    try {
+      const text = `${tip.title}. ${tip.description}`;
+
+      const response = await fetch(TTS_API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          text,
+          lang: "tl",
+          slow: false,
+        }),
+      });
+
+      if (!response.ok) throw new Error("TTS API request failed");
+
+      const blob = await response.blob();
+      const reader = new FileReader();
+
+      reader.onloadend = async () => {
+        try {
+          const base64Audio = reader.result;
+
+          await Audio.setAudioModeAsync({
+            allowsRecordingIOS: false,
+            playsInSilentModeIOS: true,
+            shouldDuckAndroid: true,
+            playThroughEarpieceAndroid: false,
+          });
+
+          const { sound } = await Audio.Sound.createAsync(
+            { uri: base64Audio },
+            { shouldPlay: true }
+          );
+
+          soundRef.current = sound;
+          setSpeaking(index);
+          setLoading(null);
+
+          sound.setOnPlaybackStatusUpdate((status) => {
+            if (status.didJustFinish) {
+              setSpeaking(null);
+              setLoading(null);
+              sound.unloadAsync();
+              soundRef.current = null;
+            }
+          });
+        } catch (err) {
+          console.error("Audio playback error:", err);
+          setSpeaking(null);
+          setLoading(null);
+          Alert.alert("Error", "Failed to play audio. Please try again.");
+        }
+      };
+
+      reader.onerror = () => {
+        setLoading(null);
+        Alert.alert("Error", "Failed to process audio. Please try again.");
+      };
+
+      reader.readAsDataURL(blob);
+    } catch (error) {
+      console.error("TTS Error:", error);
+      setLoading(null);
+      setSpeaking(null);
+      Alert.alert("Error", "Failed to generate speech. Please try again.");
+    }
+  };
+
   const getImpactColor = (impact) => {
     switch (impact?.toLowerCase()) {
       case "high":
@@ -25,6 +122,12 @@ export default function TipsSection({ recommendations }) {
     }
   };
 
+  const getTTSButtonStyle = (index) => {
+    if (speaking === index) return { bg: "#ef4444", emoji: "⏹️" };
+    if (loading === index) return { bg: "#94a3b8", emoji: "⏳" };
+    return { bg: "#e2e8f0", emoji: "🔈" };
+  };
+
   if (!recommendations || recommendations.length === 0) {
     return (
       <View className="px-4 pb-6">
@@ -43,30 +146,17 @@ export default function TipsSection({ recommendations }) {
             </Text>
           </View>
           <View className="space-y-2">
-            <View className="flex-row items-start gap-2">
-              <Text className="text-green-600 mt-0.5">•</Text>
-              <Text className="text-sm text-green-800 flex-1">
-                Switch to LED bulbs to reduce energy consumption by up to 75%
-              </Text>
-            </View>
-            <View className="flex-row items-start gap-2">
-              <Text className="text-green-600 mt-0.5">•</Text>
-              <Text className="text-sm text-green-800 flex-1">
-                Unplug appliances when not in use to avoid phantom loads
-              </Text>
-            </View>
-            <View className="flex-row items-start gap-2">
-              <Text className="text-green-600 mt-0.5">•</Text>
-              <Text className="text-sm text-green-800 flex-1">
-                Use inverter air conditioners for better energy efficiency
-              </Text>
-            </View>
-            <View className="flex-row items-start gap-2">
-              <Text className="text-green-600 mt-0.5">•</Text>
-              <Text className="text-sm text-green-800 flex-1">
-                Set AC temperature to 24–26°C for optimal cooling and savings
-              </Text>
-            </View>
+            {[
+              "Switch to LED bulbs to reduce energy consumption by up to 75%",
+              "Unplug appliances when not in use to avoid phantom loads",
+              "Use inverter air conditioners for better energy efficiency",
+              "Set AC temperature to 24–26°C for optimal cooling and savings",
+            ].map((tip, i) => (
+              <View key={i} className="flex-row items-start gap-2">
+                <Text className="text-green-600 mt-0.5">•</Text>
+                <Text className="text-sm text-green-800 flex-1">{tip}</Text>
+              </View>
+            ))}
           </View>
         </LinearGradient>
       </View>
@@ -75,9 +165,10 @@ export default function TipsSection({ recommendations }) {
 
   return (
     <View className="px-4 pb-6">
+      {/* Header */}
       <View className="mb-3 flex-row items-center justify-between">
         <Text className="text-lg font-bold text-gray-900">
-          💡 AI Miscellaneous Recommendations
+          💡 AI Miscellaneous 
         </Text>
         <View className="bg-purple-100 px-3 py-1 rounded-full">
           <Text className="text-xs font-semibold text-purple-700">
@@ -86,23 +177,48 @@ export default function TipsSection({ recommendations }) {
         </View>
       </View>
 
+      {/* Tip Cards */}
       {recommendations.map((tip, index) => {
         const colors = getImpactColor(tip.impact);
         const icon = getImpactIcon(tip.impact);
+        const ttsBtn = getTTSButtonStyle(index);
 
         return (
           <View
             key={index}
             className={`bg-white rounded-2xl p-4 border-2 ${colors.border} shadow-sm mb-3`}
           >
+            {/* Title Row */}
             <View className="flex-row items-start gap-3 mb-3">
               <View className={`w-10 h-10 ${colors.bg} rounded-xl items-center justify-center`}>
                 <Text className="text-xl">{icon}</Text>
               </View>
+
               <View className="flex-1">
-                <Text className="text-sm font-bold text-gray-900 mb-1">
-                  {tip.title}
-                </Text>
+                <View className="flex-row items-start justify-between">
+                  <Text className="text-sm font-bold text-gray-900 mb-1 flex-1 mr-2">
+                    {tip.title}
+                  </Text>
+
+                  {/* TTS Button */}
+                  <TouchableOpacity
+                    onPress={() => speakTip(tip, index)}
+                    disabled={loading === index}
+                    style={{
+                      backgroundColor: ttsBtn.bg,
+                      borderRadius: 8,
+                      padding: 8,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      minWidth: 36,
+                      minHeight: 36,
+                    }}
+                    accessibilityLabel={speaking === index ? "Stop reading" : "Read aloud"}
+                  >
+                    <Text style={{ fontSize: 16 }}>{ttsBtn.emoji}</Text>
+                  </TouchableOpacity>
+                </View>
+
                 <View className={`${colors.bg} px-2 py-1 rounded-md self-start`}>
                   <Text className={`text-xs font-semibold ${colors.text} capitalize`}>
                     {tip.impact} Impact
@@ -111,10 +227,12 @@ export default function TipsSection({ recommendations }) {
               </View>
             </View>
 
+            {/* Description */}
             <Text className="text-xs text-gray-700 leading-5 mb-3">
               {tip.description}
             </Text>
 
+            {/* Savings Estimate */}
             {tip.savingsEstimate > 0 && (
               <View className="flex-row items-center gap-2 bg-purple-50 px-3 py-2 rounded-lg border border-purple-200">
                 <Text className="text-lg">💸</Text>
@@ -132,6 +250,7 @@ export default function TipsSection({ recommendations }) {
         );
       })}
 
+      {/* Footer Note */}
       <View className="mt-4 bg-purple-50 rounded-xl p-4 border border-purple-200">
         <View className="flex-row items-center gap-2 mb-2">
           <Text className="text-base">ℹ️</Text>
