@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAnalytics } from "../../redux/slices/analytics/analyticsSlice";
 import { utilities } from "../../constants/utilities";
 import { fetchAllSavings } from "../../redux/slices/saved/savedSlice";
-// import { exportToPDF, exportToExcel } from "../../utils/exportUtils";
+import { exportToPDF, exportToExcel } from "../../utils/exportUtils";
 
 const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 
@@ -241,7 +241,7 @@ export default function Analytics({ navigation }) {
         selectedCategories,
         totalAmount: categoryTotalAmount,
       };
-      // await exportToPDF(analyticsData);
+      await exportToPDF(analyticsData);
       Alert.alert("✅ Success", "PDF report has been downloaded successfully!");
     } catch (error) {
       console.error("Error exporting PDF:", error);
@@ -259,7 +259,7 @@ export default function Analytics({ navigation }) {
         selectedCategories,
         totalAmount: categoryTotalAmount,
       };
-      // await exportToExcel(analyticsData);
+      await exportToExcel(analyticsData);
       Alert.alert("✅ Success", "Excel report has been downloaded successfully!");
     } catch (error) {
       console.error("Error exporting Excel:", error);
