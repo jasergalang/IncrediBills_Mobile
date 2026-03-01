@@ -1,15 +1,12 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { fetchAllSavingsApi } from "../../../api/savingsAPI";
 
-// ==============================
-// Async Thunk
-// ==============================
 export const fetchAllSavings = createAsyncThunk(
   "savings/fetchAllSavings",
   async (_, { rejectWithValue }) => {
     try {
       const data = await fetchAllSavingsApi();
-
+      // console.log("fetchAllSavings data:", JSON.stringify(data));
       return {
         electric: data.fetchAllElectricSavings,
         water: data.fetchAllWaterSavings,
@@ -19,16 +16,12 @@ export const fetchAllSavings = createAsyncThunk(
         kitchenGas: data.fetchAllKitchenGasSavings,
       };
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data || "Failed to fetch savings"
-      );
+      // console.log("fetchAllSavings error:", error?.response?.data || error.message);
+      return rejectWithValue(error.response?.data || "Failed to fetch savings");
     }
   }
 );
 
-// ==============================
-// Slice
-// ==============================
 const savedSlice = createSlice({
   name: "savings",
   initialState: {
@@ -44,7 +37,6 @@ const savedSlice = createSlice({
     error: null,
   },
   reducers: {},
-
   extraReducers: (builder) => {
     builder
       .addCase(fetchAllSavings.pending, (state) => {

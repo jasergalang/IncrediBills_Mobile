@@ -7,15 +7,15 @@ export const fetchAllSavingsApi = async () => {
     api.get("/transport-fuel-bill/savings"),
     api.get("/grocery-bill/savings"),
     api.get("/miscellaneous-bill/savings"),
-    api.get("/kitchen-gas-bill/savings/all")
+    api.get("/kitchen-gas-bill/savings/all"),
   ]);
 
   return {
-    fetchAllElectricSavings: electric.data?.predictions || [],
-    fetchAllWaterSavings: water.data?.predictions || [],
-    fetchAllTransportSavings: transport.data?.predictions || [],
-    fetchAllGrocerySavings: grocery.data?.predictions || [],
-    fetchAllMiscellaneousSavings: miscellaneous.data?.predictions || [],
-    fetchAllKitchenGasSavings: kitchenGas.data?.predictions || [],
+    fetchAllElectricSavings: electric.data?.predictions ?? electric.data?.savings ?? electric.data?.data ?? [],
+    fetchAllWaterSavings: water.data?.predictions ?? water.data?.savings ?? water.data?.data ?? [],
+    fetchAllTransportSavings: transport.data?.predictions ?? transport.data?.savings ?? transport.data?.data ?? [],
+    fetchAllGrocerySavings: grocery.data?.predictions ?? grocery.data?.savings ?? grocery.data?.data ?? [],
+    fetchAllMiscellaneousSavings: miscellaneous.data?.predictions ?? miscellaneous.data?.savings ?? miscellaneous.data?.data ?? [],
+    fetchAllKitchenGasSavings: kitchenGas.data?.predictions ?? kitchenGas.data?.savings ?? kitchenGas.data?.data ?? [],
   };
 };
