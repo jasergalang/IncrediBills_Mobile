@@ -8,7 +8,7 @@ import UploadBox from "../../../components/bills/uploadBills/waterBills/WaterBox
 import WaterInput from "../../../components/bills/uploadBills/waterBills/WaterInput";
 import UploadActions from "../../../components/bills/uploadBills/waterBills/WaterActions";
 import UploadRecent from "../../../components/bills/uploadBills/waterBills/WaterRecent";
-import UploadTips from "../../../components/bills/uploadBills/waterBills/WaterTips";
+// import UploadTips from "../../../components/bills/uploadBills/waterBills/WaterTips";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -24,7 +24,7 @@ export default function UploadBill({ navigation }) {
   const category = { name: "Water", icon: "💧", color: "blue" };
   const dispatch = useDispatch();
 
-  const { bills, count, uploading, recommendations } = useSelector((state) => state.water);
+  const { bills, count, uploading } = useSelector((state) => state.water);
 
   const [selectedImageUri, setSelectedImageUri] = useState(null);
   const [billingPeriod, setBillingPeriod] = useState("");
@@ -199,7 +199,7 @@ export default function UploadBill({ navigation }) {
             dispatch(removeWaterBillLocal(id));
           }}
         />
-        <UploadTips recommendations={recommendations} />
+        {/* <UploadTips recommendations={recommendations} /> */}
       </ScrollView>
     </SafeAreaView>
   );
