@@ -14,7 +14,7 @@ import KitchenGasHeader from "../../../components/bills/uploadBills/kitchenBills
 import KitchenGasBox from "../../../components/bills/uploadBills/kitchenBills/KitchenGasBox";
 import KitchenGasInput from "../../../components/bills/uploadBills/kitchenBills/KitchenGasInput";
 import KitchenGasRecent from "../../../components/bills/uploadBills/kitchenBills/KitchenGasRecent";
-import KitchenGasTips from "../../../components/bills/uploadBills/kitchenBills/KitchenGasTips";
+// import KitchenGasTips from "../../../components/bills/uploadBills/kitchenBills/KitchenGasTips";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -31,7 +31,7 @@ export default function KitchenGasBills({ navigation }) {
 
   const dispatch = useDispatch();
 
-  const { bills, uploading, count, recommendations } = useSelector(
+  const { bills, uploading, count } = useSelector(
     (state) => state.kitchenGas
   );
 
@@ -228,7 +228,7 @@ export default function KitchenGasBills({ navigation }) {
           removeUpload={(id) => dispatch(removeKitchenGasBillLocal(id))}
         />
 
-        <KitchenGasTips recommendations={recommendations} />
+        {/* <KitchenGasTips recommendations={recommendations} /> */}
       </ScrollView>
     </SafeAreaView>
   );

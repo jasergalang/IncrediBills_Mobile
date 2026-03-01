@@ -16,7 +16,7 @@ export default function KitchenGasBillDetails({ route, navigation }) {
   const { id } = route.params;
   const dispatch = useDispatch();
 
-  const { selectedBill: bill, detailsLoading } = useSelector(
+  const { selectedBill: bill, detailsLoading, recommendations } = useSelector(
     (state) => state.kitchenGas
   );
 
@@ -51,7 +51,7 @@ export default function KitchenGasBillDetails({ route, navigation }) {
         <ScannedDataSection bill={bill} />
         <PredictionSection bill={bill} />
         <ComparisonChart bill={bill} />
-        <TipsSection />
+        <TipsSection recommendations={recommendations} />
       </ScrollView>
     </SafeAreaView>
   );

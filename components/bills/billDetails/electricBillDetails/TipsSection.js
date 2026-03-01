@@ -2,54 +2,148 @@ import React from "react";
 import { View, Text } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 
-export default function TipsSection() {
+export default function TipsSection({ recommendations }) {
+  const getImpactColor = (impact) => {
+    switch (impact?.toLowerCase()) {
+      case "high":
+        return { bg: "bg-yellow-100", text: "text-yellow-700", border: "border-yellow-300" };
+      case "medium":
+        return { bg: "bg-orange-100", text: "text-orange-700", border: "border-orange-300" };
+      case "low":
+        return { bg: "bg-amber-100", text: "text-amber-700", border: "border-amber-300" };
+      default:
+        return { bg: "bg-gray-100", text: "text-gray-700", border: "border-gray-300" };
+    }
+  };
+
+  const getImpactIcon = (impact) => {
+    switch (impact?.toLowerCase()) {
+      case "high": return "⚡";
+      case "medium": return "💡";
+      case "low": return "🔌";
+      default: return "💡";
+    }
+  };
+
+  if (!recommendations || recommendations.length === 0) {
+    return (
+      <View className="px-4 pb-6">
+        <LinearGradient
+          colors={["#ecfdf5", "#d1fae5"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          className="rounded-2xl p-5 border-2 border-green-200"
+        >
+          <View className="flex-row items-center gap-3 mb-3">
+            <View className="w-12 h-12 bg-green-500 rounded-xl items-center justify-center">
+              <Text style={{ fontSize: 22, color: "white" }}>💡</Text>
+            </View>
+            <Text className="text-base font-bold text-green-900">
+              Energy Saving Tips
+            </Text>
+          </View>
+          <View className="space-y-2">
+            <View className="flex-row items-start gap-2">
+              <Text className="text-green-600 mt-0.5">•</Text>
+              <Text className="text-sm text-green-800 flex-1">
+                Switch to LED bulbs to reduce energy consumption by up to 75%
+              </Text>
+            </View>
+            <View className="flex-row items-start gap-2">
+              <Text className="text-green-600 mt-0.5">•</Text>
+              <Text className="text-sm text-green-800 flex-1">
+                Unplug appliances when not in use to avoid phantom loads
+              </Text>
+            </View>
+            <View className="flex-row items-start gap-2">
+              <Text className="text-green-600 mt-0.5">•</Text>
+              <Text className="text-sm text-green-800 flex-1">
+                Use inverter air conditioners for better energy efficiency
+              </Text>
+            </View>
+            <View className="flex-row items-start gap-2">
+              <Text className="text-green-600 mt-0.5">•</Text>
+              <Text className="text-sm text-green-800 flex-1">
+                Set AC temperature to 24–26°C for optimal cooling and savings
+              </Text>
+            </View>
+          </View>
+        </LinearGradient>
+      </View>
+    );
+  }
+
   return (
     <View className="px-4 pb-6">
-      <LinearGradient
-        colors={["#ecfdf5", "#d1fae5"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        className="rounded-2xl p-5 border-2 border-green-200"
-      >
-        <View className="flex-row items-center gap-3 mb-3">
-          <View className="w-12 h-12 bg-green-500 rounded-xl items-center justify-center">
-            <Text style={{ fontSize: 22, color: "white" }}>💡</Text>
-          </View>
-          <Text className="text-base font-bold text-green-900">
-            Energy Saving Tips
+      <View className="mb-3 flex-row items-center justify-between">
+        <Text className="text-lg font-bold text-gray-900">
+          ⚡ AI Energy Recommendations
+        </Text>
+        <View className="bg-yellow-100 px-3 py-1 rounded-full">
+          <Text className="text-xs font-semibold text-yellow-700">
+            Powered by AI
           </Text>
         </View>
+      </View>
 
-        <View className="space-y-2">
-          <View className="flex-row items-start gap-2">
-            <Text className="text-green-600 mt-0.5">•</Text>
-            <Text className="text-sm text-green-800 flex-1">
-              Switch to LED bulbs to reduce energy consumption by up to 75%
-            </Text>
-          </View>
+      {recommendations.map((tip, index) => {
+        const colors = getImpactColor(tip.impact);
+        const icon = getImpactIcon(tip.impact);
 
-          <View className="flex-row items-start gap-2">
-            <Text className="text-green-600 mt-0.5">•</Text>
-            <Text className="text-sm text-green-800 flex-1">
-              Unplug appliances when not in use to avoid phantom loads
-            </Text>
-          </View>
+        return (
+          <View
+            key={index}
+            className={`bg-white rounded-2xl p-4 border-2 ${colors.border} shadow-sm mb-3`}
+          >
+            <View className="flex-row items-start gap-3 mb-3">
+              <View className={`w-10 h-10 ${colors.bg} rounded-xl items-center justify-center`}>
+                <Text className="text-xl">{icon}</Text>
+              </View>
+              <View className="flex-1">
+                <Text className="text-sm font-bold text-gray-900 mb-1">
+                  {tip.title}
+                </Text>
+                <View className={`${colors.bg} px-2 py-1 rounded-md self-start`}>
+                  <Text className={`text-xs font-semibold ${colors.text} capitalize`}>
+                    {tip.impact} Impact
+                  </Text>
+                </View>
+              </View>
+            </View>
 
-          <View className="flex-row items-start gap-2">
-            <Text className="text-green-600 mt-0.5">•</Text>
-            <Text className="text-sm text-green-800 flex-1">
-              Use inverter air conditioners for better energy efficiency
+            <Text className="text-xs text-gray-700 leading-5 mb-3">
+              {tip.description}
             </Text>
-          </View>
 
-          <View className="flex-row items-start gap-2">
-            <Text className="text-green-600 mt-0.5">•</Text>
-            <Text className="text-sm text-green-800 flex-1">
-              Set AC temperature to 24–26°C for optimal cooling and savings
-            </Text>
+            {tip.savingsEstimate > 0 && (
+              <View className="flex-row items-center gap-2 bg-yellow-50 px-3 py-2 rounded-lg border border-yellow-200">
+                <Text className="text-lg">⚡</Text>
+                <View className="flex-1">
+                  <Text className="text-xs text-yellow-600 font-medium">
+                    Estimated Monthly Energy Savings
+                  </Text>
+                  <Text className="text-sm font-bold text-yellow-700">
+                    {tip.savingsEstimate.toLocaleString()} kWh
+                  </Text>
+                </View>
+              </View>
+            )}
           </View>
+        );
+      })}
+
+      <View className="mt-4 bg-yellow-50 rounded-xl p-4 border border-yellow-200">
+        <View className="flex-row items-center gap-2 mb-2">
+          <Text className="text-base">ℹ️</Text>
+          <Text className="text-xs font-semibold text-yellow-700">
+            About these recommendations
+          </Text>
         </View>
-      </LinearGradient>
+        <Text className="text-xs text-yellow-700 leading-4">
+          These recommendations are based on your electricity consumption trends
+          and billing data. Small changes can lead to big savings over time.
+        </Text>
+      </View>
     </View>
   );
 }

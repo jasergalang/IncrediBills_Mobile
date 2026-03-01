@@ -8,7 +8,7 @@ import GroceryBox from "../../../components/bills/uploadBills/groceryBills/Groce
 import GroceryInput from "../../../components/bills/uploadBills/groceryBills/GroceryInput";
 import GroceryActions from "../../../components/bills/uploadBills/groceryBills/GroceryActions";
 import GroceryRecent from "../../../components/bills/uploadBills/groceryBills/GroceryRecent";
-import GroceryTips from "../../../components/bills/uploadBills/groceryBills/GroceryTips";
+// import GroceryTips from "../../../components/bills/uploadBills/groceryBills/GroceryTips";
 
 
 import { useDispatch, useSelector } from "react-redux";
@@ -25,7 +25,7 @@ export default function GroceryBills({ navigation }) {
   const category = { name: "Groceries", icon: "🛒", color: "green" };
   const dispatch = useDispatch();
 
-  const { bills, count, uploading, recommendations } = useSelector(
+  const { bills, count, uploading } = useSelector(
     (state) => state.grocery
   );
 
@@ -209,7 +209,7 @@ export default function GroceryBills({ navigation }) {
             dispatch(removeGroceryBillLocal(id));
           }}
         />
-        <GroceryTips recommendations={recommendations} />
+        {/* <GroceryTips recommendations={recommendations} /> */}
       </ScrollView>
     </SafeAreaView>
   );

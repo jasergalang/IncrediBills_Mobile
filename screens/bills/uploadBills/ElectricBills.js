@@ -8,7 +8,7 @@ import ElectricBox from "../../../components/bills/uploadBills/electricBills/Ele
 import ElectricInput from "../../../components/bills/uploadBills/electricBills/ElectricInput";
 import ElectricActions from "../../../components/bills/uploadBills/electricBills/ElectricActions";
 import ElectricRecent from "../../../components/bills/uploadBills/electricBills/ElectricRecent";
-import ElectricTips from "../../../components/bills/uploadBills/electricBills/ElectricTips";
+// import ElectricTips from "../../../components/bills/uploadBills/electricBills/ElectricTips";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchElectricBills,
@@ -23,7 +23,7 @@ export default function ElectricBills({ navigation }) {
   const category = { name: "Electricity", icon: "⚡", color: "amber" };
   const dispatch = useDispatch();
 
-  const { bills, count, uploading, recommendations } = useSelector(
+  const { bills, count, uploading } = useSelector(
     (state) => state.electric
   );
 
@@ -207,7 +207,7 @@ export default function ElectricBills({ navigation }) {
             dispatch(removeElectricBillLocal(id));
           }}
         />
-        <ElectricTips recommendations={recommendations} />
+        {/* <ElectricTips recommendations={recommendations} /> */}
       </ScrollView>
     </SafeAreaView>
   );

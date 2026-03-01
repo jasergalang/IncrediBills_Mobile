@@ -16,7 +16,7 @@ import MiscellaneousBox from "../../../components/bills/uploadBills/miscellaneou
 import MiscellaneousInput from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousInput";
 import MiscellaneousActions from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousActions";
 import MiscellaneousRecent from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousRecent";
-import MiscellaneousTips from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousTips";
+// import MiscellaneousTips from "../../../components/bills/uploadBills/miscellaneousBills/MiscellaneousTips";
 
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMiscellaneousBills, uploadMiscellaneousBill, removeMiscellaneousBillLocal, clearRecommendations, } from "../../../redux/slices/bills/miscellaneousSlice"
@@ -28,7 +28,7 @@ export default function MiscellaneousBills({ navigation }) {
 
     const dispatch = useDispatch();
 
-    const { bills, count, uploading, recommendations } = useSelector(
+    const { bills, count, uploading } = useSelector(
         (state) => state.miscellaneous
     );
     const [refreshing, setRefreshing] = useState(false);
@@ -230,7 +230,7 @@ export default function MiscellaneousBills({ navigation }) {
                     }}
                 />
 
-                <MiscellaneousTips recommendations={recommendations} />
+                {/* <MiscellaneousTips recommendations={recommendations} /> */}
             </ScrollView>
         </SafeAreaView>
     );

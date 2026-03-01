@@ -16,7 +16,7 @@ import TransportBox from "../../../components/bills/uploadBills/transportBills/T
 import TransportInput from "../../../components/bills/uploadBills/transportBills/TransportInput";
 import TransportActions from "../../../components/bills/uploadBills/transportBills/TransportActions";
 import TransportRecent from "../../../components/bills/uploadBills/transportBills/TransportRecent";
-import TransportTips from "../../../components/bills/uploadBills/transportBills/TransportTips";
+// import TransportTips from "../../../components/bills/uploadBills/transportBills/TransportTips";
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -33,7 +33,7 @@ export default function TransportBills({ navigation }) {
 
   const dispatch = useDispatch();
 
-  const { bills, uploading, count, recommendations } = useSelector((state) => state.transport);
+  const { bills, uploading, count } = useSelector((state) => state.transport);
 
   const [refreshing, setRefreshing] = useState(false);
   const [selectedImageUri, setSelectedImageUri] = useState(null);
@@ -233,7 +233,7 @@ export default function TransportBills({ navigation }) {
           }
         />
 
-        <TransportTips recommendations={recommendations} />
+        {/* <TransportTips recommendations={recommendations} /> */}
       </ScrollView>
     </SafeAreaView>
   );
