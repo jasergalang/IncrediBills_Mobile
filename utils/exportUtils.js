@@ -1,6 +1,8 @@
 // import * as Print from 'expo-print';
+
 // import * as Sharing from 'expo-sharing';
-// import * as FileSystem from 'expo-file-system';
+// // import * as FileSystem from 'expo-file-system';
+// import * as FileSystem from 'expo-file-system/legacy';
 // import * as XLSX from 'xlsx';
 
 // // Format currency
@@ -14,22 +16,81 @@
 //     kpiData,
 //     timeSeriesData,
 //     categoryBreakdown,
-//     rollingAverages,
-//     anomalies,
-//     peakUsageData,
 //     dateRange,
 //     selectedCategories,
+//     totalAmount,
 //   } = analyticsData;
+
+//   // Support both flat (utilityKPI) and nested kpiData shapes
+//   const totalSpending =
+//     typeof kpiData.totalSpending === 'object'
+//       ? kpiData.totalSpending.current
+//       : kpiData.totalSpending;
+//   const avgMonthly =
+//     typeof kpiData.avgMonthly === 'object'
+//       ? kpiData.avgMonthly.current
+//       : kpiData.avgMonthly;
+//   const totalSaved =
+//     typeof kpiData.totalSaved === 'object'
+//       ? kpiData.totalSaved.current
+//       : kpiData.totalSaved;
+//   const efficiency =
+//     typeof kpiData.efficiency === 'object'
+//       ? kpiData.efficiency.current
+//       : kpiData.efficiency;
+//   const change =
+//     typeof kpiData.change === 'number'
+//       ? kpiData.change
+//       : typeof kpiData.totalSpending === 'object'
+//       ? kpiData.totalSpending.change
+//       : null;
 
 //   const currentDate = new Date().toLocaleString('en-US', {
 //     year: 'numeric',
 //     month: 'long',
 //     day: 'numeric',
 //     hour: '2-digit',
-//     minute: '2-digit'
+//     minute: '2-digit',
 //   });
 
-//   // Generate HTML content for PDF
+//   // Build bar chart SVG for monthly spending trends
+//   const chartData = (timeSeriesData || []).slice(-12);
+//   const maxAmount = Math.max(...chartData.map((d) => d.amount || d.total || 0), 1);
+//   const barWidth = chartData.length > 0 ? Math.floor(520 / chartData.length) - 4 : 40;
+//   const chartHeight = 180;
+
+//   const bars = chartData
+//     .map((d, i) => {
+//       const amount = d.amount || d.total || 0;
+//       const barH = Math.round((amount / maxAmount) * chartHeight);
+//       const x = i * (barWidth + 4) + 2;
+//       const y = chartHeight - barH;
+//       return `
+//         <rect x="${x}" y="${y}" width="${barWidth}" height="${barH}" fill="#2563eb" rx="3"/>
+//         <text x="${x + barWidth / 2}" y="${chartHeight + 14}" text-anchor="middle" font-size="9" fill="#64748b">${d.month || ''}</text>
+//         <text x="${x + barWidth / 2}" y="${y - 4}" text-anchor="middle" font-size="8" fill="#1e293b">₱${Math.round(amount / 1000)}k</text>
+//       `;
+//     })
+//     .join('');
+
+//   // Build category breakdown horizontal bars
+//   const categoryBars = (categoryBreakdown || [])
+//     .map((cat) => {
+//       const pct = cat.percentage ?? cat.percent ?? 0;
+//       return `
+//         <div style="margin-bottom:12px;">
+//           <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
+//             <span style="font-size:13px;font-weight:600;">${cat.icon || ''} ${cat.category}</span>
+//             <span style="font-size:13px;color:#2563eb;font-weight:700;">${money(cat.amount)} <span style="color:#94a3b8;font-weight:400;">(${pct}%)</span></span>
+//           </div>
+//           <div style="background:#e2e8f0;border-radius:6px;height:10px;overflow:hidden;">
+//             <div style="background:#2563eb;width:${pct}%;height:100%;border-radius:6px;"></div>
+//           </div>
+//         </div>
+//       `;
+//     })
+//     .join('');
+
 //   const htmlContent = `
 //     <!DOCTYPE html>
 //     <html>
@@ -37,394 +98,152 @@
 //       <meta charset="utf-8">
 //       <meta name="viewport" content="width=device-width, initial-scale=1.0">
 //       <style>
-//         * {
-//           margin: 0;
-//           padding: 0;
-//           box-sizing: border-box;
-//         }
-        
+//         * { margin: 0; padding: 0; box-sizing: border-box; }
 //         body {
 //           font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-//           padding: 20px;
+//           padding: 28px 32px;
 //           color: #1e293b;
 //           line-height: 1.6;
+//           background: #f8fafc;
 //         }
-        
 //         .header {
 //           text-align: center;
-//           margin-bottom: 30px;
+//           margin-bottom: 28px;
 //           border-bottom: 3px solid #2563eb;
-//           padding-bottom: 20px;
+//           padding-bottom: 18px;
 //         }
-        
-//         .app-title {
-//           font-size: 32px;
-//           font-weight: bold;
-//           color: #2563eb;
-//           margin-bottom: 10px;
-//         }
-        
-//         .report-title {
-//           font-size: 24px;
-//           font-weight: bold;
-//           margin-bottom: 10px;
-//         }
-        
-//         .metadata {
-//           font-size: 12px;
-//           color: #64748b;
-//           margin-top: 10px;
-//         }
-        
-//         .user-name {
-//           font-size: 14px;
-//           color: #475569;
-//           margin-top: 8px;
-//         }
-        
+//         .app-title { font-size: 30px; font-weight: 800; color: #2563eb; }
+//         .report-title { font-size: 18px; font-weight: 600; color: #475569; margin-top: 4px; }
+//         .metadata { font-size: 11px; color: #94a3b8; margin-top: 8px; }
 //         .section {
-//           margin-bottom: 30px;
-//           page-break-inside: avoid;
+//           background: white;
+//           border-radius: 12px;
+//           padding: 20px 22px;
+//           margin-bottom: 22px;
+//           box-shadow: 0 1px 4px rgba(0,0,0,0.08);
 //         }
-        
 //         .section-title {
-//           font-size: 18px;
-//           font-weight: bold;
-//           margin-bottom: 15px;
+//           font-size: 16px;
+//           font-weight: 700;
 //           color: #1e293b;
 //           border-left: 4px solid #2563eb;
 //           padding-left: 10px;
+//           margin-bottom: 18px;
 //         }
-        
-//         table {
-//           width: 100%;
-//           border-collapse: collapse;
-//           margin-bottom: 20px;
-//           box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-//         }
-        
-//         thead {
-//           background-color: #2563eb;
-//           color: white;
-//         }
-        
-//         th, td {
-//           padding: 12px;
-//           text-align: left;
-//           border: 1px solid #e2e8f0;
-//         }
-        
-//         th {
-//           font-weight: bold;
-//           font-size: 13px;
-//         }
-        
-//         td {
-//           font-size: 12px;
-//         }
-        
-//         tbody tr:nth-child(even) {
-//           background-color: #f8fafc;
-//         }
-        
-//         tbody tr:hover {
-//           background-color: #f1f5f9;
-//         }
-        
-//         .metric-label {
-//           font-weight: bold;
-//         }
-        
-//         .value-right {
-//           text-align: right;
-//         }
-        
-//         .value-center {
-//           text-align: center;
-//         }
-        
-//         .positive-change {
-//           color: #16a34a;
-//           font-weight: bold;
-//         }
-        
-//         .negative-change {
-//           color: #dc2626;
-//           font-weight: bold;
-//         }
-        
-//         .anomaly-table thead {
-//           background-color: #dc2626;
-//         }
-        
-//         .anomaly-severity {
-//           font-weight: bold;
-//           text-transform: uppercase;
-//           color: #dc2626;
-//         }
-        
-//         .chart-placeholder {
-//           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-//           color: white;
-//           padding: 40px;
-//           text-align: center;
-//           border-radius: 8px;
-//           margin: 20px 0;
-//           font-size: 14px;
-//         }
-        
-//         .category-grid {
+//         /* KPI Grid */
+//         .kpi-grid {
 //           display: grid;
 //           grid-template-columns: repeat(2, 1fr);
-//           gap: 15px;
-//           margin-top: 15px;
+//           gap: 14px;
 //         }
-        
-//         .category-card {
-//           border: 2px solid #e2e8f0;
-//           border-radius: 8px;
-//           padding: 15px;
-//           background: white;
+//         .kpi-card {
+//           background: #f1f5f9;
+//           border-radius: 10px;
+//           padding: 14px 16px;
 //         }
-        
-//         .category-name {
-//           font-weight: bold;
-//           font-size: 14px;
-//           margin-bottom: 5px;
-//         }
-        
-//         .category-amount {
-//           font-size: 18px;
-//           color: #2563eb;
-//           font-weight: bold;
-//         }
-        
-//         .category-percent {
-//           font-size: 12px;
-//           color: #64748b;
-//         }
-        
+//         .kpi-label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
+//         .kpi-value { font-size: 22px; font-weight: 800; color: #1e293b; margin-top: 2px; }
+//         .kpi-change { font-size: 12px; margin-top: 4px; }
+//         .positive { color: #16a34a; }
+//         .negative { color: #dc2626; }
+//         /* Chart */
+//         svg { display: block; overflow: visible; }
+//         .chart-wrap { overflow-x: auto; }
+//         /* Footer */
 //         .footer {
-//           margin-top: 40px;
-//           padding-top: 20px;
-//           border-top: 2px solid #e2e8f0;
 //           text-align: center;
-//           font-size: 11px;
+//           font-size: 10px;
 //           color: #94a3b8;
-//         }
-        
-//         .page-break {
-//           page-break-after: always;
+//           margin-top: 30px;
+//           padding-top: 14px;
+//           border-top: 1px solid #e2e8f0;
 //         }
 //       </style>
 //     </head>
 //     <body>
+
 //       <!-- HEADER -->
 //       <div class="header">
 //         <div class="app-title">IncrediBills</div>
-//         <div class="report-title">Analytics Dashboard Report</div>
-//         ${userName ? `<div class="user-name">Prepared for: ${userName}</div>` : ''}
+//         <div class="report-title">Analytics Report</div>
+//         ${userName ? `<div style="font-size:13px;color:#475569;margin-top:6px;">Prepared for: <strong>${userName}</strong></div>` : ''}
 //         <div class="metadata">
-//           Generated: ${currentDate}<br>
-//           Period: ${dateRange} | Categories: ${selectedCategories.join(', ')}
+//           Generated: ${currentDate} &nbsp;|&nbsp;
+//           Categories: ${(selectedCategories || ['all']).join(', ')}
 //         </div>
 //       </div>
 
 //       <!-- KPI SECTION -->
 //       <div class="section">
 //         <div class="section-title">Key Performance Indicators</div>
-//         <table>
-//           <thead>
-//             <tr>
-//               <th>Metric</th>
-//               <th class="value-right">Value</th>
-//               <th class="value-center">Change</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             <tr>
-//               <td class="metric-label">Total Spending</td>
-//               <td class="value-right">${money(kpiData.totalSpending.current)}</td>
-//               <td class="value-center ${kpiData.totalSpending.change >= 0 ? 'positive-change' : 'negative-change'}">
-//                 ${kpiData.totalSpending.change}%
-//               </td>
-//             </tr>
-//             <tr>
-//               <td class="metric-label">Avg Monthly</td>
-//               <td class="value-right">${money(kpiData.avgMonthly.current)}</td>
-//               <td class="value-center ${kpiData.avgMonthly.change >= 0 ? 'positive-change' : 'negative-change'}">
-//                 ${kpiData.avgMonthly.change}%
-//               </td>
-//             </tr>
-//             <tr>
-//               <td class="metric-label">Total Saved</td>
-//               <td class="value-right">${money(kpiData.totalSaved.current)}</td>
-//               <td class="value-center ${kpiData.totalSaved.change >= 0 ? 'positive-change' : 'negative-change'}">
-//                 ${kpiData.totalSaved.change}%
-//               </td>
-//             </tr>
-//             <tr>
-//               <td class="metric-label">Efficiency Score</td>
-//               <td class="value-right">${kpiData.efficiency.current}%</td>
-//               <td class="value-center ${kpiData.efficiency.change >= 0 ? 'positive-change' : 'negative-change'}">
-//                 ${kpiData.efficiency.change}%
-//               </td>
-//             </tr>
-//           </tbody>
-//         </table>
+//         <div class="kpi-grid">
+//           <div class="kpi-card">
+//             <div class="kpi-label">Total Spending</div>
+//             <div class="kpi-value">${money(totalSpending)}</div>
+//             ${change !== null ? `<div class="kpi-change ${change >= 0 ? 'negative' : 'positive'}">${change >= 0 ? '▲' : '▼'} ${Math.abs(change)}% vs last month</div>` : ''}
+//           </div>
+//           <div class="kpi-card">
+//             <div class="kpi-label">Avg Monthly</div>
+//             <div class="kpi-value">${money(avgMonthly)}</div>
+//           </div>
+//           <div class="kpi-card">
+//             <div class="kpi-label">Total Saved</div>
+//             <div class="kpi-value">${money(totalSaved)}</div>
+//           </div>
+//           <div class="kpi-card">
+//             <div class="kpi-label">Efficiency Score</div>
+//             <div class="kpi-value">${efficiency}%</div>
+//           </div>
+//         </div>
 //       </div>
-
-//       <!-- ROLLING AVERAGES -->
-//       ${rollingAverages ? `
-//       <div class="section">
-//         <div class="section-title">Rolling Averages</div>
-//         <table>
-//           <thead>
-//             <tr>
-//               <th>Period</th>
-//               <th class="value-right">Average</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             <tr>
-//               <td class="metric-label">7-Day Average</td>
-//               <td class="value-right">${money(rollingAverages.sevenDay)}</td>
-//             </tr>
-//             <tr>
-//               <td class="metric-label">30-Day Average</td>
-//               <td class="value-right">${money(rollingAverages.thirtyDay)}</td>
-//             </tr>
-//             <tr>
-//               <td class="metric-label">90-Day Average</td>
-//               <td class="value-right">${money(rollingAverages.ninetyDay)}</td>
-//             </tr>
-//           </tbody>
-//         </table>
-//       </div>
-//       ` : ''}
 
 //       <!-- CATEGORY BREAKDOWN -->
 //       <div class="section">
 //         <div class="section-title">Category Breakdown</div>
-//         <div class="category-grid">
-//           ${categoryBreakdown.map(cat => `
-//             <div class="category-card">
-//               <div class="category-name">${cat.category}</div>
-//               <div class="category-amount">${money(cat.amount)}</div>
-//               <div class="category-percent">${cat.percent}% of total</div>
-//             </div>
-//           `).join('')}
+//         <div style="margin-bottom:12px;font-size:12px;color:#64748b;">
+//           Total: <strong style="color:#1e293b;">${money(totalAmount)}</strong>
 //         </div>
+//         ${categoryBars || '<p style="color:#94a3b8;font-size:13px;">No category data available.</p>'}
 //       </div>
 
-//       <div class="page-break"></div>
-
-//       <!-- ANOMALIES -->
-//       ${anomalies && anomalies.length > 0 ? `
-//       <div class="section">
-//         <div class="section-title" style="color: #dc2626;">Anomalies Detected</div>
-//         <table class="anomaly-table">
-//           <thead>
-//             <tr>
-//               <th>Date</th>
-//               <th>Category</th>
-//               <th class="value-right">Normal</th>
-//               <th class="value-right">Actual</th>
-//               <th class="value-center">Deviation</th>
-//               <th class="value-center">Severity</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             ${anomalies.map(a => `
-//               <tr>
-//                 <td>${a.date}</td>
-//                 <td>${a.category}</td>
-//                 <td class="value-right">${money(a.normal)}</td>
-//                 <td class="value-right">${money(a.actual)}</td>
-//                 <td class="value-center">+${a.deviation}%</td>
-//                 <td class="value-center anomaly-severity">${a.severity.toUpperCase()}</td>
-//               </tr>
-//             `).join('')}
-//           </tbody>
-//         </table>
-//       </div>
-//       ` : ''}
-
-//       <!-- MONTHLY TRENDS -->
+//       <!-- MONTHLY SPENDING TRENDS CHART -->
 //       <div class="section">
 //         <div class="section-title">Monthly Spending Trends</div>
-//         <table>
-//           <thead>
-//             <tr>
-//               <th>Month</th>
-//               <th class="value-right">Total Spending</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             ${timeSeriesData.slice(-12).map(d => `
-//               <tr>
-//                 <td>${d.month}</td>
-//                 <td class="value-right">${money(d.total || d.amount)}</td>
-//               </tr>
-//             `).join('')}
-//           </tbody>
-//         </table>
-//         <div class="chart-placeholder">
-//           📊 Visual chart representation available in the mobile app
-//         </div>
+//         ${
+//           chartData.length > 0
+//             ? `
+//           <div class="chart-wrap">
+//             <svg width="${chartData.length * (barWidth + 4)}" height="${chartHeight + 28}" xmlns="http://www.w3.org/2000/svg">
+//               ${bars}
+//             </svg>
+//           </div>
+//           `
+//             : '<p style="color:#94a3b8;font-size:13px;">No trend data available.</p>'
+//         }
 //       </div>
-
-//       <!-- PEAK USAGE -->
-//       ${peakUsageData && peakUsageData.length > 0 ? `
-//       <div class="section">
-//         <div class="section-title">Peak Usage Hours</div>
-//         <table>
-//           <thead>
-//             <tr>
-//               <th>Hour</th>
-//               <th class="value-right">Usage %</th>
-//             </tr>
-//           </thead>
-//           <tbody>
-//             ${peakUsageData.map(p => `
-//               <tr>
-//                 <td>${p.hour}</td>
-//                 <td class="value-right">${p.usage}%</td>
-//               </tr>
-//             `).join('')}
-//           </tbody>
-//         </table>
-//       </div>
-//       ` : ''}
 
 //       <!-- FOOTER -->
 //       <div class="footer">
-//         Generated by IncrediBills © ${new Date().getFullYear()} | Confidential Report
+//         Generated by IncrediBills &copy; ${new Date().getFullYear()} &nbsp;|&nbsp; Confidential Report
 //       </div>
+
 //     </body>
 //     </html>
 //   `;
 
 //   try {
-//     // Generate PDF using expo-print
 //     const { uri } = await Print.printToFileAsync({
 //       html: htmlContent,
 //       base64: false,
 //     });
 
-//     // Generate filename
 //     const fileName = userName
 //       ? `IncrediBills-Analytics-${userName.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.pdf`
 //       : `IncrediBills-Analytics-${new Date().toISOString().split('T')[0]}.pdf`;
 
-//     // Move to a permanent location
 //     const pdfUri = `${FileSystem.documentDirectory}${fileName}`;
-//     await FileSystem.moveAsync({
-//       from: uri,
-//       to: pdfUri,
-//     });
+//     await FileSystem.moveAsync({ from: uri, to: pdfUri });
 
-//     // Share the PDF
 //     if (await Sharing.isAvailableAsync()) {
 //       await Sharing.shareAsync(pdfUri, {
 //         mimeType: 'application/pdf',
@@ -446,14 +265,19 @@
 //    EXCEL EXPORT FOR REACT NATIVE
 // ======================= */
 // export const exportToExcel = async (analyticsData, userName = null) => {
-//   const {
-//     kpiData,
-//     categoryBreakdown,
-//     timeSeriesData,
-//   } = analyticsData;
+//   const { kpiData, categoryBreakdown, timeSeriesData } = analyticsData;
+
+//   // Support both flat and nested kpiData shapes
+//   const val = (field, fallback = 0) => {
+//     const v = kpiData[field];
+//     return typeof v === 'object' ? v.current : v ?? fallback;
+//   };
+//   const chg = (field) => {
+//     const v = kpiData[field];
+//     return typeof v === 'object' ? `${v.change}%` : field === 'change' ? `${kpiData.change}%` : 'N/A';
+//   };
 
 //   try {
-//     // Create workbook
 //     const wb = XLSX.utils.book_new();
 
 //     /* Report Info Sheet */
@@ -463,51 +287,47 @@
 //       ['Generated For', userName || 'N/A'],
 //       ['Generated Date', new Date().toLocaleString()],
 //     ];
-//     const infoSheet = XLSX.utils.aoa_to_sheet(infoData);
-//     XLSX.utils.book_append_sheet(wb, infoSheet, 'Report Info');
+//     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(infoData), 'Report Info');
 
 //     /* KPI Sheet */
 //     const kpiSheetData = [
-//       ['Metric', 'Value', 'Change'],
-//       ['Total Spending', kpiData.totalSpending.current, `${kpiData.totalSpending.change}%`],
-//       ['Avg Monthly', kpiData.avgMonthly.current, `${kpiData.avgMonthly.change}%`],
-//       ['Total Saved', kpiData.totalSaved.current, `${kpiData.totalSaved.change}%`],
-//       ['Efficiency Score', `${kpiData.efficiency.current}%`, `${kpiData.efficiency.change}%`],
+//       ['Metric', 'Value', 'Change vs Last Month'],
+//       ['Total Spending', val('totalSpending'), chg('totalSpending')],
+//       ['Avg Monthly', val('avgMonthly'), chg('avgMonthly')],
+//       ['Total Saved', val('totalSaved'), chg('totalSaved')],
+//       ['Efficiency Score', `${val('efficiency')}%`, chg('efficiency')],
 //     ];
-//     const kpiSheet = XLSX.utils.aoa_to_sheet(kpiSheetData);
-//     XLSX.utils.book_append_sheet(wb, kpiSheet, 'KPIs');
+//     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(kpiSheetData), 'KPIs');
 
 //     /* Category Sheet */
 //     const categoryData = [
 //       ['Category', 'Amount', 'Percentage'],
-//       ...categoryBreakdown.map(c => [c.category, c.amount, `${c.percent}%`])
+//       ...(categoryBreakdown || []).map((c) => [
+//         c.category,
+//         c.amount,
+//         `${c.percentage ?? c.percent ?? 0}%`,
+//       ]),
 //     ];
-//     const categorySheet = XLSX.utils.aoa_to_sheet(categoryData);
-//     XLSX.utils.book_append_sheet(wb, categorySheet, 'Categories');
+//     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(categoryData), 'Categories');
 
 //     /* Monthly Trend Sheet */
 //     const trendData = [
 //       ['Month', 'Total Spending'],
-//       ...timeSeriesData.map(d => [d.month, d.total || d.amount])
+//       ...(timeSeriesData || []).map((d) => [d.month, d.amount || d.total || 0]),
 //     ];
-//     const trendSheet = XLSX.utils.aoa_to_sheet(trendData);
-//     XLSX.utils.book_append_sheet(wb, trendSheet, 'Monthly Trends');
+//     XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(trendData), 'Monthly Trends');
 
-//     // Write to file
 //     const wbout = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
-    
+
 //     const fileName = userName
 //       ? `IncrediBills-Analytics-${userName.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.xlsx`
 //       : `IncrediBills-Analytics-${new Date().toISOString().split('T')[0]}.xlsx`;
 
 //     const fileUri = `${FileSystem.documentDirectory}${fileName}`;
-
-//     // Write the file
 //     await FileSystem.writeAsStringAsync(fileUri, wbout, {
 //       encoding: FileSystem.EncodingType.Base64,
 //     });
 
-//     // Share the Excel file
 //     if (await Sharing.isAvailableAsync()) {
 //       await Sharing.shareAsync(fileUri, {
 //         mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -524,10 +344,8 @@
 //     throw error;
 //   }
 // };
-
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
-// import * as FileSystem from 'expo-file-system';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as XLSX from 'xlsx';
 
@@ -536,6 +354,9 @@ const money = (value) => `₱${Number(value || 0).toLocaleString()}`;
 
 /* =======================
    PDF EXPORT FOR REACT NATIVE
+   Design mirrors the web jsPDF layout:
+   - Page 1: Header → KPI table → Category Breakdown table
+   - Page 2: Monthly Spending Trends (stacked bar SVG) + Category pie-style bars
 ======================= */
 export const exportToPDF = async (analyticsData, userName = null) => {
   const {
@@ -579,178 +400,303 @@ export const exportToPDF = async (analyticsData, userName = null) => {
     minute: '2-digit',
   });
 
-  // Build bar chart SVG for monthly spending trends
+  // ── Shared chart data ─────────────────────────────────────────────────────
   const chartData = (timeSeriesData || []).slice(-12);
-  const maxAmount = Math.max(...chartData.map((d) => d.amount || d.total || 0), 1);
-  const barWidth = chartData.length > 0 ? Math.floor(520 / chartData.length) - 4 : 40;
-  const chartHeight = 180;
 
-  const bars = chartData
-    .map((d, i) => {
-      const amount = d.amount || d.total || 0;
-      const barH = Math.round((amount / maxAmount) * chartHeight);
-      const x = i * (barWidth + 4) + 2;
-      const y = chartHeight - barH;
-      return `
-        <rect x="${x}" y="${y}" width="${barWidth}" height="${barH}" fill="#2563eb" rx="3"/>
-        <text x="${x + barWidth / 2}" y="${chartHeight + 14}" text-anchor="middle" font-size="9" fill="#64748b">${d.month || ''}</text>
-        <text x="${x + barWidth / 2}" y="${y - 4}" text-anchor="middle" font-size="8" fill="#1e293b">₱${Math.round(amount / 1000)}k</text>
-      `;
-    })
+  const legendItems = [
+    { label: 'Water',         color: '#3b82f6' },
+    { label: 'Electricity',   color: '#f59e0b' },
+    { label: 'Groceries',     color: '#10b981' },
+    { label: 'Transport',     color: '#6b7280' },
+    { label: 'Miscellaneous', color: '#f97316' },
+    { label: 'Kitchen Gas',   color: '#ef4444' },
+  ];
+
+  // ── KPI table rows ────────────────────────────────────────────────────────
+  const kpiRows = [
+    ['Total Spending', money(totalSpending), change !== null ? `${change >= 0 ? '+' : ''}${change}%` : '—'],
+    ['Avg Monthly', money(avgMonthly), '—'],
+    ['Total Saved', money(totalSaved), '—'],
+    ['Efficiency Score', `${efficiency}%`, '—'],
+  ];
+
+  const kpiTableRows = kpiRows
+    .map(
+      ([metric, value, chg], i) => `
+      <tr style="background:${i % 2 === 0 ? '#f8fafc' : '#ffffff'};">
+        <td style="padding:9px 14px;font-weight:600;font-size:13px;color:#1e293b;border-bottom:1px solid #e2e8f0;">${metric}</td>
+        <td style="padding:9px 14px;text-align:right;font-size:13px;color:#1e293b;border-bottom:1px solid #e2e8f0;">${value}</td>
+        <td style="padding:9px 14px;text-align:center;font-size:13px;color:${chg.startsWith('+') || (chg !== '—' && !chg.startsWith('-')) ? '#dc2626' : chg.startsWith('-') ? '#16a34a' : '#94a3b8'};font-weight:600;border-bottom:1px solid #e2e8f0;">${chg}</td>
+      </tr>`
+    )
     .join('');
 
-  // Build category breakdown horizontal bars
-  const categoryBars = (categoryBreakdown || [])
-    .map((cat) => {
-      const pct = cat.percentage ?? cat.percent ?? 0;
-      return `
-        <div style="margin-bottom:12px;">
-          <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-            <span style="font-size:13px;font-weight:600;">${cat.icon || ''} ${cat.category}</span>
-            <span style="font-size:13px;color:#2563eb;font-weight:700;">${money(cat.amount)} <span style="color:#94a3b8;font-weight:400;">(${pct}%)</span></span>
-          </div>
-          <div style="background:#e2e8f0;border-radius:6px;height:10px;overflow:hidden;">
-            <div style="background:#2563eb;width:${pct}%;height:100%;border-radius:6px;"></div>
-          </div>
-        </div>
-      `;
-    })
+  // ── Category table rows ───────────────────────────────────────────────────
+  const categoryTableRows = (categoryBreakdown || [])
+    .map(
+      (cat, i) => `
+      <tr style="background:${i % 2 === 0 ? '#f8fafc' : '#ffffff'};">
+        <td style="padding:9px 14px;font-weight:600;font-size:13px;color:#1e293b;border-bottom:1px solid #e2e8f0;">${cat.icon || ''} ${cat.category}</td>
+        <td style="padding:9px 14px;text-align:right;font-size:13px;color:#1e293b;border-bottom:1px solid #e2e8f0;">${money(cat.amount)}</td>
+        <td style="padding:9px 14px;text-align:center;font-size:13px;color:#475569;border-bottom:1px solid #e2e8f0;">${cat.percentage ?? cat.percent ?? 0}%</td>
+      </tr>`
+    )
     .join('');
 
+  // ── Category Breakdown: Horizontal Bar Chart SVG (full width) ──────────────
+  const CAT_CHART_W = 680;
+  const CAT_BAR_H = 28;
+  const CAT_GAP = 14;
+  const CAT_LABEL_W = 120;
+  const CAT_VALUE_W = 70;
+  const CAT_BAR_AREA = CAT_CHART_W - CAT_LABEL_W - CAT_VALUE_W - 16;
+  const catTotal = (categoryBreakdown || []).reduce((s, c) => s + (c.amount || 0), 0) || 1;
+
+  const catBars = (categoryBreakdown || []).map((cat, i) => {
+    const pct = cat.percentage ?? cat.percent ?? Math.round((cat.amount / catTotal) * 100);
+    const barW = Math.round((pct / 100) * CAT_BAR_AREA);
+    const y = i * (CAT_BAR_H + CAT_GAP);
+    const colors = {
+      Electricity: '#f59e0b', Groceries: '#10b981', Transport: '#6b7280',
+      Miscellaneous: '#f97316', Water: '#3b82f6', 'Kitchen Gas': '#ef4444',
+    };
+    const color = colors[cat.category] || '#2563eb';
+    return `
+      <g transform="translate(0, ${y})">
+        <text x="${CAT_LABEL_W - 8}" y="${CAT_BAR_H / 2 + 5}" text-anchor="end" font-size="12" font-weight="600" fill="#1e293b">${cat.icon || ''} ${cat.category}</text>
+        <rect x="${CAT_LABEL_W}" y="4" width="${CAT_BAR_AREA}" height="${CAT_BAR_H - 8}" fill="#f1f5f9" rx="4"/>
+        <rect x="${CAT_LABEL_W}" y="4" width="${Math.max(barW, 2)}" height="${CAT_BAR_H - 8}" fill="${color}" rx="4"/>
+        <text x="${CAT_LABEL_W + CAT_BAR_AREA + 10}" y="${CAT_BAR_H / 2 + 5}" font-size="11" font-weight="700" fill="#1e293b">₱${Math.round(cat.amount).toLocaleString()}</text>
+        <text x="${CAT_LABEL_W + CAT_BAR_AREA + 10}" y="${CAT_BAR_H / 2 + 17}" font-size="10" fill="#64748b">${pct}%</text>
+      </g>`;
+  }).join('');
+
+  const catChartHeight = (categoryBreakdown || []).length * (CAT_BAR_H + CAT_GAP) + 10;
+
+  // ── Monthly Trends: full-width stacked bar (recalculate for wider canvas) ──
+  const TREND_W = 680;
+  const TREND_H = 220;
+  const tBarCount = chartData.length || 1;
+  const tBarWidth = Math.floor(TREND_W / tBarCount) - 8;
+
+  const tMaxAmount = Math.max(
+    ...chartData.map((d) =>
+      (d.water || 0) + (d.electricity || 0) + (d.groceries || 0) +
+      (d.transport || 0) + (d.miscellaneous || 0) + (d.kitchenGas || 0) ||
+      d.amount || d.total || 0
+    ), 1
+  );
+
+  const tStackedBars = chartData.map((d, i) => {
+    const x = i * (tBarWidth + 8) + 2;
+    const segments = [
+      { val: d.water || 0,         color: '#3b82f6' },
+      { val: d.electricity || 0,   color: '#f59e0b' },
+      { val: d.groceries || 0,     color: '#10b981' },
+      { val: d.transport || 0,     color: '#6b7280' },
+      { val: d.miscellaneous || 0, color: '#f97316' },
+      { val: d.kitchenGas || 0,    color: '#ef4444' },
+    ].filter((s) => s.val > 0);
+
+    const total = segments.length > 0
+      ? segments.reduce((s, seg) => s + seg.val, 0)
+      : d.amount || d.total || 0;
+
+    let curY = TREND_H;
+    const rects = segments.length > 0
+      ? segments.map((seg) => {
+          const h = Math.max(Math.round((seg.val / tMaxAmount) * TREND_H), 1);
+          curY -= h;
+          return `<rect x="${x}" y="${curY}" width="${tBarWidth}" height="${h}" fill="${seg.color}" rx="2"/>`;
+        }).join('')
+      : (() => {
+          const h = Math.round((total / tMaxAmount) * TREND_H);
+          return `<rect x="${x}" y="${TREND_H - h}" width="${tBarWidth}" height="${h}" fill="#2563eb" rx="2"/>`;
+        })();
+
+    const topY = TREND_H - Math.round((total / tMaxAmount) * TREND_H);
+    const totalLabel = total >= 1000 ? `₱${Math.round(total / 1000)}k` : `₱${Math.round(total)}`;
+
+    return `
+      ${rects}
+      <text x="${x + tBarWidth / 2}" y="${TREND_H + 15}" text-anchor="middle" font-size="10" fill="#64748b">${d.month || ''}</text>
+      <text x="${x + tBarWidth / 2}" y="${topY - 5}" text-anchor="middle" font-size="9" fill="#1e293b">${totalLabel}</text>`;
+  }).join('');
+
+  // ── Full HTML ─────────────────────────────────────────────────────────────
   const htmlContent = `
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <style>
+        @page { margin: 0; size: A4 landscape; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          padding: 28px 32px;
+          font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
           color: #1e293b;
-          line-height: 1.6;
-          background: #f8fafc;
+          background: #ffffff;
         }
-        .header {
-          text-align: center;
-          margin-bottom: 28px;
-          border-bottom: 3px solid #2563eb;
-          padding-bottom: 18px;
+
+        .page {
+          width: 100%;
+          min-height: 100vh;
+          padding: 32px 40px 28px;
+          page-break-after: always;
         }
-        .app-title { font-size: 30px; font-weight: 800; color: #2563eb; }
-        .report-title { font-size: 18px; font-weight: 600; color: #475569; margin-top: 4px; }
-        .metadata { font-size: 11px; color: #94a3b8; margin-top: 8px; }
-        .section {
-          background: white;
-          border-radius: 12px;
-          padding: 20px 22px;
-          margin-bottom: 22px;
-          box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+        .page:last-child { page-break-after: avoid; }
+
+        /* ── PAGE 1 HEADER ── */
+        .header { text-align: center; margin-bottom: 24px; }
+        .app-title { font-size: 30px; font-weight: 800; color: #2563eb; letter-spacing: -0.5px; }
+        .report-title { font-size: 18px; font-weight: 600; color: #1e293b; margin-top: 4px; }
+        .divider { border: none; border-top: 2px solid #2563eb; margin: 10px 60px; }
+        .prepared-for { font-size: 14px; color: #475569; margin-top: 8px; }
+        .prepared-for strong { color: #1e293b; font-size: 16px; }
+        .meta { font-size: 11px; color: #6b7280; margin-top: 5px; line-height: 1.9; }
+
+        /* ── PAGE 2 MINI HEADER ── */
+        .page2-header {
+          display: flex; align-items: center; justify-content: space-between;
+          margin-bottom: 24px; padding-bottom: 12px; border-bottom: 2px solid #2563eb;
         }
-        .section-title {
-          font-size: 16px;
-          font-weight: 700;
-          color: #1e293b;
-          border-left: 4px solid #2563eb;
-          padding-left: 10px;
-          margin-bottom: 18px;
+        .page2-brand { font-size: 18px; font-weight: 800; color: #2563eb; }
+        .page2-brand span { font-size: 11px; font-weight: 400; color: #94a3b8; display: block; }
+        .page2-user { text-align: center; }
+        .page2-user strong { font-size: 14px; color: #1e293b; display: block; }
+        .page2-user span { font-size: 11px; color: #64748b; }
+        .page2-pagenum { font-size: 11px; color: #94a3b8; text-align: right; }
+
+        /* ── SECTION ── */
+        .section { margin-bottom: 28px; }
+        .section-title { font-size: 15px; font-weight: 700; color: #1e293b; margin-bottom: 12px; }
+
+        /* ── TABLES ── */
+        table { width: 100%; border-collapse: collapse; border: 1px solid #e2e8f0; }
+        thead tr { background: #2563eb; }
+        thead th {
+          padding: 10px 14px; text-align: left;
+          font-size: 12px; font-weight: 700; color: #ffffff; letter-spacing: 0.3px;
         }
-        /* KPI Grid */
-        .kpi-grid {
-          display: grid;
-          grid-template-columns: repeat(2, 1fr);
-          gap: 14px;
-        }
-        .kpi-card {
-          background: #f1f5f9;
-          border-radius: 10px;
-          padding: 14px 16px;
-        }
-        .kpi-label { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-        .kpi-value { font-size: 22px; font-weight: 800; color: #1e293b; margin-top: 2px; }
-        .kpi-change { font-size: 12px; margin-top: 4px; }
-        .positive { color: #16a34a; }
-        .negative { color: #dc2626; }
-        /* Chart */
+        thead th:nth-child(2) { text-align: right; }
+        thead th:nth-child(3) { text-align: center; }
+
         svg { display: block; overflow: visible; }
-        .chart-wrap { overflow-x: auto; }
-        /* Footer */
+
         .footer {
-          text-align: center;
-          font-size: 10px;
-          color: #94a3b8;
-          margin-top: 30px;
-          padding-top: 14px;
-          border-top: 1px solid #e2e8f0;
+          text-align: center; font-size: 10px; color: #9ca3af;
+          margin-top: 28px; padding-top: 12px; border-top: 1px solid #e2e8f0;
         }
+
+        /* ── LEGEND ── */
+        .legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-bottom: 12px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #475569; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
       </style>
     </head>
     <body>
 
-      <!-- HEADER -->
-      <div class="header">
-        <div class="app-title">IncrediBills</div>
-        <div class="report-title">Analytics Report</div>
-        ${userName ? `<div style="font-size:13px;color:#475569;margin-top:6px;">Prepared for: <strong>${userName}</strong></div>` : ''}
-        <div class="metadata">
-          Generated: ${currentDate} &nbsp;|&nbsp;
-          Categories: ${(selectedCategories || ['all']).join(', ')}
+      <!-- ══════════════════════════════════════
+           PAGE 1 — Header + KPI + Category Tables
+      ══════════════════════════════════════ -->
+      <div class="page">
+
+        <div class="header">
+          <div class="app-title">IncrediBills</div>
+          <div class="report-title">Analytics Dashboard Report</div>
+          <hr class="divider"/>
+          ${userName ? `<div class="prepared-for">Prepared for: <strong>${userName}</strong></div>` : ''}
+          <div class="meta">
+            Generated: ${currentDate} &nbsp;|&nbsp;
+            Period: ${dateRange || 'all'} &nbsp;|&nbsp;
+            Categories: ${(selectedCategories || ['all']).join(', ')}
+          </div>
+        </div>
+
+        <!-- KPI TABLE -->
+        <div class="section">
+          <div class="section-title">Key Performance Indicators</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th style="text-align:right;">Value</th>
+                <th style="text-align:center;">Change</th>
+              </tr>
+            </thead>
+            <tbody>${kpiTableRows}</tbody>
+          </table>
+        </div>
+
+        <!-- CATEGORY BREAKDOWN TABLE -->
+        <div class="section">
+          <div class="section-title">Category Breakdown</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th style="text-align:right;">Amount</th>
+                <th style="text-align:center;">Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${categoryTableRows || '<tr><td colspan="3" style="padding:12px;text-align:center;color:#94a3b8;">No data available</td></tr>'}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="footer">
+          Generated by IncrediBills &copy; ${new Date().getFullYear()} &nbsp;|&nbsp; Confidential Report &nbsp;|&nbsp; Page 1
         </div>
       </div>
 
-      <!-- KPI SECTION -->
-      <div class="section">
-        <div class="section-title">Key Performance Indicators</div>
-        <div class="kpi-grid">
-          <div class="kpi-card">
-            <div class="kpi-label">Total Spending</div>
-            <div class="kpi-value">${money(totalSpending)}</div>
-            ${change !== null ? `<div class="kpi-change ${change >= 0 ? 'negative' : 'positive'}">${change >= 0 ? '▲' : '▼'} ${Math.abs(change)}% vs last month</div>` : ''}
+      <!-- ══════════════════════════════════════
+           PAGE 2 — Charts (Monthly Trends + Category Breakdown)
+      ══════════════════════════════════════ -->
+      <div class="page">
+
+        <div class="page2-header">
+          <div class="page2-brand">
+            IncrediBills
+            <span>Visual Analytics</span>
           </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Avg Monthly</div>
-            <div class="kpi-value">${money(avgMonthly)}</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Total Saved</div>
-            <div class="kpi-value">${money(totalSaved)}</div>
-          </div>
-          <div class="kpi-card">
-            <div class="kpi-label">Efficiency Score</div>
-            <div class="kpi-value">${efficiency}%</div>
-          </div>
+          ${userName
+            ? `<div class="page2-user"><strong>${userName}</strong><span>Analytics Report</span></div>`
+            : '<div></div>'}
+          <div class="page2-pagenum">Page 2</div>
         </div>
-      </div>
 
-      <!-- CATEGORY BREAKDOWN -->
-      <div class="section">
-        <div class="section-title">Category Breakdown</div>
-        <div style="margin-bottom:12px;font-size:12px;color:#64748b;">
-          Total: <strong style="color:#1e293b;">${money(totalAmount)}</strong>
-        </div>
-        ${categoryBars || '<p style="color:#94a3b8;font-size:13px;">No category data available.</p>'}
-      </div>
-
-      <!-- MONTHLY SPENDING TRENDS CHART -->
-      <div class="section">
-        <div class="section-title">Monthly Spending Trends</div>
-        ${
-          chartData.length > 0
-            ? `
-          <div class="chart-wrap">
-            <svg width="${chartData.length * (barWidth + 4)}" height="${chartHeight + 28}" xmlns="http://www.w3.org/2000/svg">
-              ${bars}
-            </svg>
+        <!-- MONTHLY SPENDING TRENDS CHART -->
+        <div class="section">
+          <div class="section-title">Monthly Spending Trends (incl. Kitchen Gas)</div>
+          <!-- Legend -->
+          <div class="legend">
+            ${legendItems.map(item => `
+              <div class="legend-item">
+                <div class="legend-dot" style="background:${item.color};"></div>
+                ${item.label}
+              </div>`).join('')}
           </div>
-          `
-            : '<p style="color:#94a3b8;font-size:13px;">No trend data available.</p>'
-        }
-      </div>
+          ${chartData.length > 0
+            ? `<svg width="${Math.max(tBarCount * (tBarWidth + 8), TREND_W)}" height="${TREND_H + 28}" xmlns="http://www.w3.org/2000/svg">
+                ${tStackedBars}
+               </svg>`
+            : '<p style="color:#94a3b8;font-size:13px;">No trend data available.</p>'}
+        </div>
 
-      <!-- FOOTER -->
-      <div class="footer">
-        Generated by IncrediBills &copy; ${new Date().getFullYear()} &nbsp;|&nbsp; Confidential Report
+        <!-- CATEGORY BREAKDOWN CHART -->
+        <div class="section">
+          <div class="section-title">Category Breakdown</div>
+          ${(categoryBreakdown || []).length > 0
+            ? `<svg width="${CAT_CHART_W}" height="${catChartHeight}" xmlns="http://www.w3.org/2000/svg">
+                ${catBars}
+               </svg>`
+            : '<p style="color:#94a3b8;font-size:13px;">No category data available.</p>'}
+        </div>
+
+        <div class="footer">
+          Generated by IncrediBills &copy; ${new Date().getFullYear()} &nbsp;|&nbsp; Confidential Report &nbsp;|&nbsp; Page 2
+        </div>
       </div>
 
     </body>
@@ -789,6 +735,7 @@ export const exportToPDF = async (analyticsData, userName = null) => {
 
 /* =======================
    EXCEL EXPORT FOR REACT NATIVE
+   Mirrors web sheet structure (no rolling averages sheet)
 ======================= */
 export const exportToExcel = async (analyticsData, userName = null) => {
   const { kpiData, categoryBreakdown, timeSeriesData } = analyticsData;
@@ -808,40 +755,42 @@ export const exportToExcel = async (analyticsData, userName = null) => {
 
     /* Report Info Sheet */
     const infoData = [
-      ['Application', 'IncrediBills'],
-      ['Report Type', 'Analytics Dashboard'],
-      ['Generated For', userName || 'N/A'],
-      ['Generated Date', new Date().toLocaleString()],
+      { Field: 'Application', Value: 'IncrediBills' },
+      { Field: 'Report Type', Value: 'Analytics Dashboard' },
+      { Field: 'Generated For', Value: userName || 'N/A' },
+      { Field: 'Generated Date', Value: new Date().toLocaleString() },
     ];
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(infoData), 'Report Info');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(infoData), 'Report Info');
 
     /* KPI Sheet */
     const kpiSheetData = [
-      ['Metric', 'Value', 'Change vs Last Month'],
-      ['Total Spending', val('totalSpending'), chg('totalSpending')],
-      ['Avg Monthly', val('avgMonthly'), chg('avgMonthly')],
-      ['Total Saved', val('totalSaved'), chg('totalSaved')],
-      ['Efficiency Score', `${val('efficiency')}%`, chg('efficiency')],
+      { Metric: 'Total Spending', Value: val('totalSpending'), Change: chg('totalSpending') },
+      { Metric: 'Avg Monthly', Value: val('avgMonthly'), Change: chg('avgMonthly') },
+      { Metric: 'Total Saved', Value: val('totalSaved'), Change: chg('totalSaved') },
+      { Metric: 'Efficiency Score', Value: `${val('efficiency')}%`, Change: chg('efficiency') },
     ];
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(kpiSheetData), 'KPIs');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(kpiSheetData), 'KPIs');
 
-    /* Category Sheet */
-    const categoryData = [
-      ['Category', 'Amount', 'Percentage'],
-      ...(categoryBreakdown || []).map((c) => [
-        c.category,
-        c.amount,
-        `${c.percentage ?? c.percent ?? 0}%`,
-      ]),
-    ];
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(categoryData), 'Categories');
+    /* Category Sheet — mirrors web (Category, Amount, Percentage) */
+    const categoryData = (categoryBreakdown || []).map((c) => ({
+      Category: c.category,
+      Amount: c.amount,
+      Percentage: `${c.percentage ?? c.percent ?? 0}%`,
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(categoryData), 'Categories');
 
-    /* Monthly Trend Sheet */
-    const trendData = [
-      ['Month', 'Total Spending'],
-      ...(timeSeriesData || []).map((d) => [d.month, d.amount || d.total || 0]),
-    ];
-    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(trendData), 'Monthly Trends');
+    /* Monthly Trend Sheet — mirrors web columns including kitchenGas */
+    const trendData = (timeSeriesData || []).map((d) => ({
+      Month: d.month,
+      Water: d.water || 0,
+      Electricity: d.electricity || 0,
+      Groceries: d.groceries || 0,
+      Transport: d.transport || 0,
+      Miscellaneous: d.miscellaneous || 0,
+      'Kitchen Gas': d.kitchenGas || 0,
+      Total: d.amount || d.total || 0,
+    }));
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(trendData), 'Monthly Trends');
 
     const wbout = XLSX.write(wb, { type: 'base64', bookType: 'xlsx' });
 
