@@ -20,6 +20,7 @@ import {
 import { fetchAnalytics } from "../../../redux/slices/analytics/analyticsSlice";
 import { fetchBills } from "../../../redux/slices/bills/billSlice";
 
+import LoadingSpinner from "../../../assets/common/loadingSpinner";
 export default function UploadBill({ navigation }) {
   const category = { name: "Water", icon: "💧", color: "blue" };
   const dispatch = useDispatch();
@@ -154,6 +155,13 @@ export default function UploadBill({ navigation }) {
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
+
+      {/* 👇 Add this */}
+      <LoadingSpinner
+        visible={uploading}
+        message="Uploading your water bill..."
+      />
+      
       <UploadHeader navigation={navigation} category={category} />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* <WaterSummaryCards waterBills={{ bills, count }} /> */}

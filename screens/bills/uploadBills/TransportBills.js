@@ -28,6 +28,8 @@ import {
 import { fetchAnalytics } from "../../../redux/slices/analytics/analyticsSlice";
 import { fetchBills } from "../../../redux/slices/bills/billSlice";
 
+import LoadingSpinner from "../../../assets/common/loadingSpinner"; 
+
 export default function TransportBills({ navigation }) {
   const category = { name: "Transport Fuel", icon: "⛽", color: "red" };
 
@@ -179,6 +181,12 @@ export default function TransportBills({ navigation }) {
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
+
+            {/* 👇 Add this */}
+      <LoadingSpinner
+        visible={uploading}
+        message="Uploading your transport bill..."
+      />
 
       <TransportHeader navigation={navigation} category={category} />
 

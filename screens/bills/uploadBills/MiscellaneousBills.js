@@ -23,6 +23,8 @@ import { fetchMiscellaneousBills, uploadMiscellaneousBill, removeMiscellaneousBi
 import { fetchAnalytics } from "../../../redux/slices/analytics/analyticsSlice";
 import { fetchBills } from "../../../redux/slices/bills/billSlice";
 
+
+import LoadingSpinner from "../../../assets/common/loadingSpinner"; 
 export default function MiscellaneousBills({ navigation }) {
     const category = { name: "Miscellaneous", icon: "📦", color: "purple" };
 
@@ -175,6 +177,12 @@ export default function MiscellaneousBills({ navigation }) {
     return (
         <SafeAreaView className="flex-1 bg-slate-50">
             <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
+
+            {/* 👇 Add this */}
+            <LoadingSpinner
+                visible={uploading}
+                message="Uploading your miscellaneous bill..."
+            />
 
             <MiscellaneousHeader navigation={navigation} category={category} />
 

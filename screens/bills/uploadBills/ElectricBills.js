@@ -18,7 +18,7 @@ import {
 } from "../../../redux/slices/bills/electricSlice";
 import { fetchAnalytics } from "../../../redux/slices/analytics/analyticsSlice";
 import { fetchBills } from "../../../redux/slices/bills/billSlice";
-
+import LoadingSpinner from "../../../assets/common/loadingSpinner"; // adjust path as needed
 export default function ElectricBills({ navigation }) {
   const category = { name: "Electricity", icon: "⚡", color: "amber" };
   const dispatch = useDispatch();
@@ -163,6 +163,14 @@ export default function ElectricBills({ navigation }) {
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
+
+      {/* 👇 Add this */}
+      <LoadingSpinner
+        visible={uploading}
+        message="Uploading your electric bill..."
+      />
+
+      
       <ElectricHeader navigation={navigation} category={category} />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* <ElectricSummaryCards electricBills={{ bills, count }} /> */}

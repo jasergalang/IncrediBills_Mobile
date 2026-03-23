@@ -5,6 +5,7 @@ import {
   TouchableOpacity,
   StatusBar,
   ScrollView,
+  Image
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useNavigation } from "@react-navigation/native";
@@ -20,15 +21,12 @@ export default function Landing() {
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         {/* HEADER */}
         <View className="flex-row items-center justify-center pt-12 pb-6">
-          <LinearGradient
-            colors={["#2563eb", "#4f46e5"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            className="w-12 h-12 rounded-xl items-center justify-center shadow-lg mr-3"
-          >
-            <Text className="text-white font-bold text-2xl">₿</Text>
-          </LinearGradient>
-          <Text className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 text-transparent bg-clip-text">
+          <Image
+            source={{ uri: "https://res.cloudinary.com/dlqclovym/image/upload/v1774267747/633933584_1432435471751884_8439558636495820978_n-removebg-preview_vfabdb.png" }}
+            style={{ width: 48, height: 48 }}
+            resizeMode="contain"
+          />
+          <Text className="text-2xl font-bold text-blue-600 ml-3">
             IncrediBills
           </Text>
         </View>

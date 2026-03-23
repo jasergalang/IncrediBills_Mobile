@@ -9,7 +9,7 @@ import GroceryInput from "../../../components/bills/uploadBills/groceryBills/Gro
 import GroceryActions from "../../../components/bills/uploadBills/groceryBills/GroceryActions";
 import GroceryRecent from "../../../components/bills/uploadBills/groceryBills/GroceryRecent";
 // import GroceryTips from "../../../components/bills/uploadBills/groceryBills/GroceryTips";
-
+import LoadingSpinner from "../../../assets/common/loadingSpinner"; 
 
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -165,6 +165,12 @@ export default function GroceryBills({ navigation }) {
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
+
+            {/* 👇 Add this */}
+      <LoadingSpinner
+        visible={uploading}
+        message="Uploading your grocery bill..."
+      />
       <GroceryHeader navigation={navigation} category={category} />
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* <GrocerySummaryCards groceryBills={{ bills, count }} category={category} /> */}

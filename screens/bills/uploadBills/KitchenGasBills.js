@@ -25,7 +25,7 @@ import {
 } from "../../../redux/slices/bills/kitchenGasSlice";
 import { fetchAnalytics } from "../../../redux/slices/analytics/analyticsSlice";
 import { fetchBills } from "../../../redux/slices/bills/billSlice";
-
+import LoadingSpinner from "../../../assets/common/loadingSpinner"; 
 export default function KitchenGasBills({ navigation }) {
   const category = { name: "Kitchen Gas", icon: "🔥", color: "orange" };
 
@@ -178,6 +178,12 @@ export default function KitchenGasBills({ navigation }) {
   return (
     <SafeAreaView className="flex-1 bg-slate-50">
       <StatusBar barStyle="dark-content" backgroundColor="#f8fafc" />
+
+            {/* 👇 Add this */}
+      <LoadingSpinner
+        visible={uploading}
+        message="Uploading your kitchen gas bill..."
+      />
 
       <KitchenGasHeader navigation={navigation} category={category} />
 

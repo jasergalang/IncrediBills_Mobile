@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { createDrawerNavigator, DrawerContentScrollView } from "@react-navigation/drawer";
-import { View, Text, TouchableOpacity, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Alert, Image } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import HomeNavigator from "./homeNav";
 import GameNavigator from "./gameNav";
@@ -31,7 +31,7 @@ function CustomDrawerContent(props) {
 
   const { logout } = useAuth();
   const dispatch = useDispatch();
-  
+
   // ✅ Get user data from Redux (no need for token)
   const { userData } = useSelector((state) => state.user);
 
@@ -41,7 +41,7 @@ function CustomDrawerContent(props) {
   }, [dispatch]);
 
   const currentRoute = props.state.routeNames[props.state.index];
-  
+
   // ✅ Safely construct name with fallback
   const name = userData?.firstName && userData?.lastName
     ? `${userData.firstName} ${userData.lastName}`.trim()
@@ -84,33 +84,31 @@ function CustomDrawerContent(props) {
 
       {/* Logo */}
       <View className="p-6 border-b border-slate-200 flex-row items-center gap-3">
-        <LinearGradient 
-          colors={["#2563eb", "#4f46e5"]} 
-          start={{ x: 0, y: 0 }} 
-          end={{ x: 1, y: 1 }} 
-          className="w-10 h-10 rounded-xl items-center justify-center"
-        >
-          <Text className="text-white font-bold text-xl">₿</Text>
-        </LinearGradient>
+        <Image
+          source={{ uri: "https://res.cloudinary.com/dlqclovym/image/upload/v1774267747/633933584_1432435471751884_8439558636495820978_n-removebg-preview_vfabdb.png" }}
+          style={{ width: 40, height: 40 }}
+          resizeMode="contain"
+        />
         <View>
           <Text className="text-xl font-bold text-blue-600">IncrediBills</Text>
           <Text className="text-xs text-slate-500">Smart Bill Tracking</Text>
         </View>
       </View>
 
+
       {/* User Info */}
       <View className="p-4 border-b border-slate-200">
-        <LinearGradient 
-          colors={["#eff6ff", "#e0e7ff"]} 
-          start={{ x: 0, y: 0 }} 
-          end={{ x: 1, y: 1 }} 
+        <LinearGradient
+          colors={["#eff6ff", "#e0e7ff"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
           className="rounded-xl p-4 border border-blue-100"
         >
           <View className="flex-row items-center gap-3 mb-3">
-            <LinearGradient 
-              colors={["#2563eb", "#4f46e5"]} 
-              start={{ x: 0, y: 0 }} 
-              end={{ x: 1, y: 1 }} 
+            <LinearGradient
+              colors={["#2563eb", "#4f46e5"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
               className="w-12 h-12 rounded-full items-center justify-center"
             >
               <Text className="text-white font-bold text-lg">{getInitials()}</Text>

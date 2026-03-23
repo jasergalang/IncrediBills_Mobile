@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   StatusBar,
   ActivityIndicator,
-  ScrollView,
+  ScrollView, Image
 } from "react-native";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
@@ -223,23 +223,13 @@ export default function Login() {
         {/* Main Content */}
         <View className="px-6 pt-8">
           {/* Logo/Brand Section */}
+          {/* Logo/Brand Section */}
           <View className="mb-8 items-center">
-            <LinearGradient
-              colors={["#2563eb", "#4f46e5"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              className="w-12 h-12 rounded-xl items-center justify-center mb-3"
-              style={{
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.3,
-                shadowRadius: 4.65,
-                elevation: 8,
-              }}
-            >
-              <Text className="text-white font-bold text-2xl">₿</Text>
-            </LinearGradient>
-
+            <Image
+              source={{ uri: "https://res.cloudinary.com/dlqclovym/image/upload/v1774267747/633933584_1432435471751884_8439558636495820978_n-removebg-preview_vfabdb.png" }}
+              style={{ width: 48, height: 48, marginBottom: 12 }}
+              resizeMode="contain"
+            />
             <Text className="text-2xl font-bold text-blue-600 mb-4">
               IncrediBills
             </Text>
