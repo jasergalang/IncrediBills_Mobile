@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
 
 import { registerRootComponent } from 'expo';
 import { Text, View } from 'react-native';
-import './global.css';
+//import './global.css';
 
 function App() {
   return (
