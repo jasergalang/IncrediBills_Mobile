@@ -7,6 +7,7 @@
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
+      "image": "./assets/images/incredibills_logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -15,7 +16,7 @@
       [
         "expo-notifications",
         {
-          "icon": "./assets/icon.png",
+          "icon": "./assets/images/incredibills_logo.png",
           "color": "#f97316",
           "sounds": [],
           "mode": "production"
@@ -26,13 +27,15 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.eliboi.IncrediBills",
       "infoPlist": {
-        "UIBackgroundModes": ["remote-notification"]
+        "UIBackgroundModes": [
+          "remote-notification"
+        ]
       }
     },
     "android": {
       "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/images/incredibills_logo.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -46,7 +49,7 @@
       "bundler": "metro"
     },
     "extra": {
-      "BASE_IP": "192.168.0.111",
+      "BASE_IP": "192.168.0.110",
       "eas": {
         "projectId": "ed1b5568-6279-4565-8f9e-37d2ae855ed9"
       }
