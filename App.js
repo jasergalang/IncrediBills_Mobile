@@ -1,4 +1,4 @@
-import { StatusBar } from "expo-status-bar";
+/*import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
@@ -75,4 +75,19 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-});
+}); */
+
+
+import { registerRootComponent } from 'expo';
+import { Text, View } from 'react-native';
+import './global.css';
+
+function App() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Hello</Text>
+    </View>
+  );
+}
+
+export default App;
