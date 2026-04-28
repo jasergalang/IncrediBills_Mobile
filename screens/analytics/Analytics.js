@@ -220,6 +220,7 @@ export default function Analytics({ navigation }) {
   }, [allBills, selectedCategories]);
 
   const handleExportPDF = async () => {
+    //const { exportToPDF } = await import("../../utils/exportUtils");
     try {
       const analyticsData = { kpiData: utilityKPI, timeSeriesData: spendingData, categoryBreakdown, dateRange, selectedCategories, totalAmount: categoryTotalAmount };
       await exportToPDF(analyticsData);
@@ -230,6 +231,7 @@ export default function Analytics({ navigation }) {
   };
 
   const handleExportExcel = async () => {
+    //const { exportToExcel } = await import("../../utils/exportUtils");
     try {
       const analyticsData = { kpiData: utilityKPI, timeSeriesData: spendingData, categoryBreakdown, dateRange, selectedCategories, totalAmount: categoryTotalAmount };
       await exportToExcel(analyticsData);

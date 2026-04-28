@@ -347,7 +347,8 @@
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system/legacy';
-import * as XLSX from 'xlsx';
+//import * as XLSX from 'xlsx';
+
 
 // Format currency
 const money = (value) => `₱${Number(value || 0).toLocaleString()}`;
@@ -751,6 +752,7 @@ export const exportToExcel = async (analyticsData, userName = null) => {
   };
 
   try {
+    const XLSX = await import('xlsx');
     const wb = XLSX.utils.book_new();
 
     /* Report Info Sheet */

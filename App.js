@@ -1,4 +1,4 @@
-/*import { StatusBar } from "expo-status-bar";
+import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
@@ -51,53 +51,11 @@ function AppWrapper() {
         <Toast />
       </NavigationContainer>
 
-      {// 👇 Chatbot - Only show when authenticated }
+
       {isAuthenticated && <IncrediBot />}
     </>
   );
-  // return (
-  //   //   <NavigationContainer>
-  //   //     <Stack.Navigator initialRouteName="MainNavigator">
-  //   //       <Stack.Screen
-  //   //         name="MainNavigator"
-  //   //         component={MainNavigator}
-  //   //         options={{ headerShown: false }}
-  //   //       />
-  //   //     </Stack.Navigator>
-  //   //     <Toast />
-  //   //   </NavigationContainer>
-  //   // );
-  //   <NavigationContainer>
-  //     <Stack.Navigator initialRouteName={isAuthenticated ? "MainNavigator" : "Signup"}>
-  //       {isAuthenticated ? (
-  //         <Stack.Screen
-  //           name="MainNavigator"
-  //           component={MainNavigator}
-  //           options={{ headerShown: false }}
-  //         />
-  //       ) : (
-  //         <>
-  //           <Stack.Screen
-  //             name="Signup"
-  //             component={Signup}
-  //             options={{ headerShown: false }}
-  //           />
-  //           <Stack.Screen
-  //             name="Login"
-  //             component={Login}
-  //             options={{ headerShown: false }}
-  //           />
-  //           <Stack.Screen
-  //             name="Register"
-  //             component={Register}
-  //             options={{ headerShown: false }}
-  //           />
-  //         </>
-  //       )}
-  //     </Stack.Navigator>
-  //     <Toast />
-  //   </NavigationContainer>
-  // );
+  
 }
 
 export default function App() {
@@ -117,19 +75,4 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-}); */
-
-
-import { registerRootComponent } from 'expo';
-import { Text, View } from 'react-native';
-import './global.css';
-
-function App() {
-  return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Hello</Text>
-    </View>
-  );
-}
-
-export default App;
+});
