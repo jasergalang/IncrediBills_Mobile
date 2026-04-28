@@ -6,9 +6,10 @@ import {
 } from "@react-native-google-signin/google-signin";
 import axios from 'axios';
 
+/*
 GoogleSignin.configure({
   webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID, 
-});
+}); */
 
 export const loginUser = createAsyncThunk(
     'login/loginUser',
@@ -19,7 +20,7 @@ export const loginUser = createAsyncThunk(
             const googleRes = await GoogleSignin.signIn();
             const googleUser = googleRes.data.user;
             
-            console.log("✅ Google Success:", googleUser.email);
+            //console.log("✅ Google Success:", googleUser.email);
 
             // 2. Check Backend (with error handling specific to Network)
             let backendStatus = { exists: false }; 
@@ -34,7 +35,7 @@ export const loginUser = createAsyncThunk(
                 });
                 
                 backendStatus = res.data; // Expecting { exists: true/false, ... }
-                console.log("✅ Backend Response:", backendStatus);
+                //console.log("✅ Backend Response:", backendStatus);
 
             } catch (netError) {
                 console.error("❌ Backend Connection Failed:", netError.message);

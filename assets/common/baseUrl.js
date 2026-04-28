@@ -37,7 +37,7 @@ if (!normalized) {
   baseURL = `http://${host}:${DEFAULT_PORT}`;
 }
 
-console.log("BASE_IP from config:", RAW_BASE);
-console.log("Final baseURL:", baseURL);
+// console.log("BASE_IP from config:", RAW_BASE);
+// console.log("Final baseURL:", baseURL);
 
 export default baseURL;
