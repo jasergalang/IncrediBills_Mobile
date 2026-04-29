@@ -1,5 +1,3 @@
-
-
 module.exports = (ctx = {}) => {
   const config = ctx.config ?? ctx ?? {};
 
@@ -8,7 +6,7 @@ module.exports = (ctx = {}) => {
     process.env.BASE_IP ??
     config.extra?.BASE_IP ??
     config.extra?.BASEIP ??
-    "192.168.0.111";
+    "https://incredi-bills-server-side.vercel.app/";
 
   return {
     ...config,
