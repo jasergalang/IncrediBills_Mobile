@@ -77,21 +77,26 @@ const styles = StyleSheet.create({
   },
 }); */
 
-
 import { registerRootComponent } from 'expo';
 import { Text, View } from 'react-native';
 import './global.css';
 import store from './redux/store';
 import { Provider } from 'react-redux';
+import { AuthProvider, useAuth } from './context/auth';
+import { NavigationContainer } from '@react-navigation/native';
 
 function App() {
   return (
     <Provider store={store}>
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <Text>Hello</Text>
-      </View>
+      <AuthProvider>
+        <NavigationContainer>
+          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            <Text>Hello</Text>
+          </View>
+        </NavigationContainer>
+      </AuthProvider>
     </Provider>
   );
 }
 
-export default App; 
+export default App;
