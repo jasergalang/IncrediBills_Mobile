@@ -77,26 +77,53 @@ const styles = StyleSheet.create({
   },
 }); */
 
-import { registerRootComponent } from 'expo';
-import { Text, View } from 'react-native';
-import './global.css';
+
+
+import { StatusBar } from "expo-status-bar";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import Register from "./screens/user/register";
+import Login from "./screens/user/login";
+import Signup from "./screens/user/landing";
+import Toast from "react-native-toast-message";
+import { AuthProvider, useAuth } from "./context/auth";
+import MainNavigator from "./navigators/mainNav";
+import "./global.css";
 import store from './redux/store';
 import { Provider } from 'react-redux';
-import { AuthProvider, useAuth } from './context/auth';
-import { NavigationContainer } from '@react-navigation/native';
+import IncrediBot from "./components/chatbot/IncrediBot";
 
-function App() {
+const Stack = createNativeStackNavigator();
+
+function AppWrapper() {
+  const { isAuthenticated } = useAuth();
+  return (
+    <>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName={isAuthenticated ? "MainNavigator" : "Signup"}>
+          {isAuthenticated ? (
+            <Stack.Screen name="MainNavigator" component={MainNavigator} options={{ headerShown: false }} />
+          ) : (
+            <>
+              <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false }} />
+              <Stack.Screen name="Login" component={Login} options={{ headerShown: false }} />
+              <Stack.Screen name="Register" component={Register} options={{ headerShown: false }} />
+            </>
+          )}
+        </Stack.Navigator>
+        <Toast />
+      </NavigationContainer>
+      {isAuthenticated && <IncrediBot />}
+    </>
+  );
+}
+
+export default function App() {
   return (
     <Provider store={store}>
       <AuthProvider>
-        <NavigationContainer>
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-            <Text>Hello</Text>
-          </View>
-        </NavigationContainer>
+        <AppWrapper />
       </AuthProvider>
     </Provider>
   );
 }
-
-export default App;
