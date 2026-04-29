@@ -49,7 +49,7 @@
       "bundler": "metro"
     },
     "extra": {
-      "BASE_IP": "192.168.0.110",
+      "BASE_IP": "https://incredi-bills-server-side.vercel.app/",
       "eas": {
         "projectId": "ed1b5568-6279-4565-8f9e-37d2ae855ed9"
       }

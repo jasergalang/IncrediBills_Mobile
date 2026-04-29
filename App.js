@@ -80,14 +80,18 @@ const styles = StyleSheet.create({
 
 import { registerRootComponent } from 'expo';
 import { Text, View } from 'react-native';
-//import './global.css';
+import './global.css';
+import store from './redux/store';
+import { Provider } from 'react-redux';
 
 function App() {
   return (
-    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-      <Text>Hello</Text>
-    </View>
+    <Provider store={store}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <Text>Hello</Text>
+      </View>
+    </Provider>
   );
 }
 
-export default App;
+export default App; 
